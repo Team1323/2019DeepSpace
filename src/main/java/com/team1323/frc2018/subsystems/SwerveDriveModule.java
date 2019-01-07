@@ -197,7 +197,7 @@ public class SwerveDriveModule extends Subsystem{
 	public void setDriveOpenLoop(double velocity){
 		double volts = 0.0;
 		if(!Util.epsilonEquals(velocity, 0.0, Constants.kEpsilon)){
-			velocity *= Constants.kSwerveMaxSpeedFeetPerSecond;
+			velocity *= Constants.kSwerveMaxSpeedInchesPerSecond;
 			double m =  Constants.kVoltageVelocityEquations[moduleID][velocity < 0 ? 1 : 0][0];
 			double b = Constants.kVoltageVelocityEquations[moduleID][velocity < 0 ? 1 : 0][1];
 			volts = (velocity - b) / m;
@@ -220,14 +220,10 @@ public class SwerveDriveModule extends Subsystem{
 		return false;
 	}
 	
-	public void setVelocitySetpoint(double feetPerSecond){
+	public void setVelocitySetpoint(double inchesPerSecond){
 		driveMotor.selectProfileSlot(1, 0);
 		periodicIO.driveControlMode = ControlMode.Velocity;
-		periodicIO.driveDemand = feetPerSecondToEncVelocity(feetPerSecond);
-	}
-	
-	private double getDriveDistanceFeet(){
-		return getDriveDistanceInches() / 12.0;
+		periodicIO.driveDemand = inchesPerSecondToEncVelocity(inchesPerSecond);
 	}
 	
 	private double getDriveDistanceInches(){
@@ -242,12 +238,12 @@ public class SwerveDriveModule extends Subsystem{
 		return (int) (inches*Constants.kSwerveEncUnitsPerInch);
 	}
 	
-	public double encVelocityToFeetPerSecond(double encUnitsPer100ms){
-		return encUnitsToInches(encUnitsPer100ms) / 12.0 * 10;
+	public double encVelocityToInchesPerSecond(double encUnitsPer100ms){
+		return encUnitsToInches(encUnitsPer100ms) * 10;
 	}
 	
-	public int feetPerSecondToEncVelocity(double feetPerSecond){
-		return (int) (inchesToEncUnits(feetPerSecond * 12.0 / 10.0));
+	public int inchesPerSecondToEncVelocity(double inchesPerSecond){
+		return (int) (inchesToEncUnits(inchesPerSecond / 10.0));
 	}
 	
 	public int degreesToEncUnits(double degrees){
@@ -267,7 +263,7 @@ public class SwerveDriveModule extends Subsystem{
 	}
 	
 	public synchronized void updatePose(Rotation2d robotHeading){
-		double currentEncDistance = getDriveDistanceFeet();
+		double currentEncDistance = getDriveDistanceInches();
 		double deltaEncDistance = (currentEncDistance - previousEncDistance) * Constants.kWheelScrubFactors[moduleID];
 		Rotation2d currentWheelAngle = getFieldCentricAngle(robotHeading);
 		Translation2d deltaPosition = new Translation2d(currentWheelAngle.cos()*deltaEncDistance, 
@@ -293,7 +289,7 @@ public class SwerveDriveModule extends Subsystem{
 	}
 	
 	public synchronized void resetLastEncoderReading(){
-		previousEncDistance = getDriveDistanceFeet();
+		previousEncDistance = getDriveDistanceInches();
 	}
 
 	@Override

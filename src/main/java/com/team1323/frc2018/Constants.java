@@ -19,13 +19,13 @@ public class Constants {
 	public static final boolean kExtraNyooms = true;
 	
 	//Physical Robot Dimensions
-	public static final double kRobotWidth = 39.0 / 12.0;
-	public static final double kRobotLength = 34.0 / 12.0;
+	public static final double kRobotWidth = 39.0;
+	public static final double kRobotLength = 34.0;
 	public static final double kRobotHalfWidth = kRobotWidth / 2.0;
 	public static final double kRobotHalfLength = kRobotLength / 2.0;
-	public static final double kRobotIntakeExtrusion = 11.0/12.0;
+	public static final double kRobotIntakeExtrusion = 11.0;
 	
-	public static final double kCubeWidth = 13.0/12.0;
+	public static final double kCubeWidth = 13.0;
 	
 	//Field Landmarks
 	public static final Translation2d kAutoStartingCorner = new Translation2d(0.0, 12.5);
@@ -45,19 +45,17 @@ public class Constants {
 	public static final Translation2d kRightSwitchTarget = new Translation2d(140.0 / 12.0, 13.5 + (51.875 / 12.0));
 	public static final double kTargetHeight = 28.5 / 12.0;
 	
-	public static final Pose2d kRobotStartingPose = new Pose2d(new Translation2d(Constants.kRobotHalfLength, Constants.kAutoStartingCorner.y() + Constants.kRobotHalfWidth), Rotation2d.fromDegrees(0));
-	public static final Pose2d kRobotLeftStartingPose = new Pose2d(new Translation2d(Constants.kRobotHalfWidth, 5.5 - Constants.kRobotHalfLength), Rotation2d.fromDegrees(-90));
-	public static final Pose2d kRobotAssistStartingPose = new Pose2d(kRobotLeftStartingPose.getTranslation(), Rotation2d.fromDegrees(90.0));
+	public static final Pose2d kRobotStartingPose = new Pose2d(new Translation2d(48.0 + Constants.kRobotHalfLength, 97.0 + Constants.kRobotHalfWidth), Rotation2d.fromDegrees(0));
 	
-	//Swerve Calculations Constants (measurements are in feet)
-    public static final double kWheelbaseLength = 18.5 / 12.0;
-    public static final double kWheelbaseWidth  = 23.5 / 12.0;
+	//Swerve Calculations Constants (measurements are in inches)
+    public static final double kWheelbaseLength = 18.5;
+    public static final double kWheelbaseWidth  = 23.5;
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
     
     //Camera Constants
-    public static final double kCameraYOffset = 2.875 / 12.0;//2.875
-    public static final double kCameraXOffset = kRobotHalfLength - (4.25/12.0);//4.25
-    public static final double kCameraZOffset = 12.0 / 12.0;
+    public static final double kCameraYOffset = 2.875;//2.875
+    public static final double kCameraXOffset = kRobotHalfLength - 4.25;//4.25
+    public static final double kCameraZOffset = 12.0;
     public static final double kCameraYawAngleDegrees = 0.0;
     public static final double kCameraPitchAngleDegrees = 3.0;
     
@@ -70,17 +68,17 @@ public class Constants {
     
     //Path following constants
     public static final double kPathLookaheadTime = 0.25;  // seconds to look ahead along the path for steering 0.4
-	public static double kPathMinLookaheadDistance = 0.5;  // feet 2.0 (we've been using 0.25)
+	public static double kPathMinLookaheadDistance = 6.0;  // inches 2.0 (we've been using 0.25)
 	public static void setLookaheadDistance(double distance){
 		kPathMinLookaheadDistance = distance;
 	}
     
     //Swerve Speed Constants
     public static final double kSwerveDriveMaxSpeed = 5432.0;
-    public static final double kSwerveMaxSpeedFeetPerSecond = 12.5;
+    public static final double kSwerveMaxSpeedInchesPerSecond = 12.5 * 12.0;
 	public static final double kSwerveRotationMaxSpeed = 1250.0 * 0.8; //The 0.8 is to request a speed that is always achievable
 	public static final double kSwerveRotation10VoltMaxSpeed = 1350.0;
-    public static final double kSwerveRotationSpeedScalar = ((1.0 / 0.125) - 1.0) / kSwerveMaxSpeedFeetPerSecond;
+    public static final double kSwerveRotationSpeedScalar = ((1.0 / 0.125) - 1.0) / kSwerveMaxSpeedInchesPerSecond;
     
     //Swerve Module Wheel Offsets (Rotation encoder values when the wheels are facing 0 degrees)
 	public static final int kFrontRightEncoderStartingPos = kIsUsingCompBot ? -3799 : -3614;

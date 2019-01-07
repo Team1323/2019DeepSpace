@@ -6,7 +6,6 @@ import java.util.List;
 import com.team1323.frc2018.Constants;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Translation2d;
-import com.team254.lib.spline.QuinticHermiteSpline;
 import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
@@ -62,7 +61,7 @@ public class QuinticPathTransmitter implements Loop{
 		t = timestamp - startingTime;
 		TimedState<Pose2dWithCurvature> state = currentTrajectory.preview(t).state();
 		Translation2d pos = state.state().getTranslation();
-	SmartDashboard.putNumberArray("Path Pose", new double[]{pos.x(), pos.y(), 0.0, /*Math.abs(state.acceleration()) / 10.0*/state.velocity() / Constants.kSwerveMaxSpeedFeetPerSecond}); 
+	SmartDashboard.putNumberArray("Path Pose", new double[]{pos.x(), pos.y(), 0.0, /*Math.abs(state.acceleration()) / 10.0*/state.velocity() / Constants.kSwerveMaxSpeedInchesPerSecond}); 
 		
 		//System.out.println("Accel: " + state.acceleration());
 		if(state.acceleration() < minAccel)

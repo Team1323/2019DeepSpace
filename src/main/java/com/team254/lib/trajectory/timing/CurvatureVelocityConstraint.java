@@ -7,7 +7,7 @@ public class CurvatureVelocityConstraint implements TimingConstraint<Pose2dWithC
 
 	@Override
 	public double getMaxVelocity(final Pose2dWithCurvature state){
-		return Constants.kSwerveMaxSpeedFeetPerSecond / (1 + Math.abs(4.0*state.getCurvature()));//6.0
+		return Constants.kSwerveMaxSpeedInchesPerSecond / (1 + Math.abs(4.0*state.getCurvature()));//6.0
 	}
 	
 	@Override

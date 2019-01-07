@@ -144,7 +144,7 @@ public class DriveMotionPlanner implements CSVWritable {
                 (reversed, new
                         DistanceView<>(trajectory), kMaxDx, all_constraints, start_vel, end_vel, max_vel, max_accel, 
                         max_decel, slowdown_chunks);
-        timed_trajectory.setDefaultVelocity(default_vel / Constants.kSwerveMaxSpeedFeetPerSecond);
+        timed_trajectory.setDefaultVelocity(default_vel / Constants.kSwerveMaxSpeedInchesPerSecond);
         return timed_trajectory;
     }
     
@@ -204,12 +204,12 @@ public class DriveMotionPlanner implements CSVWritable {
         
         SmartDashboard.putNumber("Path X", lookahead_state.state().getTranslation().x());
         SmartDashboard.putNumber("Path Y", lookahead_state.state().getTranslation().y());
-        SmartDashboard.putNumber("Path Velocity", lookahead_state.velocity() / Constants.kSwerveMaxSpeedFeetPerSecond);
+        SmartDashboard.putNumber("Path Velocity", lookahead_state.velocity() / Constants.kSwerveMaxSpeedInchesPerSecond);
 
         Translation2d lookaheadTranslation = new Translation2d(current_state.getTranslation(), 
         		lookahead_state.state().getTranslation());
         Rotation2d steeringDirection = lookaheadTranslation.direction();
-        double normalizedSpeed = mSetpoint.velocity() / Constants.kSwerveMaxSpeedFeetPerSecond;
+        double normalizedSpeed = mSetpoint.velocity() / Constants.kSwerveMaxSpeedInchesPerSecond;
         if(normalizedSpeed < defaultCook && useDefaultCook){ 
         	normalizedSpeed = defaultCook;
         }else{

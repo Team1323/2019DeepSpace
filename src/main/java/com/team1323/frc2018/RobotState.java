@@ -156,7 +156,7 @@ public class RobotState {
             Translation2d robotFrameToFieldFrame = report.field_to_goal.inverse().translateBy(cubePosition);
             if(robotFrameToFieldFrame.norm() <= 5.0){
             	Swerve.getInstance().resetPosition(new Pose2d(Swerve.getInstance().getPose().getTranslation().translateBy(robotFrameToFieldFrame), Swerve.getInstance().getPose().getRotation()));
-            	System.out.println("Coordinates corrected by " + robotFrameToFieldFrame.norm() + " feet");
+            	System.out.println("Coordinates corrected by " + robotFrameToFieldFrame.norm() + " inches");
             }else{
             	System.out.println("Coordinate correction too large: " + robotFrameToFieldFrame.norm());
             }

@@ -614,7 +614,7 @@ public class Swerve extends Subsystem{
 	}
 	
 	public void setMaxRotationSpeed(){
-		double currentDriveSpeed = translationalVector.norm() * Constants.kSwerveMaxSpeedFeetPerSecond;
+		double currentDriveSpeed = translationalVector.norm() * Constants.kSwerveMaxSpeedInchesPerSecond;
 		double newMaxRotationSpeed = Constants.kSwerveRotationMaxSpeed / 
 				((Constants.kSwerveRotationSpeedScalar * currentDriveSpeed) + 1.0);
 		modules.forEach((m) -> m.setMaxRotationSpeed(newMaxRotationSpeed));
