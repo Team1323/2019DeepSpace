@@ -117,7 +117,8 @@ public class SwerveDriveModule extends Subsystem{
     	driveMotor.configNominalOutputReverse(-1.5/12.0, 10);//-1.5/12.0
     	driveMotor.configVoltageCompSaturation(12.0, 10);
     	driveMotor.enableVoltageCompensation(true);
-    	driveMotor.configOpenloopRamp(0.25, 10);//0.25
+		driveMotor.configOpenloopRamp(0.25, 10);//0.25
+		driveMotor.configClosedloopRamp(0.0);
     	driveMotor.configAllowableClosedloopError(0, 0, 10);
     	driveMotor.setInverted(false);
     	driveMotor.setSensorPhase(false);
@@ -129,10 +130,10 @@ public class SwerveDriveModule extends Subsystem{
     	driveMotor.config_kD(0, 24.0, 10);
     	driveMotor.config_kF(0, 1023.0/Constants.kSwerveDriveMaxSpeed, 10);
     	// Slot 1 corresponds to velocity mode
-    	driveMotor.config_kP(1, 0.05, 10);
+    	driveMotor.config_kP(1, 0.2, 10);//0.05
     	driveMotor.config_kI(1, 0.0, 10);
-    	driveMotor.config_kD(1, 0.0, 10);
-    	driveMotor.config_kF(1, 1023.0/Constants.kSwerveDriveMaxSpeed*0.65, 10);
+    	driveMotor.config_kD(1, 0.0, 10);//0.0
+    	driveMotor.config_kF(1, 1023.0/Constants.kSwerveDriveMaxSpeed*0.8, 10);
     	driveMotor.configMotionCruiseVelocity((int)(Constants.kSwerveDriveMaxSpeed*0.9), 10);
 		driveMotor.configMotionAcceleration((int)(Constants.kSwerveDriveMaxSpeed), 10);
 		if(!isDriveSensorConnected())
@@ -195,17 +196,18 @@ public class SwerveDriveModule extends Subsystem{
 	 * @param velocity Normalized value
 	 */
 	public void setDriveOpenLoop(double velocity){
-		double volts = 0.0;
+		/*double volts = 0.0;
 		if(!Util.epsilonEquals(velocity, 0.0, Constants.kEpsilon)){
 			velocity *= Constants.kSwerveMaxSpeedInchesPerSecond;
 			double m =  Constants.kVoltageVelocityEquations[moduleID][velocity < 0 ? 1 : 0][0];
 			double b = Constants.kVoltageVelocityEquations[moduleID][velocity < 0 ? 1 : 0][1];
 			volts = (velocity - b) / m;
 			volts = Util.deadBand(volts, 1.0);
-		}
+		}*/
 
 		periodicIO.driveControlMode = ControlMode.PercentOutput;
-		periodicIO.driveDemand = volts / 12.0;
+		//periodicIO.driveDemand = volts / 12.0;
+		periodicIO.driveDemand = velocity;
 	}
 	
 	public void setDrivePositionTarget(double deltaDistanceInches){
@@ -296,6 +298,7 @@ public class SwerveDriveModule extends Subsystem{
 	public synchronized void readPeriodicInputs() {
 		periodicIO.rotationPosition = rotationMotor.getSelectedSensorPosition(0);
 		if(useDriveEncoder) periodicIO.drivePosition = driveMotor.getSelectedSensorPosition(0);
+		periodicIO.velocity = driveMotor.getSelectedSensorVelocity();
 		/*if(moduleID == 3){
 			periodicIO.velocity = driveMotor.getSelectedSensorVelocity(0);
 			periodicIO.driveVoltage = driveMotor.getMotorOutputVoltage();
@@ -351,7 +354,7 @@ public class SwerveDriveModule extends Subsystem{
 		//SmartDashboard.putNumber(name + "Drive Voltage", periodicIO.driveVoltage);
 		SmartDashboard.putNumber(name + "Inches Driven", getDriveDistanceInches());
 		//SmartDashboard.putNumber(name + "Rotation Voltage", rotationMotor.getMotorOutputVoltage());
-		//SmartDashboard.putNumber(name + "Velocity", encVelocityToFeetPerSecond(periodicIO.velocity));
+		SmartDashboard.putNumber(name + "Velocity", encVelocityToInchesPerSecond(periodicIO.velocity));
 		/*if(rotationMotor.getControlMode() == ControlMode.MotionMagic)
 			SmartDashboard.putNumber(name + "Error", encUnitsToDegrees(rotationMotor.getClosedLoopError(0)));*/
 		//SmartDashboard.putNumber(name + "X", position.x());

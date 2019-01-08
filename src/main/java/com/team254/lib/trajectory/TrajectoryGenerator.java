@@ -272,9 +272,9 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getStraightPath(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(Constants.kRobotStartingPose);
-            waypoints.add(Constants.kRobotStartingPose.transformBy(Pose2d.fromTranslation(new Translation2d(4.0, 0.0))));
+            waypoints.add(Constants.kRobotStartingPose.transformBy(Pose2d.fromTranslation(new Translation2d(120.0, 0.0))));
 
-            return generateTrajectory(false, waypoints, Arrays.asList(), 10.0, 10.0, 6.0, kMaxVoltage, 5.0, 1);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 96.0, 96.0, 24.0, kMaxVoltage, 60.0, 1);
         }
     }
     

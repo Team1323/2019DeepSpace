@@ -148,6 +148,19 @@ public class RobotState {
             return Optional.empty();
         }
     }
+
+    public synchronized Optional<Pose2d> getRobotScoringPosition(){
+        List<Pose2d> targetPositions = getCaptureTimeFieldToGoal();
+		Optional<ShooterAimingParameters> aimingParameters = getAimingParameters();
+		if(targetPositions.size() > 0 && aimingParameters.isPresent()){
+			Translation2d targetPosition = targetPositions.get(0).getTranslation();
+			Pose2d orientedTargetPosition = new Pose2d(targetPosition, aimingParameters.get().getRobotToGoal());
+            Pose2d robotScoringPosition = orientedTargetPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength, 0.0)));
+            
+            return Optional.of(robotScoringPosition);
+        }
+        return Optional.empty();
+    }
     
     public synchronized void resetRobotPosition(Translation2d cubePosition){
     	List<TrackReport> reports = goal_tracker_.getTracks();
