@@ -84,6 +84,11 @@ public class TrajectoryGenerator {
     // ALL POSES DEFINED FOR THE CASE THAT ROBOT STARTS ON RIGHT! (mirrored about +x axis for LEFT)
     static final Pose2d autoStartingPose = new Pose2d(Constants.kRobotStartingPose.getTranslation(), Rotation2d.fromDegrees(-90.0));
 
+    static final Pose2d closeHatchScoringPose = Constants.closeHatchPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 12.0, 0.0)));
+    static final Pose2d humanLoaderPose = Constants.humanLoaderPosition.transformBy(Pose2d.fromTranslation(new Translation2d(Constants.kRobotHalfLength + 12.0, 0.0)));
+    static final Pose2d ballIntakePose = Constants.autoBallPosition.transformBy(Pose2d.fromTranslation(new Translation2d(Constants.kRobotHalfLength + 6.0, 0.0)));
+    static final Pose2d portScoringPose = Constants.rocketPortPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 12.0, 0.0)));
+
     public class TrajectorySet {
         public class MirroredTrajectory {
             public MirroredTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> left) {
@@ -104,7 +109,10 @@ public class TrajectoryGenerator {
 
         //Preliminary Auto Paths
         public final Trajectory<TimedState<Pose2dWithCurvature>> startToCloseHatch;
-        //public final Trajectory<TimedState<Pose2dWithCurvature>> closeHatchToHumanLoader;
+        public final Trajectory<TimedState<Pose2dWithCurvature>> closeHatchToHumanLoader;
+        public final Trajectory<TimedState<Pose2dWithCurvature>> humanLoaderToCloseHatch;
+        public final Trajectory<TimedState<Pose2dWithCurvature>> closeHatchToBall;
+        public final Trajectory<TimedState<Pose2dWithCurvature>> ballToRocketPort;
 
         private TrajectorySet() {
             //Test Paths
@@ -112,6 +120,10 @@ public class TrajectoryGenerator {
 
             //Preliminary Auto Paths
             startToCloseHatch = getStartToCloseHatch();
+            closeHatchToHumanLoader = getCloseHatchToHumanLoader();
+            humanLoaderToCloseHatch = getHumanLoaderToCloseHatch();
+            closeHatchToBall = getCloseHatchToBall();
+            ballToRocketPort = getBallToRocketPort();
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getStraightPath(){
@@ -125,7 +137,39 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getStartToCloseHatch(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(autoStartingPose);
-            waypoints.add(Constants.closeHatchPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 12.0, 0.0))));
+            waypoints.add(closeHatchScoringPose);
+
+            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getCloseHatchToHumanLoader(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(closeHatchScoringPose);
+            waypoints.add(humanLoaderPose);
+
+            return generateTrajectory(true, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getHumanLoaderToCloseHatch(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(humanLoaderPose);
+            waypoints.add(closeHatchScoringPose);
+
+            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getCloseHatchToBall(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(closeHatchScoringPose);
+            waypoints.add(ballIntakePose);
+
+            return generateTrajectory(true, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getBallToRocketPort(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(ballIntakePose);
+            waypoints.add(portScoringPose);
 
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
         }

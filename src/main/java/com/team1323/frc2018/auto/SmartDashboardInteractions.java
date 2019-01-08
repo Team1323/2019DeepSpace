@@ -1,34 +1,30 @@
 package com.team1323.frc2018.auto;
 
 import com.team1323.frc2018.auto.modes.StandStillMode;
+import com.team1323.frc2018.auto.modes.TwoCloseOneBallMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SmartDashboardInteractions {
-	private static final String AUTO_OPTIONS = "auto_options";
     private static final String SELECTED_AUTO_MODE = "selected_auto_mode";
     
-    private static final AutoOption DEFAULT_MODE = AutoOption.SCALE_ONLY;
+    private static final AutoOption DEFAULT_MODE = AutoOption.TWO_CLOSE_ONE_BALL;
     
     private SendableChooser<AutoOption> modeChooser;
     
     public void initWithDefaults(){
     	modeChooser = new SendableChooser<AutoOption>();
-    	modeChooser.addDefault(DEFAULT_MODE.name, DEFAULT_MODE);
-    	modeChooser.addObject("Switch Only", AutoOption.SWITCH_ONLY);
-		//modeChooser.addObject("Scale Only", AutoOption.SCALE_ONLY);
-		modeChooser.addObject("2 Switch + 1 Scale", AutoOption.ASSIST);
-		//modeChooser.addObject("Four Cube Switch (Test)", AutoOption.FOUR_CUBE_SWITCH);
+    	modeChooser.setDefaultOption(DEFAULT_MODE.name, DEFAULT_MODE);
     	
     	SmartDashboard.putData("Mode Chooser", modeChooser);
     	SmartDashboard.putString(SELECTED_AUTO_MODE, DEFAULT_MODE.name);
     }
     
-    public AutoModeBase getSelectedAutoMode(String gameData){
-        AutoOption selectedOption =  (AutoOption)  modeChooser.getSelected();
+    public AutoModeBase getSelectedAutoMode(){
+        AutoOption selectedOption = (AutoOption) modeChooser.getSelected();
                 
-        return createAutoMode(selectedOption, gameData);
+        return createAutoMode(selectedOption);
     }
     
     public String getSelectedMode(){
@@ -37,10 +33,7 @@ public class SmartDashboardInteractions {
     }
     
     enum AutoOption{
-		SWITCH_ONLY("Switch Only"),
-		FOUR_CUBE_SWITCH("Four Cube Switch"),
-		SCALE_ONLY("Scale Only"),
-		ASSIST("Assist");
+		TWO_CLOSE_ONE_BALL("2 Close, 1 Ball");
     	
     	public final String name;
     	
@@ -49,8 +42,10 @@ public class SmartDashboardInteractions {
     	}
     }
     
-    private AutoModeBase createAutoMode(AutoOption option, String gameData){
+    private AutoModeBase createAutoMode(AutoOption option){
     	switch(option){
+			case TWO_CLOSE_ONE_BALL:
+				return new TwoCloseOneBallMode();
             default:
                 System.out.println("ERROR: unexpected auto mode: " + option);
                 return new StandStillMode();

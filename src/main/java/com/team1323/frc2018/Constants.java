@@ -24,9 +24,14 @@ public class Constants {
 	public static final double kRobotHalfWidth = kRobotWidth / 2.0;
 	public static final double kRobotHalfLength = kRobotLength / 2.0;
 	public static final double kRobotIntakeExtrusion = 11.0;//TODO update
+
+	public static final double kBallRadius = 6.5;
 	
 	//Field Landmarks
 	public static final Pose2d closeHatchPosition = new Pose2d(new Translation2d(48.0 + 166.57, 27.44 - 10.0), Rotation2d.fromDegrees(-30.0));
+	public static final Pose2d humanLoaderPosition = new Pose2d(new Translation2d(0.0, 25.72), Rotation2d.fromDegrees(0.0));
+	public static final Pose2d autoBallPosition = new Pose2d(new Translation2d(48.0 - 4.0 - kBallRadius, 97.0 - (3.0*kBallRadius)), Rotation2d.fromDegrees(-45.0));
+	public static final Pose2d rocketPortPosition = new Pose2d(new Translation2d(229.13, 27.44), Rotation2d.fromDegrees(-90.0));
 
 	public static final double kTargetHeight = 28.5 / 12.0;
 	

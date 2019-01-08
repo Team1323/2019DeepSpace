@@ -3,6 +3,9 @@ package com.team1323.frc2018.auto;
 import com.team1323.frc2018.auto.actions.Action;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.timing.TimedState;
+
+import edu.wpi.first.wpilibj.Timer;
+
 import java.util.List;
 import java.util.ArrayList;
 import com.team254.lib.trajectory.Trajectory;
@@ -20,6 +23,11 @@ public abstract class AutoModeBase {
 
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths(){
         return new ArrayList<>();
+    }
+
+    protected double startTime = 0.0;
+    protected double currentTime(){
+        return Timer.getFPGATimestamp() - startTime;
     }
 
     protected abstract void routine() throws AutoModeEndedException;

@@ -59,7 +59,7 @@ public class Swerve extends Subsystem{
 	//Heading controller methods
 	Pigeon pigeon;
 	SwerveHeadingController headingController = new SwerveHeadingController();
-	InputRamp rotationRamp = new InputRamp(1.0, 2.0, 0.1);
+	InputRamp rotationRamp = new InputRamp(1.0, 5.0, 0.1);
 	public void temporarilyDisableHeadingController(){
 		headingController.temporarilyDisable();
 	}
