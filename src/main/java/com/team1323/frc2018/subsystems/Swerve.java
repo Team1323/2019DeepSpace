@@ -226,7 +226,7 @@ public class Swerve extends Subsystem{
 		
 		rotationalInput = rotate;
 
-		if(translationalInput.norm() != 0){
+		if(translationalInput.norm() != 0 || rotationalInput != 0){
 			if(currentState == ControlState.VISION){
 				if(Math.abs(translationalInput.direction().distance(visionTargetHeading)) > Math.toRadians(90.0)){
 					setState(ControlState.MANUAL);

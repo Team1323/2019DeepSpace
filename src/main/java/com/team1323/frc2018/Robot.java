@@ -114,7 +114,7 @@ public class Robot extends TimedRobot {
 		
 		generator.generateTrajectories();		
 
-		qTransmitter.addPath(generator.getTrajectorySet().straightPath);
+		qTransmitter.addPath(generator.getTrajectorySet().startToCloseHatch);
 	}
 	
 	public void allPeriodic(){
@@ -212,7 +212,7 @@ public class Robot extends TimedRobot {
 	public void teleopPeriodic() {
 		try{
 			driver.update();
-			coDriver.update();
+			//coDriver.update();
 
 			timestamp = Timer.getFPGATimestamp();
 			
@@ -327,7 +327,7 @@ public class Robot extends TimedRobot {
 			swerve.temporarilyDisableHeadingController();
 			swerve.zeroSensors(Constants.kRobotStartingPose);
 			swerve.requireModuleConfiguration();
-			swerve.setTrajectory(generator.getTrajectorySet().straightPath, 0.0, 1.0);
+			swerve.setTrajectory(generator.getTrajectorySet().startToCloseHatch, -30.0, 1.0);
 			//swerve.setVelocity(new Rotation2d(), 24.0);
 		}else if(driver.startButton.wasPressed()){
 			swerve.setVisionTrajectory();

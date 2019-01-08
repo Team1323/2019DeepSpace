@@ -82,6 +82,7 @@ public class TrajectoryGenerator {
     // +x is towards the center of the field.
     // +y is to the right.
     // ALL POSES DEFINED FOR THE CASE THAT ROBOT STARTS ON RIGHT! (mirrored about +x axis for LEFT)
+    static final Pose2d autoStartingPose = new Pose2d(Constants.kRobotStartingPose.getTranslation(), Rotation2d.fromDegrees(-90.0));
 
     public class TrajectorySet {
         public class MirroredTrajectory {
@@ -101,9 +102,16 @@ public class TrajectoryGenerator {
         //Test Paths
         public final Trajectory<TimedState<Pose2dWithCurvature>> straightPath;
 
+        //Preliminary Auto Paths
+        public final Trajectory<TimedState<Pose2dWithCurvature>> startToCloseHatch;
+        //public final Trajectory<TimedState<Pose2dWithCurvature>> closeHatchToHumanLoader;
+
         private TrajectorySet() {
             //Test Paths
             straightPath = getStraightPath();
+
+            //Preliminary Auto Paths
+            startToCloseHatch = getStartToCloseHatch();
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getStraightPath(){
@@ -112,6 +120,14 @@ public class TrajectoryGenerator {
             waypoints.add(Constants.kRobotStartingPose.transformBy(Pose2d.fromTranslation(new Translation2d(120.0, 0.0))));
 
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getStartToCloseHatch(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(autoStartingPose);
+            waypoints.add(Constants.closeHatchPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 12.0, 0.0))));
+
+            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
         }
     }
     
