@@ -50,8 +50,6 @@ public class RobotState {
 			return new Translation2d();
 	}
 	
-	private final Translation2d kCubePosition = Constants.kLeftSwitchFarCorner.translateBy(new Translation2d(Constants.kCubeWidth, Constants.kCubeWidth/2.0));
-	
 	private static final Pose2d kVehicleToCamera = new Pose2d(
             new Translation2d(Constants.kCameraXOffset, Constants.kCameraYOffset), new Rotation2d());
 	

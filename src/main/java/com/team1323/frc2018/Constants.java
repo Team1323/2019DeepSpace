@@ -23,30 +23,13 @@ public class Constants {
 	public static final double kRobotLength = 34.0;
 	public static final double kRobotHalfWidth = kRobotWidth / 2.0;
 	public static final double kRobotHalfLength = kRobotLength / 2.0;
-	public static final double kRobotIntakeExtrusion = 11.0;
-	
-	public static final double kCubeWidth = 13.0;
+	public static final double kRobotIntakeExtrusion = 11.0;//TODO update
 	
 	//Field Landmarks
-	public static final Translation2d kAutoStartingCorner = new Translation2d(0.0, 12.5);
-	public static final Translation2d kRightSwitchCloseCorner = new Translation2d(140.0 / 12.0, 27.0 - (85.25/12.0));
-	public static final Translation2d kRightSwitchFarCorner = new Translation2d(196.0 / 12.0, 27.0 - (85.25/12.0));
-	public static final Translation2d kLeftSwitchCloseCorner = new Translation2d(140.0 / 12.0, 85.25/12.0);
-	public static final Translation2d kLeftSwitchFarCorner = new Translation2d(196.0 / 12.0, 85.25/12.0);
-	public static final Translation2d kRightScaleCorner = new Translation2d(299.65 / 12.0, 27.0 - (95.25/12.0));
-	public static final Translation2d kLeftScaleCorner = new Translation2d(299.65 / 12.0, 95.25 / 12.0);
-	public static final Translation2d kRightMostCube = kRightSwitchFarCorner.translateBy(new Translation2d(kCubeWidth, -0.25));
-	public static final Translation2d kLeftMostCube = kLeftSwitchFarCorner.translateBy(new Translation2d(kCubeWidth, kCubeWidth/2.0));
-	public static final Translation2d kLeftMostCubeCorner = kLeftSwitchFarCorner.translateBy(new Translation2d(kCubeWidth, 0.0));
-	public static final Translation2d kSecondLeftCube = kLeftMostCube.translateBy(new Translation2d(0.0, kCubeWidth + (15.1/12.0)));
-	public static final Translation2d kSecondLeftCubeCorner = kSecondLeftCube.translateBy(new Translation2d(0.0, -kCubeWidth/2.0));
 	
-	public static final Translation2d kLeftSwitchTarget = new Translation2d(140.0 / 12.0, 13.5 - (51.875 / 12.0));
-	public static final Translation2d kRightSwitchTarget = new Translation2d(140.0 / 12.0, 13.5 + (51.875 / 12.0));
 	public static final double kTargetHeight = 28.5 / 12.0;
 	
 	public static final Pose2d kRobotStartingPose = new Pose2d(new Translation2d(48.0 + Constants.kRobotHalfLength, 97.0 + Constants.kRobotHalfWidth), Rotation2d.fromDegrees(0));
-	//public static final Pose2d kRobotStartingPose = new Pose2d();
 	
 	//Swerve Calculations Constants (measurements are in inches)
     public static final double kWheelbaseLength = 18.5;
@@ -69,7 +52,7 @@ public class Constants {
     
     //Path following constants
     public static final double kPathLookaheadTime = 0.25;  // seconds to look ahead along the path for steering 0.4
-	public static double kPathMinLookaheadDistance = 6.0;  // inches 2.0 (we've been using 0.25)
+	public static double kPathMinLookaheadDistance = 6.0;  // inches 24.0 (we've been using 3.0)
 	public static void setLookaheadDistance(double distance){
 		kPathMinLookaheadDistance = distance;
 	}
@@ -112,9 +95,7 @@ public class Constants {
 	//Swerve Odometry Constants
 	public static final double kSwerveWheelDiameter = 3.93; //inches
 	public static final double kSwerveDriveEncoderResolution = 4096.0;
-	/**
-	 * The number of rotations the swerve drive encoder undergoes for every rotation of the wheel.
-	 */
+	/** The number of rotations the swerve drive encoder undergoes for every rotation of the wheel. */
 	public static final double kSwerveEncoderToWheelRatio = 10.0/9.0;
 	public static final double kSwerveEncUnitsPerWheelRev = kSwerveDriveEncoderResolution * kSwerveEncoderToWheelRatio;
 	public static final double kSwerveEncUnitsPerInch = kSwerveEncUnitsPerWheelRev / (Math.PI * kSwerveWheelDiameter);
@@ -122,9 +103,7 @@ public class Constants {
 	//Elevator Constants
 	public static final double kElevatorMaxSpeedHighGear = 535.6785 * 4096.0 / 600.0; //encoder units per 100 ms (4266)
 	public static final double kElevatorMaxSpeedLowGear = 169.67 * 4096.0 / 600.0; //encoder units per 100 ms
-	/**
-	 * Pulse width position of the elevator encoder when it has fully descended.
-	 */
+	/** Pulse width position of the elevator encoder when it has fully descended. */
 	public static final int kElevatorEncoderStartingPosition = 0;
 	public static final double kElevatorTicksPerFoot = 11983.0 / 2.5989583; //determined empirically
 	public static final double kElevatorHeightTolerance = 0.1; //feet
@@ -160,13 +139,9 @@ public class Constants {
 	//Wrist Constants
 	public static final double kWristMaxSpeed = /*41.58 * 4096.0 / 600.0*/300.0; //encoder units per 100 ms
 	public static final double kWristStartingAngle = 90.0;
-	/**
-	 * Pulse width position of the wrist encoder when the wrist is upright (at 90 degrees, parallel to the elevator).
-	 */
+	/** Pulse width position of the wrist encoder when the wrist is upright (at 90 degrees, parallel to the elevator). */
 	public static final int kWristStartingEncoderPosition = kIsUsingCompBot ? 3249 : 559;
-	/**
-	 * The number of rotations the wrist encoder undergoes for every rotation of the wrist.
-	 */
+	/** The number of rotations the wrist encoder undergoes for every rotation of the wrist. */
 	public static final double kWristEncoderToOutputRatio = 41.58 / 19.19;
 	public static final double kWristAngleTolerance = 10.0; //degrees
 	public static final double kWristMinControlAngle = -2.0; //degrees

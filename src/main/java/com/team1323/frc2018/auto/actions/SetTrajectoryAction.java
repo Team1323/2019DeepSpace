@@ -2,9 +2,7 @@ package com.team1323.frc2018.auto.actions;
 
 import com.team1323.frc2018.subsystems.Swerve;
 import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 
 public class SetTrajectoryAction extends RunOnceAction{
@@ -22,6 +20,6 @@ public class SetTrajectoryAction extends RunOnceAction{
 	
 	@Override
 	public synchronized void runOnce(){
-		swerve.setTrajectory(new TrajectoryIterator<>(new TimedView<>(trajectory)), goalHeading, rotationScalar);
+		swerve.setTrajectory(trajectory, goalHeading, rotationScalar);
 	}
 }
