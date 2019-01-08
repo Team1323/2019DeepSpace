@@ -327,8 +327,8 @@ public class Intake extends Subsystem{
 		SmartDashboard.putNumber("Right Intake Current", rightIntake.getOutputCurrent());
 		SmartDashboard.putNumber("Left Intake Voltage", leftIntake.getMotorOutputVoltage());
 		SmartDashboard.putNumber("Right Intake Voltage", rightIntake.getMotorOutputVoltage());*/
-		SmartDashboard.putBoolean("Intake Has Cube", hasCube);
-		SmartDashboard.putBoolean("Intake Banner", banner.get());
+		//SmartDashboard.putBoolean("Intake Has Cube", hasCube);
+		//SmartDashboard.putBoolean("Intake Banner", banner.get());
 	}
 
 }

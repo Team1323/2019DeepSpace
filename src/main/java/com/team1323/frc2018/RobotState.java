@@ -153,7 +153,7 @@ public class RobotState {
 		if(targetPositions.size() > 0 && aimingParameters.isPresent()){
 			Translation2d targetPosition = targetPositions.get(0).getTranslation();
 			Pose2d orientedTargetPosition = new Pose2d(targetPosition, aimingParameters.get().getRobotToGoal());
-            Pose2d robotScoringPosition = orientedTargetPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength, 0.0)));
+            Pose2d robotScoringPosition = orientedTargetPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - Constants.kRobotIntakeExtrusion, 0.0)));
             
             return Optional.of(robotScoringPosition);
         }

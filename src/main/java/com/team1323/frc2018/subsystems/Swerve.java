@@ -13,6 +13,7 @@ import com.team1323.frc2018.loops.ILooper;
 import com.team1323.frc2018.loops.Loop;
 import com.team1323.frc2018.vision.ShooterAimingParameters;
 import com.team1323.lib.math.vectors.VectorField;
+import com.team1323.lib.util.InputRamp;
 import com.team1323.lib.util.SwerveHeadingController;
 import com.team1323.lib.util.SwerveInverseKinematics;
 import com.team1323.lib.util.SwerveKinematics;
@@ -58,6 +59,7 @@ public class Swerve extends Subsystem{
 	//Heading controller methods
 	Pigeon pigeon;
 	SwerveHeadingController headingController = new SwerveHeadingController();
+	InputRamp rotationRamp = new InputRamp(1.0, 2.0, 0.1);
 	public void temporarilyDisableHeadingController(){
 		headingController.temporarilyDisable();
 	}
@@ -319,6 +321,19 @@ public class Swerve extends Subsystem{
     	}
 	}
 
+	public void setDriveOutput(List<Translation2d> driveVectors, double percentOutputOverride){
+		for(int i=0; i<modules.size(); i++){
+    		if(Util.shouldReverse(driveVectors.get(i).direction().getDegrees(), modules.get(i).getModuleAngle().getDegrees())){
+    			modules.get(i).setModuleAngle(driveVectors.get(i).direction().getDegrees() + 180.0);
+    			modules.get(i).setDriveOpenLoop(-percentOutputOverride);
+    		}else{
+    			modules.get(i).setModuleAngle(driveVectors.get(i).direction().getDegrees());
+    			modules.get(i).setDriveOpenLoop(percentOutputOverride);
+    		}
+    	}
+	}
+
+
 	/** Configures each module to match its assigned vector, but puts the drive motors into closed-loop velocity mode */
 	public void setVelocityDriveOutput(List<Translation2d> driveVectors){
 		for(int i=0; i<modules.size(); i++){
@@ -560,9 +575,8 @@ public class Swerve extends Subsystem{
 	double lastHyp = 0.0;
 	/** Called every cycle to update the swerve based on its control state */
 	public synchronized void updateControlCycle(double timestamp){
-		//if(currentState == ControlState.TRAJECTORY) headingController.setSnapTarget(motionPlanner.getHeading());
 		double rotationCorrection = headingController.updateRotationCorrection(pose.getRotation().getUnboundedDegrees(), timestamp);
-		//rotationCorrection = 0.0;
+
 		switch(currentState){
 		case MANUAL:
 			if(evading && evadingToggled){
@@ -593,17 +607,8 @@ public class Swerve extends Subsystem{
 				if(lastDriveVector.equals(rotationalVector)){
 					stop();
 				}else{
-					List<Translation2d> driveVectors = inverseKinematics.updateDriveVectors(lastDriveVector,
-							rotationCorrection, pose, robotCentric);
-					for(int i=0; i<modules.size(); i++){
-			    		if(Util.shouldReverse(driveVectors.get(i).direction().getDegrees(), modules.get(i).getModuleAngle().getDegrees())){
-			    			modules.get(i).setModuleAngle(driveVectors.get(i).direction().getDegrees() + 180.0);
-			    			modules.get(i).setDriveOpenLoop(0);
-			    		}else{
-			    			modules.get(i).setModuleAngle(driveVectors.get(i).direction().getDegrees());
-			    			modules.get(i).setDriveOpenLoop(0);
-			    		}
-			    	}
+					setDriveOutput(inverseKinematics.updateDriveVectors(lastDriveVector,
+					rotationCorrection, pose, robotCentric), 0.0);
 				}
 			}else{
 				setDriveOutput(inverseKinematics.updateDriveVectors(translationalVector,
@@ -627,17 +632,21 @@ public class Swerve extends Subsystem{
 		case TRAJECTORY:
 			if(!motionPlanner.isDone()){
 				Translation2d driveVector = motionPlanner.update(timestamp, pose);
-				if(modulesReady && Util.epsilonEquals(driveVector.norm(), 0.0, Constants.kEpsilon)){
-					driveVector = lastTrajectoryVector;
-					setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
-						Util.deadBand(rotationCorrection*rotationScalar*driveVector.norm(), 0.01), pose, false), 0.0);
-				}else if(modulesReady){
-					setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
-						Util.deadBand(rotationCorrection*rotationScalar*driveVector.norm(), 0.01), pose, false));
+
+				if(modulesReady){
+					double rotationInput = Util.deadBand(rotationRamp.update(rotationCorrection*rotationScalar*driveVector.norm(), timestamp), 0.01);
+					if(Util.epsilonEquals(driveVector.norm(), 0.0, Constants.kEpsilon)){
+						driveVector = lastTrajectoryVector;
+						setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
+							rotationInput, pose, false), 0.0);
+					}else{
+						setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
+						rotationInput, pose, false));
+					}
 				}else if(!moduleConfigRequested){
 					set10VoltRotationMode(true);
 					setModuleAngles(inverseKinematics.updateDriveVectors(driveVector, 
-						Util.deadBand(rotationCorrection*rotationScalar*driveVector.norm(), 0.01), pose, false));
+						0.0, pose, false));
 					moduleConfigRequested = true;
 				}
 
@@ -645,6 +654,7 @@ public class Swerve extends Subsystem{
 					set10VoltRotationMode(false);
 					modules.forEach((m) -> m.resetLastEncoderReading());
 					modulesReady = true;
+					rotationRamp.reset(timestamp);
 					System.out.println("Modules Ready");
 				}
 				
@@ -799,10 +809,10 @@ public class Swerve extends Subsystem{
 		SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getUnboundedDegrees()});
 		//SmartDashboard.putNumber("Robot Heading", pose.getRotation().getUnboundedDegrees());
 		//SmartDashboard.putString("Heading Controller", headingController.getState().toString());
-		SmartDashboard.putNumber("Target Heading", headingController.getTargetHeading());
+		//SmartDashboard.putNumber("Target Heading", headingController.getTargetHeading());
 		//SmartDashboard.putNumber("Distance Traveled", distanceTraveled);
 		//SmartDashboard.putNumber("Robot Velocity", currentVelocity);
-		SmartDashboard.putString("Swerve State", currentState.toString());
+		//SmartDashboard.putString("Swerve State", currentState.toString());
 		//SmartDashboard.putNumber("Swerve Ultrasonic", getUltrasonicReading());
 	}
 }

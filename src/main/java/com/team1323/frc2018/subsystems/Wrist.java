@@ -235,9 +235,9 @@ public class Wrist extends Subsystem{
 	public void outputTelemetry() {
 		//SmartDashboard.putNumber("Wrist Current", periodicIO.current);
 		//SmartDashboard.putNumber("Wrist Voltage", wrist.getMotorOutputVoltage());
-		SmartDashboard.putNumber("Wrist Encoder", periodicIO.position);
+		//SmartDashboard.putNumber("Wrist Encoder", periodicIO.position);
 		//SmartDashboard.putNumber("Wrist Pulse Width Position", wrist.getSensorCollection().getPulseWidthPosition());
-		SmartDashboard.putNumber("Wrist Angle", getAngle());
+		//SmartDashboard.putNumber("Wrist Angle", getAngle());
 		//SmartDashboard.putNumber("Wrist Velocity", wrist.getSelectedSensorVelocity(0));
 		//SmartDashboard.putNumber("Wrist Error", wrist.getClosedLoopError(0));
 		/*if(wrist.getControlMode() == ControlMode.MotionMagic)

@@ -87,9 +87,9 @@ public class Robot extends TimedRobot {
 		wrist = Wrist.getInstance();
 		elevator = Elevator.getInstance();
 		subsystems = new SubsystemManager(
-				Arrays.asList(Intake.getInstance(), Elevator.getInstance(),
-						Wrist.getInstance(), Superstructure.getInstance(),
-						Swerve.getInstance()));
+			Arrays.asList(Intake.getInstance(), Elevator.getInstance(),
+					Wrist.getInstance(), Superstructure.getInstance(),
+					Swerve.getInstance()));
 		
 		driver = new Xbox(0);
 		coDriver = new Xbox(1);
@@ -121,7 +121,7 @@ public class Robot extends TimedRobot {
 		subsystems.outputToSmartDashboard();
 		robotState.outputToSmartDashboard();
 		enabledLooper.outputToSmartDashboard();
-		SmartDashboard.putNumber("Elevator Output", elevatorInput.getOutput());
+		//SmartDashboard.putNumber("Elevator Output", elevatorInput.getOutput());
 	}
 
 	public void autoConfig(){

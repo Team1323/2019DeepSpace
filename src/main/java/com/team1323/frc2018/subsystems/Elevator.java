@@ -479,10 +479,10 @@ public class Elevator extends Subsystem{
 		//SmartDashboard.putNumber("Elevator Voltage", periodicIO.voltage);
 		//SmartDashboard.putNumber("Elevator 2 Voltage", motor2.getMotorOutputVoltage());
 		//SmartDashboard.putNumber("Elevator 3 Voltage", motor3.getMotorOutputVoltage());
-		SmartDashboard.putNumber("Elevator Height", /*Math.round(getHeight()*1000.0)/1000.0*/getHeight());
+		//SmartDashboard.putNumber("Elevator Height", /*Math.round(getHeight()*1000.0)/1000.0*/getHeight());
 		//SmartDashboard.putNumber("Elevator Height Graph", getHeight());
 		//SmartDashboard.putNumber("Elevator Pulse Width Position", master.getSensorCollection().getPulseWidthPosition());
-		SmartDashboard.putNumber("Elevator Encoder", periodicIO.position);
+		//SmartDashboard.putNumber("Elevator Encoder", periodicIO.position);
 		//SmartDashboard.putNumber("Elevator Velocity", periodicIO.velocity);
 		//SmartDashboard.putNumber("Elevator Error", master.getClosedLoopError(0));
 		/*if(master.getControlMode() == ControlMode.MotionMagic)

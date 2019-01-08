@@ -321,7 +321,7 @@ public class Superstructure extends Subsystem{
 
 	@Override
 	public void outputTelemetry() {
-		SmartDashboard.putNumber("Winch Encoder", winch.getSelectedSensorPosition(0));
+		//SmartDashboard.putNumber("Winch Encoder", winch.getSelectedSensorPosition(0));
 	}
 
 }

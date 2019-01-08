@@ -298,7 +298,7 @@ public class SwerveDriveModule extends Subsystem{
 	public synchronized void readPeriodicInputs() {
 		periodicIO.rotationPosition = rotationMotor.getSelectedSensorPosition(0);
 		if(useDriveEncoder) periodicIO.drivePosition = driveMotor.getSelectedSensorPosition(0);
-		periodicIO.velocity = driveMotor.getSelectedSensorVelocity();
+		//periodicIO.velocity = driveMotor.getSelectedSensorVelocity();
 		/*if(moduleID == 3){
 			periodicIO.velocity = driveMotor.getSelectedSensorVelocity(0);
 			periodicIO.driveVoltage = driveMotor.getMotorOutputVoltage();
@@ -354,7 +354,7 @@ public class SwerveDriveModule extends Subsystem{
 		//SmartDashboard.putNumber(name + "Drive Voltage", periodicIO.driveVoltage);
 		SmartDashboard.putNumber(name + "Inches Driven", getDriveDistanceInches());
 		//SmartDashboard.putNumber(name + "Rotation Voltage", rotationMotor.getMotorOutputVoltage());
-		SmartDashboard.putNumber(name + "Velocity", encVelocityToInchesPerSecond(periodicIO.velocity));
+		//SmartDashboard.putNumber(name + "Velocity", encVelocityToInchesPerSecond(periodicIO.velocity));
 		/*if(rotationMotor.getControlMode() == ControlMode.MotionMagic)
 			SmartDashboard.putNumber(name + "Error", encUnitsToDegrees(rotationMotor.getClosedLoopError(0)));*/
 		//SmartDashboard.putNumber(name + "X", position.x());

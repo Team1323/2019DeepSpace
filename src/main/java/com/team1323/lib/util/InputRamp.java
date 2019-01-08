@@ -1,6 +1,5 @@
 package com.team1323.lib.util;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class InputRamp{
     double output = 0.0;
@@ -57,5 +56,12 @@ public class InputRamp{
 
     public double getOutput(){
         return output;
+    }
+
+    public void reset(double timestamp){
+        output = 0.0;
+        lastInput = 0.0;
+        lastTimestamp = timestamp;
+        ramping = false;
     }
 }
