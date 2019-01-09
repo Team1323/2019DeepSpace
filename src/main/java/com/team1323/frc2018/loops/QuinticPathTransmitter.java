@@ -40,6 +40,16 @@ public class QuinticPathTransmitter implements Loop{
 		paths.forEach((p) -> addPath(p));
 	}
 
+	public double getTotalPathTime(List<Trajectory<TimedState<Pose2dWithCurvature>>> paths){
+        double total = 0.0;
+
+        for(Trajectory<TimedState<Pose2dWithCurvature>> path : paths){
+            total += path.getLastState().t();
+        }
+
+        return total;
+    }
+
 	@Override
 	public void onStart(double timestamp) {
 		
@@ -61,7 +71,7 @@ public class QuinticPathTransmitter implements Loop{
 		t = timestamp - startingTime;
 		TimedState<Pose2dWithCurvature> state = currentTrajectory.preview(t).state();
 		Translation2d pos = state.state().getTranslation();
-	SmartDashboard.putNumberArray("Path Pose", new double[]{pos.x(), pos.y(), 0.0, /*Math.abs(state.acceleration()) / 10.0*/state.velocity() / Constants.kSwerveMaxSpeedInchesPerSecond}); 
+	SmartDashboard.putNumberArray("Path Pose", new double[]{pos.x(), pos.y(), 0.0, /*Math.abs(state.acceleration()) / 10.0*/Math.abs(state.velocity()) / Constants.kSwerveMaxSpeedInchesPerSecond}); 
 		
 		//System.out.println("Accel: " + state.acceleration());
 		if(state.acceleration() < minAccel)

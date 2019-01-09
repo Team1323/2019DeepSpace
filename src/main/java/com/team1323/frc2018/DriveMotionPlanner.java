@@ -50,6 +50,9 @@ public class DriveMotionPlanner implements CSVWritable {
     }
 
     TrajectoryIterator<TimedState<Pose2dWithCurvature>> mCurrentTrajectory;
+    public Trajectory<TimedState<Pose2dWithCurvature>> getTrajectory(){
+        return mCurrentTrajectory.trajectory();
+    }
     boolean mIsReversed = false;
     double mLastTime = Double.POSITIVE_INFINITY;
     public TimedState<Pose2dWithCurvature> mSetpoint = new TimedState<>(Pose2dWithCurvature.identity());
@@ -209,7 +212,7 @@ public class DriveMotionPlanner implements CSVWritable {
         Translation2d lookaheadTranslation = new Translation2d(current_state.getTranslation(), 
         		lookahead_state.state().getTranslation());
         Rotation2d steeringDirection = lookaheadTranslation.direction();
-        double normalizedSpeed = mSetpoint.velocity() / Constants.kSwerveMaxSpeedInchesPerSecond;
+        double normalizedSpeed = Math.abs(mSetpoint.velocity()) / Constants.kSwerveMaxSpeedInchesPerSecond;
         if(normalizedSpeed < defaultCook && useDefaultCook){ 
         	normalizedSpeed = defaultCook;
         }else{

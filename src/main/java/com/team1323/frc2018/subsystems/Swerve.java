@@ -11,6 +11,7 @@ import com.team1323.frc2018.Ports;
 import com.team1323.frc2018.RobotState;
 import com.team1323.frc2018.loops.ILooper;
 import com.team1323.frc2018.loops.Loop;
+import com.team1323.frc2018.loops.QuinticPathTransmitter;
 import com.team1323.frc2018.vision.ShooterAimingParameters;
 import com.team1323.lib.math.vectors.VectorField;
 import com.team1323.lib.util.InputRamp;
@@ -59,7 +60,7 @@ public class Swerve extends Subsystem{
 	//Heading controller methods
 	Pigeon pigeon;
 	SwerveHeadingController headingController = new SwerveHeadingController();
-	InputRamp rotationRamp = new InputRamp(1.0, 5.0, 0.1);
+	InputRamp rotationRamp = new InputRamp(1.0, 10.0, 0.1);
 	public void temporarilyDisableHeadingController(){
 		headingController.temporarilyDisable();
 	}
@@ -70,6 +71,10 @@ public class Swerve extends Subsystem{
 	//Vision dependencies
 	RobotState robotState;
 	Rotation2d visionTargetHeading = new Rotation2d();
+	boolean keepUpdatingVision = true;
+	public void updateVision(){
+		keepUpdatingVision = true;
+	}
 
 	//Name says it all
 	TrajectoryGenerator generator;
@@ -99,6 +104,7 @@ public class Swerve extends Subsystem{
 	double rotationScalar;
 	double trajectoryStartTime = 0;
 	Translation2d lastTrajectoryVector = new Translation2d();
+	boolean hasStartedFollowing = false;
 	boolean hasFinishedPath = false;
 	public boolean hasFinishedPath(){
 		return hasFinishedPath;
@@ -408,6 +414,7 @@ public class Swerve extends Subsystem{
 	 */
 	public synchronized void setTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> trajectory, double targetHeading,
 		double rotationScalar, Translation2d followingCenter){
+			hasStartedFollowing = false;
 			hasFinishedPath = false;
 			moduleConfigRequested = false;
 			motionPlanner.reset();
@@ -428,12 +435,14 @@ public class Swerve extends Subsystem{
 	/** Creates and sets a trajectory for the robot to follow, in order to approach a target and score a game piece */
 	public synchronized void setVisionTrajectory(){
 		Optional<Pose2d> robotScoringPosition = robotState.getRobotScoringPosition();
-		if(robotScoringPosition.isPresent()){
+		if(/*robotScoringPosition.isPresent()*/robotState.seesTarget() && keepUpdatingVision){
 			List<Pose2d> waypoints = new ArrayList<>();
-			waypoints.add(new Pose2d(pose.getTranslation(), lastDriveVector.direction()));
+			waypoints.add(new Pose2d(pose.getTranslation(), /*lastDriveVector.direction()*/robotScoringPosition.get().getRotation()));
 			waypoints.add(robotScoringPosition.get());
+			Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 24.0, 24.0, 24.0, 9.0, 24.0, 1);			
 			motionPlanner.reset();
-			motionPlanner.setTrajectory(new TrajectoryIterator<>(new TimedView<>(generator.generateTrajectory(false, waypoints, Arrays.asList(), 24.0, 24.0, 24.0, 9.0, 24.0, 1))));
+			motionPlanner.setTrajectory(new TrajectoryIterator<>(new TimedView<>(trajectory)));
+			//QuinticPathTransmitter.getInstance().addPath(trajectory);
 			setPathHeading(robotScoringPosition.get().getRotation().getDegrees());
 			visionTargetHeading = robotScoringPosition.get().getRotation();
 			setState(ControlState.VISION);
@@ -634,6 +643,15 @@ public class Swerve extends Subsystem{
 				Translation2d driveVector = motionPlanner.update(timestamp, pose);
 
 				if(modulesReady){
+					if(!hasStartedFollowing && moduleConfigRequested){
+						zeroSensors(Constants.kRobotStartingPose);
+						System.out.println("Position reset for auto");
+						rotationRamp.reset(timestamp);
+						hasStartedFollowing = true;
+					}else if(!hasStartedFollowing){
+						rotationRamp.reset(timestamp);
+						hasStartedFollowing = true;
+					}
 					double rotationInput = Util.deadBand(rotationRamp.update(rotationCorrection*rotationScalar*driveVector.norm(), timestamp), 0.01);
 					if(Util.epsilonEquals(driveVector.norm(), 0.0, Constants.kEpsilon)){
 						driveVector = lastTrajectoryVector;
@@ -654,7 +672,6 @@ public class Swerve extends Subsystem{
 					set10VoltRotationMode(false);
 					modules.forEach((m) -> m.resetLastEncoderReading());
 					modulesReady = true;
-					rotationRamp.reset(timestamp);
 					System.out.println("Modules Ready");
 				}
 				
@@ -671,13 +688,33 @@ public class Swerve extends Subsystem{
 		case VISION:
 			if(!motionPlanner.isDone()){
 				Translation2d driveVector = motionPlanner.update(timestamp, pose);
-				driveVector = Translation2d.fromPolar(driveVector.direction(), translationalVector.norm());
+				//driveVector = Translation2d.fromPolar(driveVector.direction(), translationalVector.norm());
+				/*if(Util.epsilonEquals(driveVector.norm(), 0.0, Constants.kEpsilon)){
+					Rotation2d direction = motionPlanner.setpoint().state().getPose().getRotation();
+					driveVector = new Translation2d(direction.cos(), direction.sin());
+					setDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
+						Util.deadBand(rotationCorrection*driveVector.norm(), 0.01), pose, false), 0.0);
+				}else{
+					setDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
+						Util.deadBand(rotationCorrection*driveVector.norm(), 0.01), pose, false));
+				}
+				if(robotState.getRobotScoringPosition().isPresent()){
+					double heading = robotState.getRobotScoringPosition().get().getRotation().getDegrees();
+					setPathHeading(heading);
+				}*/
 				if(Util.epsilonEquals(driveVector.norm(), 0.0, Constants.kEpsilon)){
 					driveVector = lastTrajectoryVector;
+					setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
+						rotationCorrection, pose, false), 0.0);
+				}else{
+					setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
+					rotationCorrection, pose, false));
 				}
-				setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
-					Util.deadBand(rotationCorrection*rotationScalar*driveVector.norm(), 0.01), pose, false));
 				lastTrajectoryVector = driveVector;
+				setVisionTrajectory();
+				if(!robotState.seesTarget()){
+					keepUpdatingVision = false;
+				}
 			}
 			break;
 		case VELOCITY:
@@ -807,9 +844,9 @@ public class Swerve extends Subsystem{
 		SmartDashboard.putNumber("Robot X", pose.getTranslation().x());
 		SmartDashboard.putNumber("Robot Y", pose.getTranslation().y());
 		SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getUnboundedDegrees()});
-		//SmartDashboard.putNumber("Robot Heading", pose.getRotation().getUnboundedDegrees());
+		SmartDashboard.putNumber("Robot Heading", pose.getRotation().getUnboundedDegrees());
 		//SmartDashboard.putString("Heading Controller", headingController.getState().toString());
-		//SmartDashboard.putNumber("Target Heading", headingController.getTargetHeading());
+		SmartDashboard.putNumber("Target Heading", headingController.getTargetHeading());
 		//SmartDashboard.putNumber("Distance Traveled", distanceTraveled);
 		//SmartDashboard.putNumber("Robot Velocity", currentVelocity);
 		//SmartDashboard.putString("Swerve State", currentState.toString());

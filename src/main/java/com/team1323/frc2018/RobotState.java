@@ -32,7 +32,12 @@ public class RobotState {
     private Rotation2d camera_yaw_correction_;
     private double differential_height_;
 	private double distance_driven_;
-	private ShooterAimingParameters cached_shooter_aiming_params_ = null;
+    private ShooterAimingParameters cached_shooter_aiming_params_ = null;
+    
+    private boolean seesTarget = false;
+    public boolean seesTarget(){
+        return seesTarget;
+    }
 	
 	private double angleToCube = 0;
 	public double getAngleToCube(){
@@ -94,6 +99,7 @@ public class RobotState {
         List<Translation2d> field_to_goals = new ArrayList<>();
         Pose2d field_to_camera = getFieldToCamera(timestamp);
         if (!(vision_update == null || vision_update.isEmpty())) {
+            seesTarget = true;
             for (TargetInfo target : vision_update) {
                 double ydeadband = target.getY();
 
@@ -118,6 +124,8 @@ public class RobotState {
                             .getTranslation());
                 //}
             }
+        }else{
+            seesTarget = false;
         }
         synchronized (this) {
             goal_tracker_.update(timestamp, field_to_goals);
@@ -204,7 +212,7 @@ public class RobotState {
             SmartDashboard.putNumber("goal_pose_y", pose.getTranslation().y());
             break;
         }
-        Optional<ShooterAimingParameters> aiming_params = getCachedAimingParameters();
+        Optional<ShooterAimingParameters> aiming_params = /*getCachedAimingParameters();*/getAimingParameters();
         if (aiming_params.isPresent()) {
             SmartDashboard.putNumber("goal_range", aiming_params.get().getRange());
             SmartDashboard.putNumber("goal_theta", aiming_params.get().getRobotToGoal().getDegrees());
@@ -212,5 +220,7 @@ public class RobotState {
             SmartDashboard.putNumber("goal_range", 0.0);
             SmartDashboard.putNumber("goal_theta", 0.0);
         }
+
+        SmartDashboard.putBoolean("Sees Target", seesTarget);
     }
 }

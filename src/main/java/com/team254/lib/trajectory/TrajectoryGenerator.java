@@ -85,9 +85,10 @@ public class TrajectoryGenerator {
     static final Pose2d autoStartingPose = new Pose2d(Constants.kRobotStartingPose.getTranslation(), Rotation2d.fromDegrees(-90.0));
 
     static final Pose2d closeHatchScoringPose = Constants.closeHatchPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 12.0, 0.0)));
+    static final Pose2d farHatchScoringPose = Constants.farHatchPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 12.0, 0.0)));
     static final Pose2d humanLoaderPose = Constants.humanLoaderPosition.transformBy(Pose2d.fromTranslation(new Translation2d(Constants.kRobotHalfLength + 12.0, 0.0)));
-    static final Pose2d ballIntakePose = Constants.autoBallPosition.transformBy(Pose2d.fromTranslation(new Translation2d(Constants.kRobotHalfLength + 6.0, 0.0)));
-    static final Pose2d portScoringPose = Constants.rocketPortPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 12.0, 0.0)));
+    static final Pose2d ballIntakePose = new Pose2d(Constants.autoBallPosition.transformBy(Pose2d.fromTranslation(new Translation2d(Constants.kRobotHalfLength + 6.0, 0.0))).getTranslation(), Rotation2d.fromDegrees(0.0));
+    static final Pose2d portScoringPose = Constants.rocketPortPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 6.0, 0.0)));
 
     public class TrajectorySet {
         public class MirroredTrajectory {
@@ -113,6 +114,12 @@ public class TrajectoryGenerator {
         public final Trajectory<TimedState<Pose2dWithCurvature>> humanLoaderToCloseHatch;
         public final Trajectory<TimedState<Pose2dWithCurvature>> closeHatchToBall;
         public final Trajectory<TimedState<Pose2dWithCurvature>> ballToRocketPort;
+        public final Trajectory<TimedState<Pose2dWithCurvature>> rocketPortToHumanLoader;
+
+        public final Trajectory<TimedState<Pose2dWithCurvature>> startToFarHatch;
+        public final Trajectory<TimedState<Pose2dWithCurvature>> farHatchToHumanLoader;
+        public final Trajectory<TimedState<Pose2dWithCurvature>> humanLoaderToFarHatch;
+        public final Trajectory<TimedState<Pose2dWithCurvature>> farHatchToBall;
 
         private TrajectorySet() {
             //Test Paths
@@ -124,6 +131,12 @@ public class TrajectoryGenerator {
             humanLoaderToCloseHatch = getHumanLoaderToCloseHatch();
             closeHatchToBall = getCloseHatchToBall();
             ballToRocketPort = getBallToRocketPort();
+            rocketPortToHumanLoader = getRocketPortToHumanLoader();
+
+            startToFarHatch = getStartToFarHatch();
+            farHatchToHumanLoader = getFarHatchToHumanLoader();
+            humanLoaderToFarHatch = getHumanLoaderToFarHatch();
+            farHatchToBall = getFarHatchToBall();
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getStraightPath(){
@@ -163,15 +176,60 @@ public class TrajectoryGenerator {
             waypoints.add(closeHatchScoringPose);
             waypoints.add(ballIntakePose);
 
-            return generateTrajectory(true, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
+            return generateTrajectory(true, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 48.0, kMaxVoltage, 72.0, 1);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getBallToRocketPort(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(ballIntakePose);
+            waypoints.add(ballIntakePose.transformBy(Pose2d.fromTranslation(new Translation2d(96.0, 0.0))));
             waypoints.add(portScoringPose);
 
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getRocketPortToHumanLoader(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(portScoringPose);
+            waypoints.add(humanLoaderPose);
+
+            return generateTrajectory(true, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getStartToFarHatch(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(Constants.kRobotStartingPose);
+            waypoints.add(farHatchScoringPose);
+
+            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getFarHatchToHumanLoader(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(farHatchScoringPose);
+            waypoints.add(new Pose2d(new Translation2d(210.0, 80.0), Rotation2d.fromDegrees(0.0)));
+            waypoints.add(humanLoaderPose);
+
+            return generateTrajectory(true, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getHumanLoaderToFarHatch(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(humanLoaderPose);
+            waypoints.add(new Pose2d(new Translation2d(210.0, 80.0), Rotation2d.fromDegrees(0.0)));
+            waypoints.add(farHatchScoringPose);
+
+            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getFarHatchToBall(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(farHatchScoringPose);
+            //waypoints.add(new Pose2d(new Translation2d(210.0, 75.0), Rotation2d.fromDegrees(0.0)));
+            waypoints.add(ballIntakePose.transformBy(Pose2d.fromTranslation(new Translation2d(96.0, 0.0))));
+            waypoints.add(ballIntakePose);
+
+            return generateTrajectory(true, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
         }
     }
     

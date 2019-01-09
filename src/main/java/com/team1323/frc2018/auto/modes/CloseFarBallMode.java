@@ -18,20 +18,20 @@ import com.team254.lib.trajectory.timing.TimedState;
 
 import edu.wpi.first.wpilibj.Timer;
 
-public class TwoCloseOneBallMode extends AutoModeBase {
+public class CloseFarBallMode extends AutoModeBase {
 	Superstructure s;
 	Intake intake;
 
-    private List<Trajectory<TimedState<Pose2dWithCurvature>>> paths = Arrays.asList(trajectories.startToCloseHatch,
-        trajectories.closeHatchToHumanLoader, trajectories.humanLoaderToCloseHatch, trajectories.closeHatchToBall,
-            trajectories.ballToRocketPort/*, trajectories.rocketPortToHumanLoader*/);
+    private static List<Trajectory<TimedState<Pose2dWithCurvature>>> paths = Arrays.asList(trajectories.startToCloseHatch,
+        trajectories.closeHatchToHumanLoader, trajectories.humanLoaderToFarHatch, trajectories.farHatchToBall,
+            trajectories.ballToRocketPort);
 
-    @Override 
-    public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths(){
+    @Override
+    public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
         return paths;
     }
 
-	public TwoCloseOneBallMode() {
+	public CloseFarBallMode() {
         s = Superstructure.getInstance();
         intake = Intake.getInstance();
     }
@@ -47,16 +47,13 @@ public class TwoCloseOneBallMode extends AutoModeBase {
         runAction(new SetTrajectoryAction(trajectories.closeHatchToHumanLoader, -180.0, 1.0));
         runAction(new WaitToFinishPathAction());
         runAction(new WaitAction(0.5));
-        runAction(new SetTrajectoryAction(trajectories.humanLoaderToCloseHatch, -30.0, 1.0));
+        runAction(new SetTrajectoryAction(trajectories.humanLoaderToFarHatch, -150.0, 1.0));
         runAction(new WaitToFinishPathAction());
         runAction(new WaitAction(0.5));
-        runAction(new SetTrajectoryAction(trajectories.closeHatchToBall, -45.0, 1.0));
+        runAction(new SetTrajectoryAction(trajectories.farHatchToBall, -45.0, 1.0));
         runAction(new WaitToFinishPathAction());
         runAction(new WaitAction(0.5));
         runAction(new SetTrajectoryAction(trajectories.ballToRocketPort, -90.0, 1.0));
-        runAction(new WaitToFinishPathAction());
-        runAction(new WaitAction(0.5));
-        runAction(new SetTrajectoryAction(trajectories.rocketPortToHumanLoader, -180.0, 1.0));
         runAction(new WaitToFinishPathAction());
 
         System.out.println("Auto mode finished in " + currentTime() + " seconds");

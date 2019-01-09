@@ -15,7 +15,10 @@ public class SmartDashboardInteractions {
     
     public void initWithDefaults(){
     	modeChooser = new SendableChooser<AutoOption>();
-    	modeChooser.setDefaultOption(DEFAULT_MODE.name, DEFAULT_MODE);
+        modeChooser.setDefaultOption(DEFAULT_MODE.name, DEFAULT_MODE);
+        modeChooser.addOption(AutoOption.TWO_FAR_ONE_BALL.name, AutoOption.TWO_FAR_ONE_BALL);
+        modeChooser.addOption(AutoOption.CLOSE_FAR_BALL.name, AutoOption.CLOSE_FAR_BALL);
+        modeChooser.addOption(AutoOption.FAR_CLOSE_BALL.name, AutoOption.FAR_CLOSE_BALL);
     	
     	SmartDashboard.putData("Mode Chooser", modeChooser);
     	SmartDashboard.putString(SELECTED_AUTO_MODE, DEFAULT_MODE.name);
@@ -33,7 +36,10 @@ public class SmartDashboardInteractions {
     }
     
     enum AutoOption{
-		TWO_CLOSE_ONE_BALL("2 Close, 1 Ball");
+        TWO_CLOSE_ONE_BALL("2 Close, 1 Ball"),
+        TWO_FAR_ONE_BALL("2 Far, 1 Ball"),
+        CLOSE_FAR_BALL("1 Close, 1 Far, 1 Ball"),
+        FAR_CLOSE_BALL("1 Far, 1 Close, 1 Ball");
     	
     	public final String name;
     	

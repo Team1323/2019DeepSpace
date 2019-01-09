@@ -29,11 +29,12 @@ public class Constants {
 	
 	//Field Landmarks
 	public static final Pose2d closeHatchPosition = new Pose2d(new Translation2d(48.0 + 166.57, 27.44 - 10.0), Rotation2d.fromDegrees(-30.0));
+	public static final Pose2d farHatchPosition = new Pose2d(new Translation2d(229.13 + 14.71, 27.44 - 10.0), Rotation2d.fromDegrees(-150.0));
 	public static final Pose2d humanLoaderPosition = new Pose2d(new Translation2d(0.0, 25.72), Rotation2d.fromDegrees(0.0));
 	public static final Pose2d autoBallPosition = new Pose2d(new Translation2d(48.0 - 4.0 - kBallRadius, 97.0 - (3.0*kBallRadius)), Rotation2d.fromDegrees(-45.0));
 	public static final Pose2d rocketPortPosition = new Pose2d(new Translation2d(229.13, 27.44), Rotation2d.fromDegrees(-90.0));
 
-	public static final double kTargetHeight = 28.5 / 12.0;
+	public static final double kTargetHeight = 28.5;
 	
 	public static final Pose2d kRobotStartingPose = new Pose2d(new Translation2d(48.0 + Constants.kRobotHalfLength, 97.0 + Constants.kRobotHalfWidth), Rotation2d.fromDegrees(0));
 	

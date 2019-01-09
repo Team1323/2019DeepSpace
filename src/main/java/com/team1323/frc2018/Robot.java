@@ -9,9 +9,10 @@ package com.team1323.frc2018;
 
 import java.util.Arrays;
 
+import com.team1323.frc2018.auto.AutoModeBase;
 import com.team1323.frc2018.auto.AutoModeExecuter;
 import com.team1323.frc2018.auto.SmartDashboardInteractions;
-import com.team1323.frc2018.auto.modes.TwoCloseOneBallMode;
+import com.team1323.frc2018.auto.modes.FarCloseBallMode;
 import com.team1323.frc2018.loops.LimelightProcessor;
 import com.team1323.frc2018.loops.Looper;
 import com.team1323.frc2018.loops.QuinticPathTransmitter;
@@ -30,14 +31,11 @@ import com.team1323.lib.util.InputRamp;
 import com.team1323.lib.util.Logger;
 import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Translation2d;
-import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.TrajectoryGenerator;
-import com.team254.lib.trajectory.TrajectoryIterator;
 
 import edu.wpi.cscore.MjpegServer;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode.PixelFormat;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -115,7 +113,10 @@ public class Robot extends TimedRobot {
 		
 		generator.generateTrajectories();		
 
-		qTransmitter.addPaths(new TwoCloseOneBallMode().getPaths());
+		AutoModeBase auto = new FarCloseBallMode();
+
+		//qTransmitter.addPaths(auto.getPaths());
+		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 	}
 	
 	public void allPeriodic(){
@@ -327,6 +328,7 @@ public class Robot extends TimedRobot {
 			swerve.setTrajectory(generator.getTrajectorySet().startToCloseHatch, -30.0, 1.0);
 			//swerve.setVelocity(new Rotation2d(), 24.0);
 		}else if(driver.startButton.wasPressed()){
+			swerve.updateVision();
 			swerve.setVisionTrajectory();
 		}
 					
