@@ -75,6 +75,12 @@ public class Swerve extends Subsystem{
 	public void updateVision(){
 		keepUpdatingVision = true;
 	}
+	public enum VisionState{
+		CURVED, LINEAR
+	}
+	VisionState visionState = VisionState.CURVED;
+	double visionLinearShiftDist = Constants.kDefaultLinearShiftDistance;
+	Translation2d visionTargetPosition = new Translation2d();
 
 	//Name says it all
 	TrajectoryGenerator generator;
@@ -432,22 +438,65 @@ public class Swerve extends Subsystem{
 		setTrajectory(trajectory, targetHeading, rotationScalar, Translation2d.identity());
 	}
 
-	/** Creates and sets a trajectory for the robot to follow, in order to approach a target and score a game piece */
-	public synchronized void setVisionTrajectory(){
-		Optional<Pose2d> robotScoringPosition = robotState.getRobotScoringPosition();
-		if(/*robotScoringPosition.isPresent()*/robotState.seesTarget() && keepUpdatingVision){
+	private synchronized void setCurvedVisionTrajectory(double linearShiftDistance, Optional<ShooterAimingParameters> aimingParameters){
+		visionLinearShiftDist = linearShiftDistance;
+		visionTargetPosition = robotState.getCaptureTimeFieldToGoal().get(2).getTranslation();
+		Optional<Pose2d> robotScoringPosition = robotState.getRobotScoringPosition(aimingParameters);
+		if(robotScoringPosition.isPresent() && robotState.seesTarget() && keepUpdatingVision){
+			Translation2d deltaPosition = robotScoringPosition.get().transformBy(Pose2d.fromTranslation(new Translation2d(-linearShiftDistance, 0.0))).getTranslation().translateBy(pose.getTranslation().inverse());
+			Rotation2d deltaPositionHeading = new Rotation2d(deltaPosition, true);
 			List<Pose2d> waypoints = new ArrayList<>();
-			waypoints.add(new Pose2d(pose.getTranslation(), /*lastDriveVector.direction()*/robotScoringPosition.get().getRotation()));
+			waypoints.add(new Pose2d(pose.getTranslation(), deltaPositionHeading));
 			waypoints.add(robotScoringPosition.get());
-			Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 24.0, 24.0, 24.0, 9.0, 24.0, 1);			
+			Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 24.0, 24.0, 24.0, 9.0, 20.0, 1);	
 			motionPlanner.reset();
 			motionPlanner.setTrajectory(new TrajectoryIterator<>(new TimedView<>(trajectory)));
-			//QuinticPathTransmitter.getInstance().addPath(trajectory);
+			rotationScalar = 0.2;
+			QuinticPathTransmitter.getInstance().addPath(trajectory);
 			setPathHeading(robotScoringPosition.get().getRotation().getDegrees());
 			visionTargetHeading = robotScoringPosition.get().getRotation();
 			setState(ControlState.VISION);
+			visionState = VisionState.CURVED;
 		}else{
 			DriverStation.reportError("No vision targets detected!", false);
+			System.out.println("Number of targets: " + robotState.getCaptureTimeFieldToGoal().size());
+		}
+	}
+
+	private synchronized void setLinearVisionTrajectory(Optional<ShooterAimingParameters> aimingParameters){
+		Optional<Pose2d> robotScoringPosition = robotState.getRobotScoringPosition(aimingParameters);
+		if(robotScoringPosition.isPresent() && robotState.seesTarget() && keepUpdatingVision){
+			visionState = VisionState.LINEAR;
+			Translation2d deltaPosition = robotScoringPosition.get().getTranslation().translateBy(pose.getTranslation().inverse());
+			Rotation2d deltaPositionHeading = new Rotation2d(deltaPosition, true);
+			List<Pose2d> waypoints = new ArrayList<>();
+			waypoints.add(new Pose2d(pose.getTranslation(), deltaPositionHeading));
+			waypoints.add(new Pose2d(robotScoringPosition.get().getTranslation(), deltaPositionHeading));
+			Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 80.0, 80.0, 12.0, 9.0, 48.0, 1);	
+			motionPlanner.reset();
+			motionPlanner.setTrajectory(new TrajectoryIterator<>(new TimedView<>(trajectory)));
+			rotationScalar = 0.2;
+			QuinticPathTransmitter.getInstance().addPath(trajectory);
+			setPathHeading(robotScoringPosition.get().getRotation().getDegrees());
+			visionTargetHeading = robotScoringPosition.get().getRotation();
+			setState(ControlState.VISION);
+			System.out.println("Linear trajectory set");
+		}else{
+			DriverStation.reportError("No vision targets detected!", false);
+			System.out.println("Number of targets: " + robotState.getCaptureTimeFieldToGoal().size());
+		}
+	}
+
+	/** Creates and sets a trajectory for the robot to follow, in order to approach a target and score a game piece */
+	public synchronized void setVisionTrajectory(){
+		
+		Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
+		if(aim.isPresent()){
+			if(aim.get().getRange() > Constants.kDefaultLinearShiftDistance){
+				setCurvedVisionTrajectory(Constants.kDefaultLinearShiftDistance, aim);
+			}else{
+				setCurvedVisionTrajectory(aim.get().getRange() / 2.0, aim);
+			}
 		}
 	}
 	
@@ -687,34 +736,30 @@ public class Swerve extends Subsystem{
 			break;
 		case VISION:
 			if(!motionPlanner.isDone()){
-				Translation2d driveVector = motionPlanner.update(timestamp, pose);
-				//driveVector = Translation2d.fromPolar(driveVector.direction(), translationalVector.norm());
-				/*if(Util.epsilonEquals(driveVector.norm(), 0.0, Constants.kEpsilon)){
-					Rotation2d direction = motionPlanner.setpoint().state().getPose().getRotation();
-					driveVector = new Translation2d(direction.cos(), direction.sin());
-					setDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
-						Util.deadBand(rotationCorrection*driveVector.norm(), 0.01), pose, false), 0.0);
-				}else{
-					setDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
-						Util.deadBand(rotationCorrection*driveVector.norm(), 0.01), pose, false));
+				if((!robotState.seesTarget() || robotState.getCaptureTimeFieldToGoal().size() < 3) && keepUpdatingVision){
+					keepUpdatingVision = false;
 				}
-				if(robotState.getRobotScoringPosition().isPresent()){
-					double heading = robotState.getRobotScoringPosition().get().getRotation().getDegrees();
-					setPathHeading(heading);
-				}*/
+				Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
+				//if(keepUpdatingVision && visionState == VisionState.LINEAR) setLinearVisionTrajectory(aim);
+				if(aim.isPresent()){
+					/*if(aim.get().getRange() < visionLinearShiftDist && visionState == VisionState.CURVED){
+						setLinearVisionTrajectory(aim);
+					}*/
+					Optional<Pose2d> robotScoringPosition = robotState.getRobotScoringPosition(aim);
+					setPathHeading(robotScoringPosition.get().getRotation().getDegrees());
+					visionTargetHeading = robotScoringPosition.get().getRotation();
+				}
+				if(keepUpdatingVision)robotState.resetRobotPosition(visionTargetPosition);
+				Translation2d driveVector = motionPlanner.update(timestamp, pose);
 				if(Util.epsilonEquals(driveVector.norm(), 0.0, Constants.kEpsilon)){
 					driveVector = lastTrajectoryVector;
 					setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
-						rotationCorrection, pose, false), 0.0);
+						rotationCorrection*rotationScalar, pose, false), 0.0);
 				}else{
 					setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
-					rotationCorrection, pose, false));
+						rotationCorrection*rotationScalar, pose, false));
 				}
 				lastTrajectoryVector = driveVector;
-				setVisionTrajectory();
-				if(!robotState.seesTarget()){
-					keepUpdatingVision = false;
-				}
 			}
 			break;
 		case VELOCITY:

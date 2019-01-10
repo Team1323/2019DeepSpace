@@ -138,15 +138,20 @@ public class RobotState {
     
     public synchronized Optional<ShooterAimingParameters> getAimingParameters() {
         List<TrackReport> reports = goal_tracker_.getTracks();
-        if (!reports.isEmpty()) {
-            TrackReport report = reports.get(0);
+        if (reports.size() >= 3) {
+            TrackReport report = reports.get(2);
             Translation2d robot_to_goal = getLatestFieldToVehicle().getValue().getTranslation().inverse()
                     .translateBy(report.field_to_goal);
+            Translation2d firstTargetPosition = reports.get(0).field_to_goal;
+            Translation2d secondTargetPosition = reports.get(1).field_to_goal;
+            Translation2d targetDelta = firstTargetPosition.inverse().translateBy(secondTargetPosition);
+            Rotation2d targetOrientation = Rotation2d.fromRadians(Math.atan2(targetDelta.y(), targetDelta.x())).rotateBy(Rotation2d.fromDegrees(-90.0));
             Rotation2d robot_to_goal_rotation = Rotation2d
                     .fromRadians(Math.atan2(robot_to_goal.y(), robot_to_goal.x()));
+            SmartDashboard.putNumber("Vision Target Angle", robot_to_goal_rotation.getDegrees());
 
             ShooterAimingParameters params = new ShooterAimingParameters(robot_to_goal.norm(), robot_to_goal_rotation,
-                    report.latest_timestamp, report.stability);
+                    report.latest_timestamp, report.stability, targetOrientation);
             cached_shooter_aiming_params_ = params;
 
             return Optional.of(params);
@@ -155,12 +160,11 @@ public class RobotState {
         }
     }
 
-    public synchronized Optional<Pose2d> getRobotScoringPosition(){
+    public synchronized Optional<Pose2d> getRobotScoringPosition(Optional<ShooterAimingParameters> aimingParameters){
         List<Pose2d> targetPositions = getCaptureTimeFieldToGoal();
-		Optional<ShooterAimingParameters> aimingParameters = getAimingParameters();
-		if(targetPositions.size() > 0 && aimingParameters.isPresent()){
-			Translation2d targetPosition = targetPositions.get(0).getTranslation();
-			Pose2d orientedTargetPosition = new Pose2d(targetPosition, aimingParameters.get().getRobotToGoal());
+		if(targetPositions.size() >= 3 && aimingParameters.isPresent()){
+			Translation2d targetPosition = targetPositions.get(2).getTranslation();
+			Pose2d orientedTargetPosition = new Pose2d(targetPosition, aimingParameters.get().getTargetOrientation());
             Pose2d robotScoringPosition = orientedTargetPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - Constants.kRobotIntakeExtrusion, 0.0)));
             
             return Optional.of(robotScoringPosition);
@@ -168,11 +172,11 @@ public class RobotState {
         return Optional.empty();
     }
     
-    public synchronized void resetRobotPosition(Translation2d cubePosition){
+    public synchronized void resetRobotPosition(Translation2d targetPosition){
     	List<TrackReport> reports = goal_tracker_.getTracks();
-        if (!reports.isEmpty()) {
-            TrackReport report = reports.get(0);
-            Translation2d robotFrameToFieldFrame = report.field_to_goal.inverse().translateBy(cubePosition);
+        if (reports.size() >= 3) {
+            TrackReport report = reports.get(2);
+            Translation2d robotFrameToFieldFrame = report.field_to_goal.inverse().translateBy(targetPosition);
             if(robotFrameToFieldFrame.norm() <= 5.0){
             	Swerve.getInstance().resetPosition(new Pose2d(Swerve.getInstance().getPose().getTranslation().translateBy(robotFrameToFieldFrame), Swerve.getInstance().getPose().getRotation()));
             	System.out.println("Coordinates corrected by " + robotFrameToFieldFrame.norm() + " inches");
@@ -180,7 +184,7 @@ public class RobotState {
             	System.out.println("Coordinate correction too large: " + robotFrameToFieldFrame.norm());
             }
         }else{
-        	System.out.println("Vision did not detect cube");
+        	System.out.println("Vision did not detect target");
         }
     }
     

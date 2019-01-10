@@ -101,7 +101,7 @@ public class GoalTracker {
 
     public void update(double timestamp, List<Translation2d> field_to_goals) {
         // Try to update existing tracks
-        for (Translation2d target : field_to_goals) {
+        /*for (Translation2d target : field_to_goals) {
             boolean hasUpdatedTrack = false;
             for (GoalTrack track : mCurrentTracks) {
                 if (!hasUpdatedTrack) {
@@ -112,7 +112,17 @@ public class GoalTracker {
                     track.emptyUpdate();
                 }
             }
+        }*/
+        if(field_to_goals.size() >= 3 && mCurrentTracks.size() >= 3){
+            for(int i=0; i<3; i++){
+                mCurrentTracks.get(i).tryUpdate(timestamp, field_to_goals.get(i));
+            }
+        }else{
+            for(GoalTrack track : mCurrentTracks){
+                track.emptyUpdate();
+            }
         }
+        
         // Prune any tracks that have died
         for (Iterator<GoalTrack> it = mCurrentTracks.iterator(); it.hasNext();) {
             GoalTrack track = it.next();

@@ -44,18 +44,19 @@ public class Constants {
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
     
     //Camera Constants
-    public static final double kCameraYOffset = 2.875;//2.875
-    public static final double kCameraXOffset = kRobotHalfLength - 4.25;//4.25
-    public static final double kCameraZOffset = 12.0;
+    public static final double kCameraYOffset = kRobotHalfWidth - 16.0 - 3.0;//2.875
+    public static final double kCameraXOffset = kRobotHalfLength - 8.0 - 3.0;
+    public static final double kCameraZOffset = 20.0;
     public static final double kCameraYawAngleDegrees = 0.0;
-    public static final double kCameraPitchAngleDegrees = 3.0;
+    public static final double kCameraPitchAngleDegrees = -1.9;
     
     //Goal tracker constants
-    public static double kMaxGoalTrackAge = 0.1;
-    public static double kMaxTrackerDistance = 18.0;
+    public static double kMaxGoalTrackAge = 1.0;
+    public static double kMaxTrackerDistance = 3.0;//18.0
     public static double kCameraFrameRate = 90.0;
     public static double kTrackReportComparatorStablityWeight = 1.0;
-    public static double kTrackReportComparatorAgeWeight = 1.0;
+	public static double kTrackReportComparatorAgeWeight = 1.0;
+	public static final double kDefaultLinearShiftDistance = kRobotHalfLength + 50.0;
     
     //Path following constants
     public static final double kPathLookaheadTime = 0.25;  // seconds to look ahead along the path for steering 0.4
