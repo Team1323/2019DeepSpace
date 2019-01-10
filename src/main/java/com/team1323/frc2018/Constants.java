@@ -56,7 +56,8 @@ public class Constants {
     public static double kCameraFrameRate = 90.0;
     public static double kTrackReportComparatorStablityWeight = 1.0;
 	public static double kTrackReportComparatorAgeWeight = 1.0;
-	public static final double kDefaultLinearShiftDistance = kRobotHalfLength + 50.0;
+	public static final double kDefaultLinearShiftDistance = kRobotHalfLength + 36.0;
+	public static final double kVisionUpdateDistance = kRobotHalfLength + 28.0;
     
     //Path following constants
     public static final double kPathLookaheadTime = 0.25;  // seconds to look ahead along the path for steering 0.4
