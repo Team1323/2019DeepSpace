@@ -34,6 +34,8 @@ public class RobotState {
 	private double distance_driven_;
     private ShooterAimingParameters cached_shooter_aiming_params_ = null;
     
+    public final int minimumTargetQuantity = 3;
+    private final int primaryTargetIndex = 2;
     private boolean seesTarget = false;
     public boolean seesTarget(){
         return seesTarget;
@@ -98,7 +100,7 @@ public class RobotState {
     public void addVisionUpdate(double timestamp, List<TargetInfo> vision_update) {
         List<Translation2d> field_to_goals = new ArrayList<>();
         Pose2d field_to_camera = getFieldToCamera(timestamp);
-        if (!(vision_update == null || vision_update.isEmpty())) {
+        if (/*!(vision_update == null || vision_update.isEmpty())*/ vision_update.size() >= minimumTargetQuantity) {
             seesTarget = true;
             for (TargetInfo target : vision_update) {
                 double ydeadband = target.getY();
@@ -138,8 +140,8 @@ public class RobotState {
     
     public synchronized Optional<ShooterAimingParameters> getAimingParameters() {
         List<TrackReport> reports = goal_tracker_.getTracks();
-        if (reports.size() >= 3) {
-            TrackReport report = reports.get(2);
+        if (reports.size() >= minimumTargetQuantity) {
+            TrackReport report = reports.get(primaryTargetIndex);
             Translation2d robot_to_goal = getLatestFieldToVehicle().getValue().getTranslation().inverse()
                     .translateBy(report.field_to_goal);
             Translation2d firstTargetPosition = reports.get(0).field_to_goal;
@@ -162,8 +164,8 @@ public class RobotState {
 
     public synchronized Optional<Pose2d> getRobotScoringPosition(Optional<ShooterAimingParameters> aimingParameters){
         List<Pose2d> targetPositions = getCaptureTimeFieldToGoal();
-		if(targetPositions.size() >= 3 && aimingParameters.isPresent()){
-            Translation2d targetPosition = targetPositions.get(2).getTranslation();
+		if(targetPositions.size() >= minimumTargetQuantity && aimingParameters.isPresent()){
+            Translation2d targetPosition = targetPositions.get(primaryTargetIndex).getTranslation();
             SmartDashboard.putNumberArray("Path Pose", new double[]{targetPosition.x(), targetPosition.y(), aimingParameters.get().getTargetOrientation().getDegrees(), 0.0}); 
 			Pose2d orientedTargetPosition = new Pose2d(targetPosition, aimingParameters.get().getTargetOrientation());
             Pose2d robotScoringPosition = orientedTargetPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - Constants.kRobotIntakeExtrusion, 0.0)));
@@ -172,11 +174,23 @@ public class RobotState {
         }
         return Optional.empty();
     }
+
+    public synchronized Optional<Pose2d> getOrientedTargetPosition(Optional<ShooterAimingParameters> aimingParameters){
+        List<Pose2d> targetPositions = getCaptureTimeFieldToGoal();
+		if(targetPositions.size() >= minimumTargetQuantity && aimingParameters.isPresent()){
+            Translation2d targetPosition = targetPositions.get(primaryTargetIndex).getTranslation();
+            SmartDashboard.putNumberArray("Path Pose", new double[]{targetPosition.x(), targetPosition.y(), aimingParameters.get().getTargetOrientation().getDegrees(), 0.0}); 
+			Pose2d orientedTargetPosition = new Pose2d(targetPosition, aimingParameters.get().getTargetOrientation());
+            
+            return Optional.of(orientedTargetPosition);
+        }
+        return Optional.empty();
+    }
     
     public synchronized void resetRobotPosition(Translation2d targetPosition){
     	List<TrackReport> reports = goal_tracker_.getTracks();
-        if (reports.size() >= 3) {
-            TrackReport report = reports.get(2);
+        if (reports.size() >= minimumTargetQuantity) {
+            TrackReport report = reports.get(primaryTargetIndex);
             Translation2d robotFrameToFieldFrame = report.field_to_goal.inverse().translateBy(targetPosition);
             if(robotFrameToFieldFrame.norm() <= 5.0){
             	Swerve.getInstance().resetPosition(new Pose2d(Swerve.getInstance().getPose().getTranslation().translateBy(robotFrameToFieldFrame), Swerve.getInstance().getPose().getRotation()));

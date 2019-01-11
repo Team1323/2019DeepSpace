@@ -328,7 +328,7 @@ public class Robot extends TimedRobot {
 			swerve.setTrajectory(generator.getTrajectorySet().startToCloseHatch, -30.0, 1.0);
 			//swerve.setVelocity(new Rotation2d(), 24.0);
 		}else if(driver.startButton.wasPressed()){
-			swerve.updateVision();
+			swerve.resetVisionUpdates();
 			swerve.setVisionTrajectory();
 		}
 					
