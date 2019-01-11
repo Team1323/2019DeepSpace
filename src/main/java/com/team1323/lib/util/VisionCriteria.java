@@ -53,9 +53,8 @@ public class VisionCriteria {
     }
 
     public void reset(){
-        activeCriteria = new ArrayList<>();
-        for(Criterion criterion : Criterion.values()){
-            activeCriteria.add(criterion);
+        for(Criterion criterion : activeCriteria){
+            criterion.reset();
         }
     }
 }
