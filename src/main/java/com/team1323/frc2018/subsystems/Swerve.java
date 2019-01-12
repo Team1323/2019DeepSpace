@@ -748,7 +748,7 @@ public class Swerve extends Subsystem{
 				Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
 				if(aim.isPresent() && visionUpdatesAllowed){
 					if(aim.get().getRange() < (Constants.kVisionUpdateDistance - (Constants.kVisionDistanceStep * visionCriteria.successfulUpdates(VisionCriteria.Criterion.DISTANCE))) 
-						&& visionCriteria.updateAllowed(VisionCriteria.Criterion.DISTANCE)){
+						&& visionCriteria.updateAllowed(VisionCriteria.Criterion.DISTANCE) && aim.get().getRange() >= Constants.kClosestVisionDistance){
 						setVisionTrajectory();
 						visionCriteria.addSuccessfulUpdate(VisionCriteria.Criterion.DISTANCE);
 					}else if(Math.abs(pose.getRotation().distance(visionTargetHeading)) < Math.toRadians(2.0) && visionCriteria.updateAllowed(VisionCriteria.Criterion.HEADING)){

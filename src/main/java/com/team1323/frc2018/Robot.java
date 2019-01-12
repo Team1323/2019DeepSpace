@@ -25,6 +25,7 @@ import com.team1323.frc2018.subsystems.SubsystemManager;
 import com.team1323.frc2018.subsystems.Superstructure;
 import com.team1323.frc2018.subsystems.Swerve;
 import com.team1323.frc2018.subsystems.Wrist;
+import com.team1323.io.SwitchController;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.CrashTracker;
 import com.team1323.lib.util.InputRamp;
@@ -71,6 +72,8 @@ public class Robot extends TimedRobot {
 	private RobotState robotState = RobotState.getInstance();
 	
 	private Xbox driver, coDriver;
+	private SwitchController switchController;
+	private final boolean useSwitchController = false;
 	private final boolean oneControllerMode = false;
 	private boolean flickRotation = false;
 
@@ -90,6 +93,9 @@ public class Robot extends TimedRobot {
 					Wrist.getInstance(), Superstructure.getInstance(),
 					Swerve.getInstance()));
 		
+		if(useSwitchController){
+			switchController = new SwitchController(2);
+		}
 		driver = new Xbox(0);
 		coDriver = new Xbox(1);
 		driver.setDeadband(0.0);
@@ -212,6 +218,10 @@ public class Robot extends TimedRobot {
 			driver.update();
 			//coDriver.update();
 
+			if(useSwitchController){
+				switchController.update();
+			}
+
 			timestamp = Timer.getFPGATimestamp();
 			
 			if(oneControllerMode) oneControllerMode();
@@ -282,6 +292,30 @@ public class Robot extends TimedRobot {
 		double swerveYInput = driver.getX(Hand.kLeft);
 		double swerveXInput = -driver.getY(Hand.kLeft);
 		double swerveRotationInput = (flickRotation ? 0.0 : driver.getX(Hand.kRight));
+
+		if(useSwitchController){
+			swerveYInput = switchController.getX(Hand.kLeft);
+			swerveXInput = -switchController.getY(Hand.kLeft);
+			swerveRotationInput = (flickRotation ? 0.0 : switchController.getX(Hand.kRight));
+
+			if(switchController.plusButton.wasPressed()){
+				swerve.resetVisionUpdates();
+				swerve.setVisionTrajectory();
+			}else if(switchController.minusButton.wasPressed()){
+				swerve.temporarilyDisableHeadingController();
+				swerve.zeroSensors(Constants.kRobotStartingPose);
+				swerve.resetAveragedDirection();
+			}
+
+			if(switchController.xButton.isBeingPressed())
+				swerve.rotate(0);
+			else if(switchController.aButton.isBeingPressed())
+				swerve.rotate(90);
+			else if(switchController.bButton.isBeingPressed())
+				swerve.rotate(180);
+			else if(switchController.yButton.isBeingPressed())
+				swerve.rotate(270);
+		}
 		
 		swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, driver.leftTrigger.isBeingPressed());
 

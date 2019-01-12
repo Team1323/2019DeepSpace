@@ -47,7 +47,7 @@ public class Constants {
     public static final double kCameraYOffset = kRobotHalfWidth - 16.0 - 3.0;//2.875
     public static final double kCameraXOffset = kRobotHalfLength - 8.0 - 3.0;
     public static final double kCameraZOffset = 20.0;
-    public static final double kCameraYawAngleDegrees = 0.0;
+    public static final double kCameraYawAngleDegrees = 1.0;
     public static final double kCameraPitchAngleDegrees = -1.9;
     
     //Goal tracker constants
@@ -59,6 +59,7 @@ public class Constants {
 	public static final double kDefaultCurveDistance = kRobotHalfLength + 36.0;
 	public static final double kVisionUpdateDistance = kRobotHalfLength + 52.0;
 	public static final double kVisionDistanceStep = kVisionUpdateDistance / 6.0;
+	public static final double kClosestVisionDistance = 40.0;
     
     //Path following constants
     public static final double kPathLookaheadTime = 0.25;  // seconds to look ahead along the path for steering 0.4
