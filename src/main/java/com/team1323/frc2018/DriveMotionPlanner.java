@@ -13,7 +13,6 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.TrajectorySamplePoint;
 import com.team254.lib.trajectory.TrajectoryUtil;
-import com.team254.lib.trajectory.timing.CurvatureVelocityConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 import com.team254.lib.trajectory.timing.TimingUtil;
@@ -23,7 +22,7 @@ import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveMotionPlanner implements CSVWritable {
-    private static final double kMaxDx = 2.0;//2.0
+    private static final double kMaxDx = 2.0;
     private static final double kMaxDy = 0.25;
     private static final double kMaxDTheta = Math.toRadians(5.0);
     
@@ -58,6 +57,7 @@ public class DriveMotionPlanner implements CSVWritable {
     public TimedState<Pose2dWithCurvature> mSetpoint = new TimedState<>(Pose2dWithCurvature.identity());
     Pose2d mError = Pose2d.identity();
     Translation2d mOutput = Translation2d.identity();
+    double currentTrajectoryLength = 0.0;
     
     double mDt = 0.0;
 
@@ -68,6 +68,7 @@ public class DriveMotionPlanner implements CSVWritable {
         mCurrentTrajectory = trajectory;
         mSetpoint = trajectory.getState();
         defaultCook = trajectory.trajectory().defaultVelocity();
+        currentTrajectoryLength = trajectory.trajectory().getLastState().t();
         for (int i = 0; i < trajectory.trajectory().length(); ++i) {
             if (trajectory.trajectory().getState(i).velocity() > Util.kEpsilon) {
                 mIsReversed = false;
@@ -213,10 +214,12 @@ public class DriveMotionPlanner implements CSVWritable {
         		lookahead_state.state().getTranslation());
         Rotation2d steeringDirection = lookaheadTranslation.direction();
         double normalizedSpeed = Math.abs(mSetpoint.velocity()) / Constants.kSwerveMaxSpeedInchesPerSecond;
-        if(normalizedSpeed < defaultCook && useDefaultCook){ 
-        	normalizedSpeed = defaultCook;
-        }else{
-        	useDefaultCook = false;
+
+        if(normalizedSpeed > defaultCook || mSetpoint.t() > (currentTrajectoryLength / 2.0)){
+            useDefaultCook = false;
+        }
+        if(useDefaultCook){
+            normalizedSpeed = defaultCook;
         }
         
         final Translation2d steeringVector = Translation2d.fromPolar(steeringDirection, normalizedSpeed);
