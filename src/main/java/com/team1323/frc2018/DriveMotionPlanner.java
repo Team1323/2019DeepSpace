@@ -28,13 +28,6 @@ public class DriveMotionPlanner implements CSVWritable {
     
     private double defaultCook = 0.5;
     private boolean useDefaultCook = true;
-    
-    private double rotationStartTime = 0.0;
-    private double rotationEndTime = 0.0;
-    private double rotationTimeDuration = 0.0;
-    private double targetHeading = 0.0;
-    private double currentHeading = 0.0;
-    private double headingDifferential = 0.0;
 
     private Translation2d followingCenter = Translation2d.identity();
 
@@ -60,6 +53,20 @@ public class DriveMotionPlanner implements CSVWritable {
     double currentTrajectoryLength = 0.0;
     
     double mDt = 0.0;
+
+    public double getMaxRotationSpeed(){
+        final double kMaxSpeed = 1.0;
+        final double kPivotPoint = 0.5;
+        double normalizedProgress = mCurrentTrajectory.getProgress() / currentTrajectoryLength;
+        double scalar = 0.0;
+        if(normalizedProgress <= kPivotPoint){
+            scalar = normalizedProgress / kPivotPoint;
+        }else{
+            scalar = 1.0 - ((normalizedProgress - kPivotPoint) / (1.0 - kPivotPoint));
+        }
+
+        return kMaxSpeed * scalar;
+    }
 
     public DriveMotionPlanner() {
     }
@@ -150,28 +157,6 @@ public class DriveMotionPlanner implements CSVWritable {
                         max_decel, slowdown_chunks);
         timed_trajectory.setDefaultVelocity(default_vel / Constants.kSwerveMaxSpeedInchesPerSecond);
         return timed_trajectory;
-    }
-    
-    public void setTargetHeading(double targetHeading, double rotationTimeDuration, Pose2d robotPose){
-    	double currentRobotHeading = robotPose.getRotation().getUnboundedDegrees();
-    	this.targetHeading = com.team1323.lib.util.Util.placeInAppropriate0To360Scope(currentRobotHeading, targetHeading);
-    	headingDifferential = targetHeading - currentRobotHeading;
-    	rotationStartTime = mCurrentTrajectory.getProgress();
-    	rotationEndTime = rotationStartTime + rotationTimeDuration;
-    	this.rotationTimeDuration = rotationTimeDuration;
-    }
-    
-    private double interpolateHeading(){
-    	double currentTime = mCurrentTrajectory.getProgress();
-    	if(currentTime < rotationEndTime)
-    		currentHeading = targetHeading - (((rotationEndTime - currentTime) / rotationTimeDuration) * headingDifferential);
-    	else
-    		currentHeading = targetHeading;
-    	return currentHeading;
-    }
-    
-    public double getHeading(){
-    	return currentHeading;
     }
 
     /**
@@ -267,7 +252,6 @@ public class DriveMotionPlanner implements CSVWritable {
 
             if (mFollowerType == FollowerType.PURE_PURSUIT) {
                 mOutput = updatePurePursuit(current_state);
-                interpolateHeading();
             }
         } else {
             // TODO Possibly switch to a pose stabilizing controller?
