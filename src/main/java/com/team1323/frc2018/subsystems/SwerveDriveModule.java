@@ -28,7 +28,6 @@ public class SwerveDriveModule extends Subsystem{
 	boolean useDriveEncoder = true;
 	boolean tenVoltRotationMode = false;
 	private double previousEncDistance = 0;
-	private Rotation2d previousWheelAngle = new Rotation2d();
 	private Translation2d position;
 	private Translation2d startingPosition;
 	private Pose2d estimatedRobotPose = new Pose2d();
@@ -37,8 +36,6 @@ public class SwerveDriveModule extends Subsystem{
 	
 	public SwerveDriveModule(int rotationSlot, int driveSlot, int moduleID, 
 			int encoderOffset, Translation2d startingPose){
-		//rotationMotor = TalonSRXFactory.createDefaultTalon(rotationSlot);
-		//driveMotor = TalonSRXFactory.createDefaultTalon(driveSlot);
 		rotationMotor = new LazyTalonSRX(rotationSlot);
 		driveMotor = new LazyTalonSRX(driveSlot);
 		configureMotors();
@@ -278,7 +275,6 @@ public class SwerveDriveModule extends Subsystem{
 		position = updatedPosition;
 		estimatedRobotPose =  robotPose;
 		previousEncDistance = currentEncDistance;
-		previousWheelAngle = currentWheelAngle;
 	}
 	
 	public synchronized void resetPose(Pose2d robotPose){
@@ -339,7 +335,6 @@ public class SwerveDriveModule extends Subsystem{
 		resetPose(robotPose);
 		estimatedRobotPose = robotPose;
 		previousEncDistance = 0;
-		previousWheelAngle = getFieldCentricAngle(robotPose.getRotation());
 	}
 
 	@Override

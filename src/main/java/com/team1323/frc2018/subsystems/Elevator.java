@@ -13,6 +13,8 @@ import com.team1323.frc2018.Ports;
 import com.team1323.frc2018.loops.ILooper;
 import com.team1323.frc2018.loops.Loop;
 import com.team254.drivers.LazyTalonSRX;
+import com.team1323.frc2018.subsystems.requests.*;
+import com.team1323.lib.util.Util;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -64,9 +66,6 @@ public class Elevator extends Subsystem{
 	PeriodicIO periodicIO = new PeriodicIO();
 	
 	private Elevator(){
-		//master = TalonSRXFactory.createDefaultTalon(Ports.ELEVATOR_1);
-		//motor2 = TalonSRXFactory.createPermanentSlaveTalon(Ports.ELEVATOR_2, Ports.ELEVATOR_1);
-		//motor3 = TalonSRXFactory.createPermanentSlaveTalon(Ports.ELEVATOR_3, Ports.ELEVATOR_1);
 		master = new LazyTalonSRX(Ports.ELEVATOR_1);
 		motor2 = new LazyTalonSRX(Ports.ELEVATOR_2);
 		motor3 = new LazyTalonSRX(Ports.ELEVATOR_3);
@@ -365,6 +364,17 @@ public class Elevator extends Subsystem{
 		};
 	}
 	
+	public Prerequisite heightReq(double height, boolean above){
+		return new Prerequisite(){
+		
+			@Override
+			public boolean met() {
+				return Util.epsilonEquals(Math.signum(height - getHeight()), above ? -1.0 : 1.0);
+			}
+
+		};
+	}
+
 	public double getHeight(){
 		return encUnitsToFeet(periodicIO.position - Constants.kElevatorEncoderStartingPosition);
 	}
