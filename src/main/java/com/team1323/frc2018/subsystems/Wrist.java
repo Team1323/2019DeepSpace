@@ -8,10 +8,10 @@ import com.team1323.frc2018.loops.ILooper;
 import com.team1323.frc2018.loops.Loop;
 import com.team1323.lib.util.Util;
 import com.team254.drivers.LazyTalonSRX;
+import com.team1323.frc2018.subsystems.requests.*;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Wrist extends Subsystem{
 	private static Wrist instance = null;
@@ -37,7 +37,6 @@ public class Wrist extends Subsystem{
 	PeriodicIO periodicIO = new PeriodicIO();
 	
 	private Wrist(){
-		//wrist = TalonSRXFactory.createDefaultTalon(Ports.WRIST);
 		wrist = new LazyTalonSRX(Ports.WRIST);
 		wrist.configVoltageCompSaturation(12.0, 10);
 		wrist.enableVoltageCompensation(true);
@@ -114,6 +113,25 @@ public class Wrist extends Subsystem{
 			
 		};
 	}
+
+	public Request angleRequest(double angle, double terminationPoint){
+		return new Request(){
+
+			double startingSide;
+
+			@Override
+			public void act() {
+				setAngle(angle);
+				startingSide = Math.signum(terminationPoint - getAngle());
+			}
+
+			@Override
+			public boolean isFinished() {
+				return !Util.epsilonEquals(Math.signum(terminationPoint - getAngle()), startingSide);
+			}
+			
+		};
+	}
 	
 	public Request lockAngleRequest(){
 		return new Request(){
@@ -134,6 +152,17 @@ public class Wrist extends Subsystem{
 				setOpenLoop(output);
 			}
 			
+		};
+	}
+
+	public Prerequisite angleReq(double angle, boolean above){
+		return new Prerequisite(){
+		
+			@Override
+			public boolean met() {
+				return Util.epsilonEquals(Math.signum(angle - getAngle()), above ? -1.0 : 1.0);
+			}
+
 		};
 	}
 	

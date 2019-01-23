@@ -16,6 +16,7 @@ import com.team1323.frc2018.loops.ILooper;
 import com.team1323.frc2018.loops.Loop;
 import com.team1323.frc2018.subsystems.Intake.IntakeState;
 import com.team1323.lib.util.InterpolatingDouble;
+import com.team1323.frc2018.subsystems.requests.*;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -211,7 +212,7 @@ public class Superstructure extends Subsystem{
 					}else if(currentRequest.isFinished()){
 							if(activeRequests.isEmpty()){
 								activeRequestsCompleted = true;
-							}else{
+							}else if(activeRequests.getRequests().get(0).allowed()){
 								newRequests = true;
 								activeRequestsCompleted = false;
 							}
@@ -248,9 +249,6 @@ public class Superstructure extends Subsystem{
 		}
 		
 		if(!list.isEmpty()){
-			/*for(Request r : list.getRequests()){
-				addForemostActiveRequest(r);
-			}*/
 			request(list);
 		}
 	}

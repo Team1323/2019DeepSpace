@@ -13,7 +13,6 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.TrajectorySamplePoint;
 import com.team254.lib.trajectory.TrajectoryUtil;
-import com.team254.lib.trajectory.timing.CurvatureVelocityConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 import com.team254.lib.trajectory.timing.TimingUtil;
@@ -23,19 +22,12 @@ import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveMotionPlanner implements CSVWritable {
-    private static final double kMaxDx = 2.0;//2.0
+    private static final double kMaxDx = 2.0;
     private static final double kMaxDy = 0.25;
     private static final double kMaxDTheta = Math.toRadians(5.0);
     
     private double defaultCook = 0.5;
     private boolean useDefaultCook = true;
-    
-    private double rotationStartTime = 0.0;
-    private double rotationEndTime = 0.0;
-    private double rotationTimeDuration = 0.0;
-    private double targetHeading = 0.0;
-    private double currentHeading = 0.0;
-    private double headingDifferential = 0.0;
 
     private Translation2d followingCenter = Translation2d.identity();
 
@@ -58,8 +50,23 @@ public class DriveMotionPlanner implements CSVWritable {
     public TimedState<Pose2dWithCurvature> mSetpoint = new TimedState<>(Pose2dWithCurvature.identity());
     Pose2d mError = Pose2d.identity();
     Translation2d mOutput = Translation2d.identity();
+    double currentTrajectoryLength = 0.0;
     
     double mDt = 0.0;
+
+    public double getMaxRotationSpeed(){
+        final double kMaxSpeed = 1.0;
+        final double kPivotPoint = 0.5;
+        double normalizedProgress = mCurrentTrajectory.getProgress() / currentTrajectoryLength;
+        double scalar = 0.0;
+        if(normalizedProgress <= kPivotPoint){
+            scalar = normalizedProgress / kPivotPoint;
+        }else{
+            scalar = 1.0 - ((normalizedProgress - kPivotPoint) / (1.0 - kPivotPoint));
+        }
+
+        return kMaxSpeed * scalar;
+    }
 
     public DriveMotionPlanner() {
     }
@@ -68,6 +75,7 @@ public class DriveMotionPlanner implements CSVWritable {
         mCurrentTrajectory = trajectory;
         mSetpoint = trajectory.getState();
         defaultCook = trajectory.trajectory().defaultVelocity();
+        currentTrajectoryLength = trajectory.trajectory().getLastState().t();
         for (int i = 0; i < trajectory.trajectory().length(); ++i) {
             if (trajectory.trajectory().getState(i).velocity() > Util.kEpsilon) {
                 mIsReversed = false;
@@ -150,28 +158,6 @@ public class DriveMotionPlanner implements CSVWritable {
         timed_trajectory.setDefaultVelocity(default_vel / Constants.kSwerveMaxSpeedInchesPerSecond);
         return timed_trajectory;
     }
-    
-    public void setTargetHeading(double targetHeading, double rotationTimeDuration, Pose2d robotPose){
-    	double currentRobotHeading = robotPose.getRotation().getUnboundedDegrees();
-    	this.targetHeading = com.team1323.lib.util.Util.placeInAppropriate0To360Scope(currentRobotHeading, targetHeading);
-    	headingDifferential = targetHeading - currentRobotHeading;
-    	rotationStartTime = mCurrentTrajectory.getProgress();
-    	rotationEndTime = rotationStartTime + rotationTimeDuration;
-    	this.rotationTimeDuration = rotationTimeDuration;
-    }
-    
-    private double interpolateHeading(){
-    	double currentTime = mCurrentTrajectory.getProgress();
-    	if(currentTime < rotationEndTime)
-    		currentHeading = targetHeading - (((rotationEndTime - currentTime) / rotationTimeDuration) * headingDifferential);
-    	else
-    		currentHeading = targetHeading;
-    	return currentHeading;
-    }
-    
-    public double getHeading(){
-    	return currentHeading;
-    }
 
     /**
      * @param followingCenter the followingCenter to set (relative to the robot's center)
@@ -213,10 +199,12 @@ public class DriveMotionPlanner implements CSVWritable {
         		lookahead_state.state().getTranslation());
         Rotation2d steeringDirection = lookaheadTranslation.direction();
         double normalizedSpeed = Math.abs(mSetpoint.velocity()) / Constants.kSwerveMaxSpeedInchesPerSecond;
-        if(normalizedSpeed < defaultCook && useDefaultCook){ 
-        	normalizedSpeed = defaultCook;
-        }else{
-        	useDefaultCook = false;
+
+        if(normalizedSpeed > defaultCook || mSetpoint.t() > (currentTrajectoryLength / 2.0)){
+            useDefaultCook = false;
+        }
+        if(useDefaultCook){
+            normalizedSpeed = defaultCook;
         }
         
         final Translation2d steeringVector = Translation2d.fromPolar(steeringDirection, normalizedSpeed);
@@ -264,7 +252,6 @@ public class DriveMotionPlanner implements CSVWritable {
 
             if (mFollowerType == FollowerType.PURE_PURSUIT) {
                 mOutput = updatePurePursuit(current_state);
-                interpolateHeading();
             }
         } else {
             // TODO Possibly switch to a pose stabilizing controller?

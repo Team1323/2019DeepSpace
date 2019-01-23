@@ -8,11 +8,12 @@ import com.team1323.frc2018.Constants;
 import com.team1323.frc2018.Ports;
 import com.team1323.frc2018.loops.ILooper;
 import com.team1323.frc2018.loops.Loop;
+import com.team254.drivers.LazyTalonSRX;
+import com.team1323.frc2018.subsystems.requests.*;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake extends Subsystem{
 	private static Intake instance = null;
@@ -27,7 +28,7 @@ public class Intake extends Subsystem{
 		return hasCube;
 	}
 	
-	private TalonSRX leftIntake, rightIntake;
+	private LazyTalonSRX leftIntake, rightIntake;
 	private Solenoid pinchers, clampers;
 	private DigitalInput banner;
 	public boolean getBanner(){
@@ -35,10 +36,8 @@ public class Intake extends Subsystem{
 	}
 	
 	private Intake(){
-		//leftIntake = TalonSRXFactory.createDefaultTalon(Ports.INTAKE_LEFT);
-		//rightIntake = TalonSRXFactory.createDefaultTalon(Ports.INTAKE_RIGHT);
-		leftIntake = new TalonSRX(Ports.INTAKE_LEFT);
-		rightIntake = new TalonSRX(Ports.INTAKE_RIGHT);
+		leftIntake = new LazyTalonSRX(Ports.INTAKE_LEFT);
+		rightIntake = new LazyTalonSRX(Ports.INTAKE_RIGHT);
 		pinchers = new Solenoid(20, Ports.INTAKE_PINCHERS);
 		clampers = new Solenoid(20, Ports.INTAKE_CLAMPERS);
 		banner = new DigitalInput(Ports.INTAKE_BANNER);
@@ -303,6 +302,17 @@ public class Intake extends Subsystem{
 				conformToState(IntakeState.EJECTING, output);
 			}
 			
+		};
+	}
+
+	public Prerequisite cubeReq(){
+		return new Prerequisite(){
+		
+			@Override
+			public boolean met() {
+				return hasCube();
+			}
+
 		};
 	}
 	

@@ -18,7 +18,7 @@ public class Constants {
 	public static final boolean kIsUsingTractionWheels = true;
 	public static final boolean kExtraNyooms = true;
 	
-	//Physical Robot Dimensions
+	//Physical Robot Dimensions (including bumpers)
 	public static final double kRobotWidth = 39.0;
 	public static final double kRobotLength = 34.0;
 	public static final double kRobotHalfWidth = kRobotWidth / 2.0;
@@ -34,7 +34,7 @@ public class Constants {
 	public static final Pose2d autoBallPosition = new Pose2d(new Translation2d(48.0 - 4.0 - kBallRadius, 97.0 - (3.0*kBallRadius)), Rotation2d.fromDegrees(-45.0));
 	public static final Pose2d rocketPortPosition = new Pose2d(new Translation2d(229.13, 27.44), Rotation2d.fromDegrees(-90.0));
 
-	public static final double kTargetHeight = 28.5;
+	public static final double kHatchTargetHeight = 28.5;
 	
 	public static final Pose2d kRobotStartingPose = new Pose2d(new Translation2d(48.0 + Constants.kRobotHalfLength, 97.0 + Constants.kRobotHalfWidth), Rotation2d.fromDegrees(0));
 	
@@ -44,7 +44,7 @@ public class Constants {
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
     
     //Camera Constants
-    public static final double kCameraYOffset = kRobotHalfWidth - 16.0 - 3.0;//2.875
+    public static final double kCameraYOffset = kRobotHalfWidth - 16.0 - 3.0;
     public static final double kCameraXOffset = kRobotHalfLength - 8.0 - 3.0;
     public static final double kCameraZOffset = 20.0;
     public static final double kCameraYawAngleDegrees = 1.0;
@@ -112,7 +112,7 @@ public class Constants {
 	public static final double kSwerveEncUnitsPerInch = kSwerveEncUnitsPerWheelRev / (Math.PI * kSwerveWheelDiameter);
 	
 	//Elevator Constants
-	public static final double kElevatorMaxSpeedHighGear = 535.6785 * 4096.0 / 600.0; //encoder units per 100 ms (4266)
+	public static final double kElevatorMaxSpeedHighGear = 535.6785 * 4096.0 / 600.0; //encoder units per 100 ms
 	public static final double kElevatorMaxSpeedLowGear = 169.67 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
 	public static final int kElevatorEncoderStartingPosition = 0;

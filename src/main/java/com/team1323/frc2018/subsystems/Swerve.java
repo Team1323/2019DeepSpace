@@ -61,7 +61,6 @@ public class Swerve extends Subsystem{
 	//Heading controller methods
 	Pigeon pigeon;
 	SwerveHeadingController headingController = new SwerveHeadingController();
-	InputRamp rotationRamp = new InputRamp(1.0, 10.0, 0.1);
 	public void temporarilyDisableHeadingController(){
 		headingController.temporarilyDisable();
 	}
@@ -702,13 +701,11 @@ public class Swerve extends Subsystem{
 					if(!hasStartedFollowing && moduleConfigRequested){
 						zeroSensors(Constants.kRobotStartingPose);
 						System.out.println("Position reset for auto");
-						rotationRamp.reset(timestamp);
 						hasStartedFollowing = true;
 					}else if(!hasStartedFollowing){
-						rotationRamp.reset(timestamp);
 						hasStartedFollowing = true;
 					}
-					double rotationInput = Util.deadBand(rotationRamp.update(rotationCorrection*rotationScalar*driveVector.norm(), timestamp), 0.01);
+					double rotationInput = Util.deadBand(Util.limit(rotationCorrection*rotationScalar*driveVector.norm(), motionPlanner.getMaxRotationSpeed()), 0.01);
 					if(Util.epsilonEquals(driveVector.norm(), 0.0, Constants.kEpsilon)){
 						driveVector = lastTrajectoryVector;
 						setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
