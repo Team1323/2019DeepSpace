@@ -564,7 +564,7 @@ public class Swerve extends Subsystem{
 			modulesToUse.add(modules.get(minDevianceIndex));
 		}
 		
-		SmartDashboard.putNumber("Modules Used", modulesToUse.size());
+		//SmartDashboard.putNumber("Modules Used", modulesToUse.size());
 		
 		for(SwerveDriveModule m : modulesToUse){
 			x += m.getEstimatedRobotPose().getTranslation().x();

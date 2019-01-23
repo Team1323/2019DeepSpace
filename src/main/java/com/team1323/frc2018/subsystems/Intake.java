@@ -82,7 +82,7 @@ public class Intake extends Subsystem{
 	}
 	
 	public enum IntakeState{
-		OFF(0,true,false), INTAKING(Constants.kIntakingOutput,true,false), CLAMPING(Constants.kIntakeWeakHoldingOutput,true,true), 
+		OFF(0,true,true), INTAKING(Constants.kIntakingOutput,true,false), CLAMPING(Constants.kIntakeWeakHoldingOutput,true,true), 
 		EJECTING(Constants.kIntakeWeakEjectOutput,true,false), OPEN(0,false,false), INTAKING_WIDE(Constants.kIntakingOutput,false,false), 
 		GROUND_CLAMPING(Constants.kIntakeWeakHoldingOutput,true,true), FORCED_INTAKE(Constants.kIntakingOutput,true,false),
 		OPEN_EJECTING(-0.3,false,false);

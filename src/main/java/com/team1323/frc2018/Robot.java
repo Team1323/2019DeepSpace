@@ -37,6 +37,7 @@ import com.team254.lib.trajectory.TrajectoryGenerator;
 import edu.wpi.cscore.MjpegServer;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode.PixelFormat;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -70,6 +71,8 @@ public class Robot extends TimedRobot {
 	private double timestamp;
 	
 	private RobotState robotState = RobotState.getInstance();
+
+	private DriverStation ds = DriverStation.getInstance();
 	
 	private Xbox driver, coDriver;
 	private SwitchController switchController;
@@ -126,10 +129,11 @@ public class Robot extends TimedRobot {
 	}
 	
 	public void allPeriodic(){
-		subsystems.outputToSmartDashboard();
-		robotState.outputToSmartDashboard();
+		//subsystems.outputToSmartDashboard();
+		//robotState.outputToSmartDashboard();
 		enabledLooper.outputToSmartDashboard();
-		//SmartDashboard.putNumber("Elevator Output", elevatorInput.getOutput());
+		//SmartDashboard.putBoolean("Enabled", ds.isEnabled());
+		//SmartDashboard.putNumber("Match time", ds.getMatchTime());
 	}
 
 	public void autoConfig(){
