@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
 
 public class SwitchController extends GenericHID{
-    private static final double PRESS_THRESHOLD = 0.3;
     private double DEAD_BAND = 0.15;
     private boolean rumbling = false;
     public ButtonCheck aButton, bButton, xButton, yButton, plusButton, minusButton,

@@ -9,7 +9,6 @@ import com.team254.lib.geometry.Translation2d;
  */
 public class CubicHermiteSpline extends Spline {
     private final double ax, bx, cx, dx, ay, by, cy, dy;
-    private final ReferenceFrame mReferenceFrame;
 
     public CubicHermiteSpline(Pose2d p0, Pose2d p1) {
         this(p0, p1, ReferenceFrame.NONE);
@@ -34,7 +33,6 @@ public class CubicHermiteSpline extends Spline {
         by = -2 * dy0 - dy1 - 3 * y0 + 3 * y1;
         cy = dy0;
         dy = y0;
-        this.mReferenceFrame = mReferenceFrame;
     }
 
     @Override

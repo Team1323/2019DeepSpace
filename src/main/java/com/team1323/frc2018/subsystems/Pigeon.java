@@ -2,9 +2,7 @@ package com.team1323.frc2018.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
-import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
-import com.team1323.frc2018.Constants;
 import com.team1323.frc2018.Ports;
 import com.team254.lib.geometry.Rotation2d;
 

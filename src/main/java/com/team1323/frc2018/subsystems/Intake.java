@@ -3,7 +3,6 @@ package com.team1323.frc2018.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1323.frc2018.Constants;
 import com.team1323.frc2018.Ports;
 import com.team1323.frc2018.loops.ILooper;
@@ -224,10 +223,10 @@ public class Intake extends Subsystem{
 					setRampRate(0.0);
 					hasCube = false;
 				}
-				/*if(timestamp - stateEnteredTimestamp > 2.0){
+				if(timestamp - stateEnteredTimestamp > 2.0){
 					stop();
 					setRampRate(Constants.kIntakeRampRate);
-				}*/
+				}
 				break;
 			default:
 				break;

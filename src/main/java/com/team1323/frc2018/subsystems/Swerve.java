@@ -11,13 +11,10 @@ import com.team1323.frc2018.Ports;
 import com.team1323.frc2018.RobotState;
 import com.team1323.frc2018.loops.ILooper;
 import com.team1323.frc2018.loops.Loop;
-import com.team1323.frc2018.loops.QuinticPathTransmitter;
 import com.team1323.frc2018.vision.ShooterAimingParameters;
 import com.team1323.lib.math.vectors.VectorField;
-import com.team1323.lib.util.InputRamp;
 import com.team1323.lib.util.SwerveHeadingController;
 import com.team1323.lib.util.SwerveInverseKinematics;
-import com.team1323.lib.util.SwerveKinematics;
 import com.team1323.lib.util.Util;
 import com.team1323.lib.util.VisionCriteria;
 import com.team254.lib.geometry.Pose2d;
@@ -77,10 +74,6 @@ public class Swerve extends Subsystem{
 		visionUpdateCount = 0;
 		visionCriteria.reset();
 	}
-	public enum VisionState{
-		CURVED, LINEAR
-	}
-	VisionState visionState = VisionState.CURVED;
 	double visionCurveDistance = Constants.kDefaultCurveDistance;
 	Translation2d visionTargetPosition = new Translation2d();
 	int visionUpdateCount = 0;
@@ -164,7 +157,6 @@ public class Swerve extends Subsystem{
 	public void setMaxSpeed(double max){
 		maxSpeedFactor = max;
 	}
-	private boolean isInLowPower = false;
 	private boolean robotCentric = false;
 	
 	//Swerve kinematics (exists in a separate class)
@@ -227,7 +219,6 @@ public class Swerve extends Subsystem{
 				
 		translationalVector = translationalInput;
 		
-		isInLowPower = lowPower;
 		if(lowPower){
 			translationalVector = translationalVector.scale(0.6);
 			rotate *= 0.3;
@@ -463,34 +454,10 @@ public class Swerve extends Subsystem{
 			setPathHeading(robotScoringPosition.get().getRotation().getDegrees());
 			visionTargetHeading = robotScoringPosition.get().getRotation();
 			setState(ControlState.VISION);
-			visionState = VisionState.CURVED;
 			visionUpdateCount++;
 			System.out.println("Vision trajectory updated " + visionUpdateCount + " times.");
 		}else{
 			DriverStation.reportError("Vision update refused!", false);
-		}
-	}
-
-	private synchronized void setLinearVisionTrajectory(Optional<ShooterAimingParameters> aimingParameters){
-		Optional<Pose2d> robotScoringPosition = robotState.getRobotScoringPosition(aimingParameters);
-		if(robotScoringPosition.isPresent() && robotState.seesTarget() && visionUpdatesAllowed){
-			visionState = VisionState.LINEAR;
-			Translation2d deltaPosition = robotScoringPosition.get().getTranslation().translateBy(pose.getTranslation().inverse());
-			Rotation2d deltaPositionHeading = new Rotation2d(deltaPosition, true);
-			List<Pose2d> waypoints = new ArrayList<>();
-			waypoints.add(new Pose2d(pose.getTranslation(), deltaPositionHeading));
-			waypoints.add(new Pose2d(robotScoringPosition.get().getTranslation(), deltaPositionHeading));
-			Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 80.0, 80.0, 12.0, 9.0, 48.0, 1);	
-			motionPlanner.reset();
-			motionPlanner.setTrajectory(new TrajectoryIterator<>(new TimedView<>(trajectory)));
-			rotationScalar = 0.2;
-			//QuinticPathTransmitter.getInstance().addPath(trajectory);
-			setPathHeading(robotScoringPosition.get().getRotation().getDegrees());
-			visionTargetHeading = robotScoringPosition.get().getRotation();
-			setState(ControlState.VISION);
-			System.out.println("Linear trajectory set");
-		}else{
-			DriverStation.reportError("No vision targets detected!", false);
 		}
 	}
 

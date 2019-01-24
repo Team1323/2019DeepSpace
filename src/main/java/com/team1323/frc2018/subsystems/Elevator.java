@@ -6,7 +6,6 @@ import java.util.List;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1323.frc2018.Constants;
 import com.team1323.frc2018.Ports;
@@ -19,7 +18,6 @@ import com.team1323.lib.util.Util;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Elevator extends Subsystem{
 	private static Elevator instance = null;
@@ -443,11 +441,6 @@ public class Elevator extends Subsystem{
 		int pulseWidthPeriod = master.getSensorCollection().getPulseWidthRiseToRiseUs();
 		return pulseWidthPeriod != 0;
 	}
-	
-	private void resetToAbsolutePosition(){
-		int absolutePosition = master.getSensorCollection().getPulseWidthPosition();
-		master.setSelectedSensorPosition(absolutePosition, 0, 10);
-	}
 
 	@Override
 	public synchronized void readPeriodicInputs(){
@@ -504,7 +497,7 @@ public class Elevator extends Subsystem{
 		double currentMaximum = 20.0;
 		double timeInterval = 1.0;
 		double testOutput = 4.0/12.0;
-		double outputDirection = 1.0;
+		//double outputDirection = 1.0;
 		
 		boolean passed = true;
 		
