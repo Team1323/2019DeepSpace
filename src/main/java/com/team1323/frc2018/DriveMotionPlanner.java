@@ -44,6 +44,12 @@ public class DriveMotionPlanner implements CSVWritable {
     public Trajectory<TimedState<Pose2dWithCurvature>> getTrajectory(){
         return mCurrentTrajectory.trajectory();
     }
+    public double getRemainingProgress(){
+        if(mCurrentTrajectory != null){
+            return mCurrentTrajectory.getRemainingProgress();
+        }
+        return 0.0;
+    }
     boolean mIsReversed = false;
     double mLastTime = Double.POSITIVE_INFINITY;
     public TimedState<Pose2dWithCurvature> mSetpoint = new TimedState<>(Pose2dWithCurvature.identity());

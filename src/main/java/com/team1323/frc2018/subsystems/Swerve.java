@@ -105,6 +105,12 @@ public class Swerve extends Subsystem{
 
 	//Trajectory variables
 	DriveMotionPlanner motionPlanner;
+	public double getRemainingProgress(){
+		if(motionPlanner != null && getState() == ControlState.TRAJECTORY){
+			return motionPlanner.getRemainingProgress();
+		}
+		return 0.0;
+	}
 	double rotationScalar;
 	double trajectoryStartTime = 0;
 	Translation2d lastTrajectoryVector = new Translation2d();
