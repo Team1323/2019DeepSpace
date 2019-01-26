@@ -25,13 +25,11 @@ public class TwoFarOneBallMode extends AutoModeBase {
     final boolean left;
     final double directionFactor;
 
-    private static List<Trajectory<TimedState<Pose2dWithCurvature>>> paths = Arrays.asList(trajectories.startToFarHatch.get(true),
-        trajectories.farHatchToHumanLoader.get(true), trajectories.humanLoaderToFarHatch.get(true), trajectories.farHatchToBall.get(true),
-            trajectories.ballToRocketPort.get(true));
-
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
-        return paths;
+        return Arrays.asList(trajectories.startToFarHatch.get(left), trajectories.farHatchToHumanLoader.get(left), 
+            trajectories.humanLoaderToFarHatch.get(left), trajectories.farHatchToBall.get(left),
+            trajectories.ballToRocketPort.get(left));
     }
 
 	public TwoFarOneBallMode(boolean left) {

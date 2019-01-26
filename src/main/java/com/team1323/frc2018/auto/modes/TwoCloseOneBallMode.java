@@ -25,13 +25,11 @@ public class TwoCloseOneBallMode extends AutoModeBase {
     final boolean left;
     final double directionFactor;
 
-    private List<Trajectory<TimedState<Pose2dWithCurvature>>> paths = Arrays.asList(trajectories.startToCloseHatch.get(true),
-        trajectories.closeHatchToHumanLoader.get(true), trajectories.humanLoaderToCloseHatch.get(true), trajectories.closeHatchToBall.get(true),
-            trajectories.ballToRocketPort.get(true));
-
     @Override 
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths(){
-        return paths;
+        return Arrays.asList(trajectories.startToCloseHatch.get(left), trajectories.closeHatchToHumanLoader.get(left), 
+            trajectories.humanLoaderToCloseHatch.get(left), trajectories.closeHatchToBall.get(left),
+            trajectories.ballToRocketPort.get(left));
     }
 
 	public TwoCloseOneBallMode(boolean left) {

@@ -25,13 +25,11 @@ public class CloseFarBallMode extends AutoModeBase {
     final boolean left;
     final double directionFactor;
 
-    private static List<Trajectory<TimedState<Pose2dWithCurvature>>> paths = Arrays.asList(trajectories.startToCloseHatch.get(true),
-        trajectories.closeHatchToHumanLoader.get(true), trajectories.humanLoaderToFarHatch.get(true), trajectories.farHatchToBall.get(true),
-            trajectories.ballToRocketPort.get(true));
-
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
-        return paths;
+        return Arrays.asList(trajectories.startToCloseHatch.get(left), trajectories.closeHatchToHumanLoader.get(left), 
+            trajectories.humanLoaderToFarHatch.get(left), trajectories.farHatchToBall.get(left),
+            trajectories.ballToRocketPort.get(left));
     }
 
 	public CloseFarBallMode(boolean left) {

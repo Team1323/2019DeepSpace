@@ -206,7 +206,7 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getFarHatchToHumanLoader(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(farHatchScoringPose);
-            waypoints.add(new Pose2d(new Translation2d(210.0, 80.0), Rotation2d.fromDegrees(0.0)));
+            waypoints.add(new Pose2d(new Translation2d(210.0, -82.0), Rotation2d.fromDegrees(0.0)));
             waypoints.add(humanLoaderPose);
 
             return generateTrajectory(true, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
@@ -215,7 +215,7 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getHumanLoaderToFarHatch(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(humanLoaderPose);
-            waypoints.add(new Pose2d(new Translation2d(210.0, 80.0), Rotation2d.fromDegrees(0.0)));
+            waypoints.add(new Pose2d(new Translation2d(210.0, -82.0), Rotation2d.fromDegrees(0.0)));
             waypoints.add(farHatchScoringPose);
 
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
