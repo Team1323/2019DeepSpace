@@ -20,20 +20,25 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class FarCloseBallMode extends AutoModeBase {
 	Superstructure s;
-	Intake intake;
+    Intake intake;
+    
+    final boolean left;
+    final double directionFactor;
 
-    private static List<Trajectory<TimedState<Pose2dWithCurvature>>> paths = Arrays.asList(trajectories.startToFarHatch,
-        trajectories.farHatchToHumanLoader, trajectories.humanLoaderToCloseHatch, trajectories.closeHatchToBall,
-            trajectories.ballToRocketPort);
+    private static List<Trajectory<TimedState<Pose2dWithCurvature>>> paths = Arrays.asList(trajectories.startToFarHatch.get(true),
+        trajectories.farHatchToHumanLoader.get(true), trajectories.humanLoaderToCloseHatch.get(true), trajectories.closeHatchToBall.get(true),
+            trajectories.ballToRocketPort.get(true));
 
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
         return paths;
     }
 
-	public FarCloseBallMode() {
+	public FarCloseBallMode(boolean left) {
         s = Superstructure.getInstance();
         intake = Intake.getInstance();
+        this.left = left;
+        directionFactor = left ? -1.0 : 1.0;
     }
 
     @Override
@@ -41,19 +46,19 @@ public class FarCloseBallMode extends AutoModeBase {
         super.startTime = Timer.getFPGATimestamp();
 
         runAction(new ResetPoseAction(Constants.kRobotStartingPose));
-        runAction(new SetTrajectoryAction(trajectories.startToFarHatch, -150.0, 1.0));
+        runAction(new SetTrajectoryAction(trajectories.startToFarHatch.get(left), 150.0 *directionFactor, 1.0));
         runAction(new WaitToFinishPathAction());
         runAction(new WaitAction(0.5));
-        runAction(new SetTrajectoryAction(trajectories.farHatchToHumanLoader, -180.0, 1.0));
+        runAction(new SetTrajectoryAction(trajectories.farHatchToHumanLoader.get(left), 180.0 * directionFactor, 1.0));
         runAction(new WaitToFinishPathAction());
         runAction(new WaitAction(0.5));
-        runAction(new SetTrajectoryAction(trajectories.humanLoaderToCloseHatch, -150.0, 1.0));
+        runAction(new SetTrajectoryAction(trajectories.humanLoaderToCloseHatch.get(left), 150.0 * directionFactor, 1.0));
         runAction(new WaitToFinishPathAction());
         runAction(new WaitAction(0.5));
-        runAction(new SetTrajectoryAction(trajectories.closeHatchToBall, -45.0, 1.0));
+        runAction(new SetTrajectoryAction(trajectories.closeHatchToBall.get(left), 45.0 *directionFactor, 1.0));
         runAction(new WaitToFinishPathAction());
         runAction(new WaitAction(0.5));
-        runAction(new SetTrajectoryAction(trajectories.ballToRocketPort, -90.0, 1.0));
+        runAction(new SetTrajectoryAction(trajectories.ballToRocketPort.get(left), 90.0 * directionFactor, 1.0));
         runAction(new WaitToFinishPathAction());
 
         System.out.println("Auto mode finished in " + currentTime() + " seconds");

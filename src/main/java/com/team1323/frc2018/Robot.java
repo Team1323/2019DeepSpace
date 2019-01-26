@@ -117,7 +117,7 @@ public class Robot extends TimedRobot {
 		
 		generator.generateTrajectories();		
 
-		AutoModeBase auto = new FarCloseBallMode();
+		AutoModeBase auto = new FarCloseBallMode(true);
 
 		//qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
@@ -339,11 +339,7 @@ public class Robot extends TimedRobot {
 			swerve.rotate(-135);
 		else if(driver.rightBumper.isBeingPressed())
 			swerve.rotate(25);
-		if(driver.backButton.wasPressed()){
-			swerve.temporarilyDisableHeadingController();
-			swerve.zeroSensors(Constants.kRobotStartingPose);
-			swerve.resetAveragedDirection();
-		}else if(driver.backButton.longPressed()){
+		if(driver.backButton.wasPressed() || driver.backButton.longPressed()){
 			swerve.temporarilyDisableHeadingController();
 			swerve.zeroSensors(Constants.kRobotStartingPose);
 			swerve.resetAveragedDirection();
@@ -351,7 +347,7 @@ public class Robot extends TimedRobot {
 			swerve.temporarilyDisableHeadingController();
 			swerve.zeroSensors(Constants.kRobotStartingPose);
 			swerve.requireModuleConfiguration();
-			swerve.setTrajectory(generator.getTrajectorySet().startToCloseHatch, -30.0, 1.0);
+			swerve.setTrajectory(generator.getTrajectorySet().startToCloseHatch.get(true), -30.0, 1.0);
 			//swerve.setVelocity(new Rotation2d(), 24.0);
 		}else if(driver.startButton.wasPressed()){
 			swerve.resetVisionUpdates();
