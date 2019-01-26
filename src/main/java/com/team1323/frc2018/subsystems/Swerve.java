@@ -698,11 +698,11 @@ public class Swerve extends Subsystem{
 				Translation2d driveVector = motionPlanner.update(timestamp, pose);
 
 				if(modulesReady){
-					if(!hasStartedFollowing && moduleConfigRequested){
-						zeroSensors(Constants.kRobotStartingPose);
-						System.out.println("Position reset for auto");
-						hasStartedFollowing = true;
-					}else if(!hasStartedFollowing){
+					if(!hasStartedFollowing){
+						if(moduleConfigRequested){
+							zeroSensors(Constants.kRobotStartingPose);
+							System.out.println("Position reset for auto");
+						}
 						hasStartedFollowing = true;
 					}
 					double rotationInput = Util.deadBand(Util.limit(rotationCorrection*rotationScalar*driveVector.norm(), motionPlanner.getMaxRotationSpeed()), 0.01);
