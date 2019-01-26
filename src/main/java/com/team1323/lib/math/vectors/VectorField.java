@@ -1,7 +1,6 @@
 package com.team1323.lib.math.vectors;
 
 import com.team254.lib.geometry.Translation2d;
-import com.team254.lib.geometry.Rotation2d;
 
 public abstract class VectorField implements IVectorField {
 	public abstract Translation2d getVector(Translation2d here);

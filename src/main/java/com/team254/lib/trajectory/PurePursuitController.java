@@ -1,7 +1,6 @@
 package com.team254.lib.trajectory;
 
 import com.team254.lib.geometry.*;
-import com.team254.lib.util.Util;
 
 public class PurePursuitController<S extends ITranslation2d<S>>{
     protected final TrajectoryIterator<S> iterator_;

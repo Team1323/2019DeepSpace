@@ -15,7 +15,6 @@ public class QuinticHermiteSpline extends Spline {
 
     private double x0, x1, dx0, dx1, ddx0, ddx1, y0, y1, dy0, dy1, ddy0, ddy1;
     private double ax, bx, cx, dx, ex, fx, ay, by, cy, dy, ey, fy;
-    private ReferenceFrame mReferenceFrame;
 
     /**
      * @param p0 The starting pose of the spline
@@ -44,7 +43,6 @@ public class QuinticHermiteSpline extends Spline {
         dy1 = p1.getRotation().sin() * scale;
         ddy0 = 0;
         ddy1 = 0;
-        mReferenceFrame = ref;
 
         computeCoefficients();
     }

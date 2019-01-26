@@ -7,7 +7,6 @@ import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.team1323.frc2018.Constants;
 import com.team1323.frc2018.loops.ILooper;
-import com.team1323.lib.util.Logger;
 import com.team1323.lib.util.Util;
 import com.team254.drivers.LazyTalonSRX;
 import com.team254.lib.geometry.Pose2d;
@@ -36,11 +35,11 @@ public class SwerveDriveModule extends Subsystem{
 	
 	public SwerveDriveModule(int rotationSlot, int driveSlot, int moduleID, 
 			int encoderOffset, Translation2d startingPose){
+		name += (moduleID + " ");
 		rotationMotor = new LazyTalonSRX(rotationSlot);
 		driveMotor = new LazyTalonSRX(driveSlot);
 		configureMotors();
 		this.moduleID = moduleID;
-		name += (moduleID + " ");
 		this.encoderOffset = encoderOffset;
 		previousEncDistance = 0;
 		position = startingPose;
@@ -80,7 +79,6 @@ public class SwerveDriveModule extends Subsystem{
 	
 	private void configureMotors(){
     	rotationMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 10);
-    	//resetRotationToAbsolute();
     	rotationMotor.setSensorPhase(true);
     	rotationMotor.setInverted(false);
     	rotationMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 10, 10);
@@ -92,9 +90,9 @@ public class SwerveDriveModule extends Subsystem{
     	rotationMotor.configMotionCruiseVelocity((int)(Constants.kSwerveRotationMaxSpeed), 10);
 		rotationMotor.selectProfileSlot(0, 0);
 		//Slot 1 is for normal use
-    	rotationMotor.config_kP(0, 6.0, 10);//4 8?
+    	rotationMotor.config_kP(0, 6.0, 10);
     	rotationMotor.config_kI(0, 0.0, 10);
-    	rotationMotor.config_kD(0, 160.0, 10);//120 80?
+    	rotationMotor.config_kD(0, 160.0, 10);
 		rotationMotor.config_kF(0, 1023.0/Constants.kSwerveRotationMaxSpeed, 10);
 		//Slot 2 is reserved for the beginning of auto
 		rotationMotor.config_kP(1, 8.0, 10);
@@ -103,18 +101,18 @@ public class SwerveDriveModule extends Subsystem{
     	rotationMotor.config_kF(1, 1023.0/Constants.kSwerveRotation10VoltMaxSpeed, 10);
 		rotationMotor.set(ControlMode.MotionMagic, rotationMotor.getSelectedSensorPosition(0));
 		if(!isRotationSensorConnected())
-			DriverStation.reportError("Module " + moduleID + " rotation encoder not detected!", false);
+			DriverStation.reportError(name + "rotation encoder not detected!", false);
 
     	driveMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
     	driveMotor.setSelectedSensorPosition(0, 0, 10);
     	driveMotor.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 10, 10);
     	driveMotor.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 10);
     	driveMotor.configVelocityMeasurementWindow(32, 10);
-    	driveMotor.configNominalOutputForward(1.5/12.0, 10);//1.5/12.0
-    	driveMotor.configNominalOutputReverse(-1.5/12.0, 10);//-1.5/12.0
+    	driveMotor.configNominalOutputForward(1.5/12.0, 10);
+    	driveMotor.configNominalOutputReverse(-1.5/12.0, 10);
     	driveMotor.configVoltageCompSaturation(12.0, 10);
     	driveMotor.enableVoltageCompensation(true);
-		driveMotor.configOpenloopRamp(0.25, 10);//0.25
+		driveMotor.configOpenloopRamp(0.25, 10);
 		driveMotor.configClosedloopRamp(0.0);
     	driveMotor.configAllowableClosedloopError(0, 0, 10);
     	driveMotor.setInverted(false);
@@ -125,16 +123,16 @@ public class SwerveDriveModule extends Subsystem{
     	driveMotor.config_kP(0, 2.0, 10);
     	driveMotor.config_kI(0, 0.0, 10);
     	driveMotor.config_kD(0, 24.0, 10);
-    	driveMotor.config_kF(0, 1023.0/Constants.kSwerveDriveMaxSpeed, 10);
-    	// Slot 1 corresponds to velocity mode
-    	driveMotor.config_kP(1, 0.2, 10);//0.05
-    	driveMotor.config_kI(1, 0.0, 10);
-    	driveMotor.config_kD(1, 0.0, 10);//0.0
-    	driveMotor.config_kF(1, 1023.0/Constants.kSwerveDriveMaxSpeed*0.8, 10);
-    	driveMotor.configMotionCruiseVelocity((int)(Constants.kSwerveDriveMaxSpeed*0.9), 10);
+		driveMotor.config_kF(0, 1023.0/Constants.kSwerveDriveMaxSpeed, 10);
+		driveMotor.configMotionCruiseVelocity((int)(Constants.kSwerveDriveMaxSpeed*0.9), 10);
 		driveMotor.configMotionAcceleration((int)(Constants.kSwerveDriveMaxSpeed), 10);
+    	// Slot 1 corresponds to velocity mode
+    	driveMotor.config_kP(1, 0.2, 10);
+    	driveMotor.config_kI(1, 0.0, 10);
+    	driveMotor.config_kD(1, 0.0, 10);
+    	driveMotor.config_kF(1, 1023.0/Constants.kSwerveDriveMaxSpeed*0.8, 10);
 		if(!isDriveSensorConnected())
-			DriverStation.reportError("Module " + moduleID + " drive encoder not detected!", false);
+			DriverStation.reportError(name + "drive encoder not detected!", false);
 	}
 
 	private boolean isRotationSensorConnected(){
@@ -330,11 +328,10 @@ public class SwerveDriveModule extends Subsystem{
 	}
 	
 	public synchronized void zeroSensors(Pose2d robotPose) {
-		driveMotor.setSelectedSensorPosition(0, 0, 0);
-		//resetRotationToAbsolute();
+		driveMotor.setSelectedSensorPosition(0, 0, 100);
 		resetPose(robotPose);
 		estimatedRobotPose = robotPose;
-		previousEncDistance = 0;
+		previousEncDistance = getDriveDistanceInches();
 	}
 
 	@Override
@@ -360,10 +357,10 @@ public class SwerveDriveModule extends Subsystem{
 
 	public static class PeriodicIO{
 		//Inputs
-		public int rotationPosition;
-		public int drivePosition;
-		public int velocity;
-		public double driveVoltage;
+		public int rotationPosition = 0;
+		public int drivePosition = 0;
+		public int velocity = 0;
+		public double driveVoltage = 0.0;
 		
 
 		//Outputs

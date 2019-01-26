@@ -20,7 +20,6 @@ import com.team1323.frc2018.subsystems.requests.*;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Superstructure extends Subsystem{
 	
@@ -83,10 +82,6 @@ public class Superstructure extends Subsystem{
 		newRequests = true;
 		activeRequestsCompleted = false;
 		allRequestsCompleted = false;
-	}
-	
-	private void clearActiveRequests(){
-		setActiveRequests(new RequestList());
 	}
 	
 	private void setQueuedRequests(RequestList requests){
@@ -188,11 +183,14 @@ public class Superstructure extends Subsystem{
 				if(!activeRequestsCompleted){
 					if(newRequests){
 						if(activeRequests.isParallel()){
+							boolean allActivated = true;
 							for(Iterator<Request> iterator = activeRequests.getRequests().iterator(); iterator.hasNext();){
 								Request request = iterator.next();
-								request.act();
+								boolean allowed = request.allowed();
+								allActivated &= allowed;
+								if(allowed) request.act();
 							}
-							newRequests = false;
+							newRequests = !allActivated;
 						}else{
 							if(activeRequests.isEmpty()){
 								activeRequestsCompleted = true;

@@ -1,6 +1,5 @@
 package com.team1323.frc2018;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -172,7 +171,6 @@ public class DriveMotionPlanner implements CSVWritable {
 
     @Override
     public String toCSV() {
-        DecimalFormat fmt = new DecimalFormat("#0.000");
         return mOutput.toCSV();
     }
 

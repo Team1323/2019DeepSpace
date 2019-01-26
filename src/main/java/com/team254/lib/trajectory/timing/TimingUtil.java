@@ -3,7 +3,6 @@ package com.team254.lib.trajectory.timing;
 import com.team254.lib.geometry.State;
 import com.team254.lib.trajectory.DistanceView;
 import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -34,9 +34,6 @@ import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 
-import edu.wpi.cscore.MjpegServer;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -62,7 +59,6 @@ public class Robot extends TimedRobot {
 	private AutoModeExecuter autoModeExecuter = null;
 	private TrajectoryGenerator generator = TrajectoryGenerator.getInstance();
 	private QuinticPathTransmitter qTransmitter = QuinticPathTransmitter.getInstance();
-	private boolean pathsTransmitted = false;
 	private SmartDashboardInteractions smartDashboardInteractions = new SmartDashboardInteractions();
 
 	private Looper enabledLooper = new Looper();
@@ -118,22 +114,21 @@ public class Robot extends TimedRobot {
 		swerve.zeroSensors();
 		
 		smartDashboardInteractions.initWithDefaults();
-		//initCamera();
 		
 		generator.generateTrajectories();		
 
-		AutoModeBase auto = new FarCloseBallMode();
+		AutoModeBase auto = new FarCloseBallMode(true);
 
 		//qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 	}
 	
 	public void allPeriodic(){
-		//subsystems.outputToSmartDashboard();
-		//robotState.outputToSmartDashboard();
+		subsystems.outputToSmartDashboard();
+		robotState.outputToSmartDashboard();
 		enabledLooper.outputToSmartDashboard();
-		//SmartDashboard.putBoolean("Enabled", ds.isEnabled());
-		//SmartDashboard.putNumber("Match time", ds.getMatchTime());
+		SmartDashboard.putBoolean("Enabled", ds.isEnabled());
+		SmartDashboard.putNumber("Match time", ds.getMatchTime());
 	}
 
 	public void autoConfig(){
@@ -159,13 +154,6 @@ public class Robot extends TimedRobot {
 		superstructure.elevator.configForTeleopSpeed();
 		superstructure.intake.setHoldingOutput(Constants.kIntakeStrongHoldingOutput);
 		superstructure.intake.setCurrentLimit(30);
-	}
-	
-	public void initCamera(){
-    	UsbCamera usbCamera = new UsbCamera("USB Camera 0", 0)/*CameraServer.getInstance().startAutomaticCapture()*/;
-    	usbCamera.setVideoMode(PixelFormat.kMJPEG, 320, 240, 30);
-    	MjpegServer mjpegServer2 = new MjpegServer("serve_Blur", 1182);
-		mjpegServer2.setSource(usbCamera);
 	}
 	
 	@Override
@@ -351,11 +339,7 @@ public class Robot extends TimedRobot {
 			swerve.rotate(-135);
 		else if(driver.rightBumper.isBeingPressed())
 			swerve.rotate(25);
-		if(driver.backButton.wasPressed()){
-			swerve.temporarilyDisableHeadingController();
-			swerve.zeroSensors(Constants.kRobotStartingPose);
-			swerve.resetAveragedDirection();
-		}else if(driver.backButton.longPressed()){
+		if(driver.backButton.wasPressed() || driver.backButton.longPressed()){
 			swerve.temporarilyDisableHeadingController();
 			swerve.zeroSensors(Constants.kRobotStartingPose);
 			swerve.resetAveragedDirection();
@@ -363,7 +347,7 @@ public class Robot extends TimedRobot {
 			swerve.temporarilyDisableHeadingController();
 			swerve.zeroSensors(Constants.kRobotStartingPose);
 			swerve.requireModuleConfiguration();
-			swerve.setTrajectory(generator.getTrajectorySet().startToCloseHatch, -30.0, 1.0);
+			swerve.setTrajectory(generator.getTrajectorySet().startToCloseHatch.get(true), -30.0, 1.0);
 			//swerve.setVelocity(new Rotation2d(), 24.0);
 		}else if(driver.startButton.wasPressed()){
 			swerve.resetVisionUpdates();

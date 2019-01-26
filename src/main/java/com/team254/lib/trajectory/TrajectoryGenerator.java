@@ -10,7 +10,6 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
-import com.team254.lib.trajectory.timing.CurvatureVelocityConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 
@@ -109,34 +108,34 @@ public class TrajectoryGenerator {
         public final Trajectory<TimedState<Pose2dWithCurvature>> straightPath;
 
         //Preliminary Auto Paths
-        public final Trajectory<TimedState<Pose2dWithCurvature>> startToCloseHatch;
-        public final Trajectory<TimedState<Pose2dWithCurvature>> closeHatchToHumanLoader;
-        public final Trajectory<TimedState<Pose2dWithCurvature>> humanLoaderToCloseHatch;
-        public final Trajectory<TimedState<Pose2dWithCurvature>> closeHatchToBall;
-        public final Trajectory<TimedState<Pose2dWithCurvature>> ballToRocketPort;
-        public final Trajectory<TimedState<Pose2dWithCurvature>> rocketPortToHumanLoader;
+        public final MirroredTrajectory startToCloseHatch;
+        public final MirroredTrajectory closeHatchToHumanLoader;
+        public final MirroredTrajectory humanLoaderToCloseHatch;
+        public final MirroredTrajectory closeHatchToBall;
+        public final MirroredTrajectory ballToRocketPort;
+        public final MirroredTrajectory rocketPortToHumanLoader;
 
-        public final Trajectory<TimedState<Pose2dWithCurvature>> startToFarHatch;
-        public final Trajectory<TimedState<Pose2dWithCurvature>> farHatchToHumanLoader;
-        public final Trajectory<TimedState<Pose2dWithCurvature>> humanLoaderToFarHatch;
-        public final Trajectory<TimedState<Pose2dWithCurvature>> farHatchToBall;
+        public final MirroredTrajectory startToFarHatch;
+        public final MirroredTrajectory farHatchToHumanLoader;
+        public final MirroredTrajectory humanLoaderToFarHatch;
+        public final MirroredTrajectory farHatchToBall;
 
         private TrajectorySet() {
             //Test Paths
             straightPath = getStraightPath();
 
             //Preliminary Auto Paths
-            startToCloseHatch = getStartToCloseHatch();
-            closeHatchToHumanLoader = getCloseHatchToHumanLoader();
-            humanLoaderToCloseHatch = getHumanLoaderToCloseHatch();
-            closeHatchToBall = getCloseHatchToBall();
-            ballToRocketPort = getBallToRocketPort();
-            rocketPortToHumanLoader = getRocketPortToHumanLoader();
+            startToCloseHatch = new MirroredTrajectory(getStartToCloseHatch());
+            closeHatchToHumanLoader = new MirroredTrajectory(getCloseHatchToHumanLoader());
+            humanLoaderToCloseHatch = new MirroredTrajectory(getHumanLoaderToCloseHatch());
+            closeHatchToBall = new MirroredTrajectory(getCloseHatchToBall());
+            ballToRocketPort = new MirroredTrajectory(getBallToRocketPort());
+            rocketPortToHumanLoader = new MirroredTrajectory(getRocketPortToHumanLoader());
 
-            startToFarHatch = getStartToFarHatch();
-            farHatchToHumanLoader = getFarHatchToHumanLoader();
-            humanLoaderToFarHatch = getHumanLoaderToFarHatch();
-            farHatchToBall = getFarHatchToBall();
+            startToFarHatch = new MirroredTrajectory(getStartToFarHatch());
+            farHatchToHumanLoader = new MirroredTrajectory(getFarHatchToHumanLoader());
+            humanLoaderToFarHatch = new MirroredTrajectory(getHumanLoaderToFarHatch());
+            farHatchToBall = new MirroredTrajectory(getFarHatchToBall());
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getStraightPath(){
@@ -207,7 +206,7 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getFarHatchToHumanLoader(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(farHatchScoringPose);
-            waypoints.add(new Pose2d(new Translation2d(210.0, 80.0), Rotation2d.fromDegrees(0.0)));
+            waypoints.add(new Pose2d(new Translation2d(210.0, -82.0), Rotation2d.fromDegrees(0.0)));
             waypoints.add(humanLoaderPose);
 
             return generateTrajectory(true, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
@@ -216,7 +215,7 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getHumanLoaderToFarHatch(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(humanLoaderPose);
-            waypoints.add(new Pose2d(new Translation2d(210.0, 80.0), Rotation2d.fromDegrees(0.0)));
+            waypoints.add(new Pose2d(new Translation2d(210.0, -82.0), Rotation2d.fromDegrees(0.0)));
             waypoints.add(farHatchScoringPose);
 
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
@@ -225,7 +224,6 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getFarHatchToBall(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(farHatchScoringPose);
-            //waypoints.add(new Pose2d(new Translation2d(210.0, 75.0), Rotation2d.fromDegrees(0.0)));
             waypoints.add(ballIntakePose.transformBy(Pose2d.fromTranslation(new Translation2d(96.0, 0.0))));
             waypoints.add(ballIntakePose);
 
