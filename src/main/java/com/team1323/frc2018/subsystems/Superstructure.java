@@ -183,11 +183,14 @@ public class Superstructure extends Subsystem{
 				if(!activeRequestsCompleted){
 					if(newRequests){
 						if(activeRequests.isParallel()){
+							boolean allActivated = true;
 							for(Iterator<Request> iterator = activeRequests.getRequests().iterator(); iterator.hasNext();){
 								Request request = iterator.next();
-								request.act();
+								boolean allowed = request.allowed();
+								allActivated &= allowed;
+								if(allowed) request.act();
 							}
-							newRequests = false;
+							newRequests = !allActivated;
 						}else{
 							if(activeRequests.isEmpty()){
 								activeRequestsCompleted = true;
