@@ -36,7 +36,8 @@ public class Constants {
 
 	public static final double kHatchTargetHeight = 28.5;
 	
-	public static final Pose2d kRobotStartingPose = new Pose2d(new Translation2d(48.0 + Constants.kRobotHalfLength, 97.0 + Constants.kRobotHalfWidth - 162.0), Rotation2d.fromDegrees(0));
+	public static final Pose2d kRobotLeftStartingPose = new Pose2d(new Translation2d(48.0 + Constants.kRobotHalfLength, 97.0 + Constants.kRobotHalfWidth - 162.0), Rotation2d.fromDegrees(0));
+	public static final Pose2d kRobotRightStartingPose = new Pose2d(new Translation2d(48.0 + Constants.kRobotHalfLength, -(97.0 + Constants.kRobotHalfWidth - 162.0)), Rotation2d.fromDegrees(0));
 	
 	//Swerve Calculations Constants (measurements are in inches)
     public static final double kWheelbaseLength = 18.5;

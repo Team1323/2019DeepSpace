@@ -81,7 +81,7 @@ public class TrajectoryGenerator {
     // +x is towards the center of the field.
     // +y is to the right.
     // ALL POSES DEFINED FOR THE CASE THAT ROBOT STARTS ON RIGHT! (mirrored about +x axis for LEFT)
-    static final Pose2d autoStartingPose = new Pose2d(Constants.kRobotStartingPose.getTranslation(), Rotation2d.fromDegrees(-90.0));
+    static final Pose2d autoStartingPose = new Pose2d(Constants.kRobotLeftStartingPose.getTranslation(), Rotation2d.fromDegrees(-90.0));
 
     static final Pose2d closeHatchScoringPose = Constants.closeHatchPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 12.0, 0.0)));
     static final Pose2d farHatchScoringPose = Constants.farHatchPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 12.0, 0.0)));
@@ -140,8 +140,8 @@ public class TrajectoryGenerator {
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getStraightPath(){
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(Constants.kRobotStartingPose);
-            waypoints.add(Constants.kRobotStartingPose.transformBy(Pose2d.fromTranslation(new Translation2d(120.0, 0.0))));
+            waypoints.add(Constants.kRobotLeftStartingPose);
+            waypoints.add(Constants.kRobotLeftStartingPose.transformBy(Pose2d.fromTranslation(new Translation2d(120.0, 0.0))));
 
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, kMaxDecel, kMaxVoltage, 60.0, 1);
         }
@@ -197,7 +197,7 @@ public class TrajectoryGenerator {
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getStartToFarHatch(){
             List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(Constants.kRobotStartingPose);
+            waypoints.add(Constants.kRobotLeftStartingPose);
             waypoints.add(farHatchScoringPose);
 
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);

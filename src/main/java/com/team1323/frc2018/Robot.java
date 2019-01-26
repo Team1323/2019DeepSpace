@@ -295,7 +295,7 @@ public class Robot extends TimedRobot {
 				swerve.setVisionTrajectory();
 			}else if(switchController.minusButton.wasPressed()){
 				swerve.temporarilyDisableHeadingController();
-				swerve.zeroSensors(Constants.kRobotStartingPose);
+				swerve.zeroSensors(Constants.kRobotLeftStartingPose);
 				swerve.resetAveragedDirection();
 			}
 
@@ -341,11 +341,11 @@ public class Robot extends TimedRobot {
 			swerve.rotate(25);
 		if(driver.backButton.wasPressed() || driver.backButton.longPressed()){
 			swerve.temporarilyDisableHeadingController();
-			swerve.zeroSensors(Constants.kRobotStartingPose);
+			swerve.zeroSensors(Constants.kRobotLeftStartingPose);
 			swerve.resetAveragedDirection();
 		}else if(driver.rightTrigger.wasPressed()){
 			swerve.temporarilyDisableHeadingController();
-			swerve.zeroSensors(Constants.kRobotStartingPose);
+			swerve.zeroSensors(Constants.kRobotLeftStartingPose);
 			swerve.requireModuleConfiguration();
 			swerve.setTrajectory(generator.getTrajectorySet().startToCloseHatch.get(true), -30.0, 1.0);
 			//swerve.setVelocity(new Rotation2d(), 24.0);
@@ -479,7 +479,7 @@ public class Robot extends TimedRobot {
 
 		if(driver.backButton.longPressed()){
 			swerve.temporarilyDisableHeadingController();
-			swerve.zeroSensors(Constants.kRobotStartingPose);
+			swerve.zeroSensors(Constants.kRobotLeftStartingPose);
 			swerve.resetAveragedDirection();
 		}
 		

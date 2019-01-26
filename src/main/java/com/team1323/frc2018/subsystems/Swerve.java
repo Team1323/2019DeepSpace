@@ -667,7 +667,7 @@ public class Swerve extends Subsystem{
 				if(modulesReady){
 					if(!hasStartedFollowing){
 						if(moduleConfigRequested){
-							zeroSensors(Constants.kRobotStartingPose);
+							zeroSensors(Constants.kRobotLeftStartingPose);
 							System.out.println("Position reset for auto");
 						}
 						hasStartedFollowing = true;
@@ -830,7 +830,7 @@ public class Swerve extends Subsystem{
 
 	@Override
 	public synchronized void zeroSensors() {
-		zeroSensors(Constants.kRobotStartingPose);
+		zeroSensors(Constants.kRobotLeftStartingPose);
 	}
 	
 	/** Zeroes the drive motors, and sets the robot's internal position and heading to match that of the fed pose */

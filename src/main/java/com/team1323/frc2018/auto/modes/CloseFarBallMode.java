@@ -3,7 +3,6 @@ package com.team1323.frc2018.auto.modes;
 import java.util.Arrays;
 import java.util.List;
 
-import com.team1323.frc2018.Constants;
 import com.team1323.frc2018.auto.AutoModeBase;
 import com.team1323.frc2018.auto.AutoModeEndedException;
 import com.team1323.frc2018.auto.actions.ResetPoseAction;
@@ -43,7 +42,7 @@ public class CloseFarBallMode extends AutoModeBase {
     protected void routine() throws AutoModeEndedException {
         super.startTime = Timer.getFPGATimestamp();
 
-        runAction(new ResetPoseAction(Constants.kRobotStartingPose));
+        runAction(new ResetPoseAction(left));
         runAction(new SetTrajectoryAction(trajectories.startToCloseHatch.get(left), 30.0 * directionFactor, 1.0));
         runAction(new WaitToFinishPathAction());
         runAction(new WaitAction(0.5));
