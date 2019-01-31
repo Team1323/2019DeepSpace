@@ -120,7 +120,7 @@ public class Swerve extends Subsystem{
 		return hasFinishedPath;
 	}
 	
-	//Name says it all
+	//Experimental
 	VectorField vf;
 	
 	private Swerve(){
@@ -378,10 +378,8 @@ public class Swerve extends Subsystem{
 		for(int i=0; i<modules.size(); i++){
     		if(Util.shouldReverse(driveVectors.get(i).direction().getDegrees(), modules.get(i).getModuleAngle().getDegrees())){
     			modules.get(i).setModuleAngle(driveVectors.get(i).direction().getDegrees() + 180.0);
-    			//modules.get(i).setDriveOpenLoop(0.0);
     		}else{
     			modules.get(i).setModuleAngle(driveVectors.get(i).direction().getDegrees());
-    			//modules.get(i).setDriveOpenLoop(0.0);
     		}
     	}
 	}
@@ -542,14 +540,6 @@ public class Swerve extends Subsystem{
 			x += m.getEstimatedRobotPose().getTranslation().x();
 			y += m.getEstimatedRobotPose().getTranslation().y();
 		}
-		
-		/*for(SwerveDriveModule m : modules){
-			if(m.moduleID != 0 && m.moduleID != 2 && m.moduleID != 1){
-				m.updatePose(heading);
-				x += m.getEstimatedRobotPose().getTranslation().x();
-				y += m.getEstimatedRobotPose().getTranslation().y();
-			}
-		}*/
 		Pose2d updatedPose = new Pose2d(new Translation2d(x / modulesToUse.size(), y / modulesToUse.size()), heading);
 		double deltaPos = updatedPose.getTranslation().translateBy(pose.getTranslation().inverse()).norm();
 		distanceTraveled += deltaPos;
@@ -609,7 +599,6 @@ public class Swerve extends Subsystem{
 		modules.forEach((m) -> m.resetPose(pose));
 	}
 
-	double lastHyp = 0.0;
 	/** Called every cycle to update the swerve based on its control state */
 	public synchronized void updateControlCycle(double timestamp){
 		double rotationCorrection = headingController.updateRotationCorrection(pose.getRotation().getUnboundedDegrees(), timestamp);
@@ -636,10 +625,6 @@ public class Swerve extends Subsystem{
 				inverseKinematics.setCenterOfRotation(Translation2d.identity());
 				evadingToggled = false;
 			}
-			/*Translation2d outputVector = vf.getVector(pose.getTranslation()).scale(0.25);
-			SmartDashboard.putNumber("Vector Direction", outputVector.direction().getDegrees());
-			SmartDashboard.putNumber("Vector Magnitude", outputVector.norm());*/
-			//setMaxRotationSpeed();
 			if(translationalVector.equals(Translation2d.identity()) && rotationalInput == 0.0){
 				if(lastDriveVector.equals(rotationalVector)){
 					stop();
