@@ -169,7 +169,7 @@ public class Constants {
 	public static final double kWristMaxStowHeight = 3.5; //height of the elevator
 	public static final double kWristMaxCurrent = 40.0;//amps
 	
-	//Intake Constants
+	//Ball Intake Constants
 	public static final double kIntakeWeakEjectOutput = -0.4;
 	public static final double kIntakeEjectOutput = kIsUsingCompBot ? -0.6 : -0.9;
 	public static final double kIntakeStrongEjectOutput = -1.0;
@@ -181,4 +181,13 @@ public class Constants {
 
 	//Jack Constants
 	public static final double kJackMaxSpeed = 100.0;
+
+	//Disk Intake Constants
+	public static final double kDiskIntakingOutput = 1.0;
+	public static final double kDiskIntakeRampRate = 0.25;
+	public static final double kDiskIntakeWeakEjectOutput = -0.375;
+	public static final double kDiskIntakeStrongEjectOutput = -0.9;
+	public static final double kDiskStrongHoldingOutput = 3.0;
+	public static final double kDiskIntakingResuckingOutput = 6.0/12.0;
+
 }

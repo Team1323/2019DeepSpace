@@ -20,6 +20,8 @@ public class Ports {
 
     public static final int BALL_INTAKE = 9;
     
+    public static final int DISK_INTAKE = 10;
+    
     public static final int WRIST = 5;
     public static final int WRIST_2 = 6;
 
@@ -31,6 +33,8 @@ public class Ports {
     public static final int INTAKE_PINCHERS = 0;
     public static final int INTAKE_CLAMPERS = 1;
 
+    public static final int INTAKE_LIFT = 0;
+
     public static final int PROBE_EXTENDER_1 = 2;
     public static final int PROBE_EXTENDER_2 = 3;
     public static final int PROBE_SCORER_1 = 4;
@@ -39,4 +43,6 @@ public class Ports {
     
     //Digital Inputs
     public static final int INTAKE_BANNER = 0;
+    public static final int BALL_INTAKE_BANNER  = 0;
+    public static final int DISK_INTAKE_BANNER = 1;
 }

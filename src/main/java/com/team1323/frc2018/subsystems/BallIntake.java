@@ -38,14 +38,15 @@ public class BallIntake extends Subsystem {
   }
   
   private LazyTalonSRX intakeMotor;
-
   private DigitalInput banner;
+  
   public boolean getBanner() {
     return banner.get();
   }
 
   private BallIntake() {
     intakeMotor = new LazyTalonSRX(Ports.BALL_INTAKE);
+    banner = new DigitalInput(Ports.BALL_INTAKE_BANNER)
 
     intakeMotor.setInverted(false);
 
