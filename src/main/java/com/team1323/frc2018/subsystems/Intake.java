@@ -7,12 +7,14 @@ import com.team1323.frc2018.Constants;
 import com.team1323.frc2018.Ports;
 import com.team1323.frc2018.loops.ILooper;
 import com.team1323.frc2018.loops.Loop;
+import com.team1323.frc2018.subsystems.requests.Prerequisite;
+import com.team1323.frc2018.subsystems.requests.Request;
 import com.team254.drivers.LazyTalonSRX;
-import com.team1323.frc2018.subsystems.requests.*;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Intake extends Subsystem{
 	private static Intake instance = null;
@@ -332,12 +334,14 @@ public class Intake extends Subsystem{
 	
 	@Override
 	public void outputTelemetry() {
-		/*SmartDashboard.putNumber("Left Intake Current", leftIntake.getOutputCurrent());
-		SmartDashboard.putNumber("Right Intake Current", rightIntake.getOutputCurrent());
-		SmartDashboard.putNumber("Left Intake Voltage", leftIntake.getMotorOutputVoltage());
-		SmartDashboard.putNumber("Right Intake Voltage", rightIntake.getMotorOutputVoltage());*/
-		//SmartDashboard.putBoolean("Intake Has Cube", hasCube);
-		//SmartDashboard.putBoolean("Intake Banner", banner.get());
+		if(Constants.kDebuggingOutput){
+			SmartDashboard.putNumber("Left Intake Current", leftIntake.getOutputCurrent());
+			SmartDashboard.putNumber("Right Intake Current", rightIntake.getOutputCurrent());
+			SmartDashboard.putNumber("Left Intake Voltage", leftIntake.getMotorOutputVoltage());
+			SmartDashboard.putNumber("Right Intake Voltage", rightIntake.getMotorOutputVoltage());
+			SmartDashboard.putBoolean("Intake Has Cube", hasCube);
+			SmartDashboard.putBoolean("Intake Banner", banner.get());
+		}
 	}
 
 }

@@ -852,16 +852,17 @@ public class Swerve extends Subsystem{
 	@Override
 	public void outputTelemetry() {
 		modules.forEach((m) -> m.outputTelemetry());
-		SmartDashboard.putNumber("Robot X", pose.getTranslation().x());
-		SmartDashboard.putNumber("Robot Y", pose.getTranslation().y());
-		SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getUnboundedDegrees()});
-		SmartDashboard.putNumber("Robot Heading", pose.getRotation().getUnboundedDegrees());
-		//SmartDashboard.putString("Heading Controller", headingController.getState().toString());
-		SmartDashboard.putNumber("Target Heading", headingController.getTargetHeading());
-		//SmartDashboard.putNumber("Distance Traveled", distanceTraveled);
-		//SmartDashboard.putNumber("Robot Velocity", currentVelocity);
-		//SmartDashboard.putString("Swerve State", currentState.toString());
-		//SmartDashboard.putNumber("Swerve Ultrasonic", getUltrasonicReading());
-		SmartDashboard.putBoolean("Vision Updates Allowed", visionUpdatesAllowed);
+		if(Constants.kDebuggingOutput){
+			SmartDashboard.putNumber("Robot X", pose.getTranslation().x());
+			SmartDashboard.putNumber("Robot Y", pose.getTranslation().y());
+			SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getUnboundedDegrees()});
+			SmartDashboard.putNumber("Robot Heading", pose.getRotation().getUnboundedDegrees());
+			SmartDashboard.putString("Heading Controller", headingController.getState().toString());
+			SmartDashboard.putNumber("Target Heading", headingController.getTargetHeading());
+			SmartDashboard.putNumber("Distance Traveled", distanceTraveled);
+			SmartDashboard.putNumber("Robot Velocity", currentVelocity);
+			SmartDashboard.putString("Swerve State", currentState.toString());
+			SmartDashboard.putBoolean("Vision Updates Allowed", visionUpdatesAllowed);
+		}
 	}
 }

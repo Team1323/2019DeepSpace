@@ -1,0 +1,10 @@
+Subsystems
+
+-Elevator (2 motors)
+    -Rollers (1 motor)
+-Probe (Pneumatic)
+-Ball Intake (1 motor)
+-Ground Intake (1 motor, 1 piston)
+-Wrist (2 motors, shift)
+-Jacks (1 motor)
+-Swerve (8 motors)

@@ -6,12 +6,14 @@ import com.team1323.frc2018.Constants;
 import com.team1323.frc2018.Ports;
 import com.team1323.frc2018.loops.ILooper;
 import com.team1323.frc2018.loops.Loop;
+import com.team1323.frc2018.subsystems.requests.Prerequisite;
+import com.team1323.frc2018.subsystems.requests.Request;
 import com.team1323.lib.util.Util;
 import com.team254.drivers.LazyTalonSRX;
-import com.team1323.frc2018.subsystems.requests.*;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Wrist extends Subsystem{
 	private static Wrist instance = null;
@@ -232,9 +234,11 @@ public class Wrist extends Subsystem{
 	@Override
 	public synchronized void readPeriodicInputs() {
 		periodicIO.position = wrist.getSelectedSensorPosition(0);
-		//periodicIO.velocity = wrist.getSelectedSensorVelocity(0);
-		//periodicIO.voltage = wrist.getMotorOutputVoltage();
-		//periodicIO.current = wrist.getOutputCurrent();
+		if(Constants.kDebuggingOutput){
+			periodicIO.velocity = wrist.getSelectedSensorVelocity(0);
+			periodicIO.voltage = wrist.getMotorOutputVoltage();
+			periodicIO.current = wrist.getOutputCurrent();
+		}
 	}
 
 	@Override
@@ -262,15 +266,17 @@ public class Wrist extends Subsystem{
 
 	@Override
 	public void outputTelemetry() {
-		//SmartDashboard.putNumber("Wrist Current", periodicIO.current);
-		//SmartDashboard.putNumber("Wrist Voltage", wrist.getMotorOutputVoltage());
-		//SmartDashboard.putNumber("Wrist Encoder", periodicIO.position);
-		//SmartDashboard.putNumber("Wrist Pulse Width Position", wrist.getSensorCollection().getPulseWidthPosition());
-		//SmartDashboard.putNumber("Wrist Angle", getAngle());
-		//SmartDashboard.putNumber("Wrist Velocity", wrist.getSelectedSensorVelocity(0));
-		//SmartDashboard.putNumber("Wrist Error", wrist.getClosedLoopError(0));
-		/*if(wrist.getControlMode() == ControlMode.MotionMagic)
-			SmartDashboard.putNumber("Wrist Setpoint", wrist.getClosedLoopTarget(0));*/
+		SmartDashboard.putNumber("Wrist Angle", getAngle());
+		if(Constants.kDebuggingOutput){
+			SmartDashboard.putNumber("Wrist Current", periodicIO.current);
+			SmartDashboard.putNumber("Wrist Voltage", wrist.getMotorOutputVoltage());
+			SmartDashboard.putNumber("Wrist Encoder", periodicIO.position);
+			SmartDashboard.putNumber("Wrist Pulse Width Position", wrist.getSensorCollection().getPulseWidthPosition());
+			SmartDashboard.putNumber("Wrist Velocity", wrist.getSelectedSensorVelocity(0));
+			SmartDashboard.putNumber("Wrist Error", wrist.getClosedLoopError(0));
+			if(wrist.getControlMode() == ControlMode.MotionMagic)
+				SmartDashboard.putNumber("Wrist Setpoint", wrist.getClosedLoopTarget(0));
+		}
 	}
 	
 	public boolean checkSystem(){

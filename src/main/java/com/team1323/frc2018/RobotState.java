@@ -220,26 +220,23 @@ public class RobotState {
     }
     
     public void outputToSmartDashboard(){
-    	//Pose2d odometry = getLatestFieldToVehicle().getValue();
-        //SmartDashboard.putNumber("robot_pose_x", odometry.getTranslation().x());
-        //SmartDashboard.putNumber("robot_pose_y", odometry.getTranslation().y());
-        //SmartDashboard.putNumber("robot_pose_theta", odometry.getRotation().getDegrees());
-        List<Pose2d> poses = getCaptureTimeFieldToGoal();
-        for (Pose2d pose : poses) {
-            // Only output first goal
-            SmartDashboard.putNumber("goal_pose_x", pose.getTranslation().x());
-            SmartDashboard.putNumber("goal_pose_y", pose.getTranslation().y());
-            break;
-        }
-        Optional<ShooterAimingParameters> aiming_params = /*getCachedAimingParameters();*/getAimingParameters();
-        if (aiming_params.isPresent()) {
-            SmartDashboard.putNumber("goal_range", aiming_params.get().getRange());
-            SmartDashboard.putNumber("goal_theta", aiming_params.get().getRobotToGoal().getDegrees());
-        } else {
-            SmartDashboard.putNumber("goal_range", 0.0);
-            SmartDashboard.putNumber("goal_theta", 0.0);
-        }
-
         SmartDashboard.putBoolean("Sees Target", seesTarget);
+        if(Constants.kDebuggingOutput){
+            List<Pose2d> poses = getCaptureTimeFieldToGoal();
+            for (Pose2d pose : poses) {
+                // Only output first goal
+                SmartDashboard.putNumber("goal_pose_x", pose.getTranslation().x());
+                SmartDashboard.putNumber("goal_pose_y", pose.getTranslation().y());
+                break;
+            }
+            Optional<ShooterAimingParameters> aiming_params = /*getCachedAimingParameters();*/getAimingParameters();
+            if (aiming_params.isPresent()) {
+                SmartDashboard.putNumber("goal_range", aiming_params.get().getRange());
+                SmartDashboard.putNumber("goal_theta", aiming_params.get().getRobotToGoal().getDegrees());
+            } else {
+                SmartDashboard.putNumber("goal_range", 0.0);
+                SmartDashboard.putNumber("goal_theta", 0.0);
+            }
+        }
     }
 }

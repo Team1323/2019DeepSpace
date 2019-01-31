@@ -234,13 +234,6 @@ public class Robot extends TimedRobot {
 			enabledLooper.stop();
 			subsystems.stop();
 			disabledLooper.start();
-			elevator.fireLatch(false);
-			elevator.fireForks(false);
-
-			/*if(!pathsTransmitted){
-				qTransmitter.addPaths(smartDashboardInteractions.getSelectedAutoMode(DriverStation.getInstance().getGameSpecificMessage().substring(0, 2)).getPaths());
-				pathsTransmitted = true;
-			}*/
 		}catch(Throwable t){
 			CrashTracker.logThrowableCrash(t);
 			throw t;
@@ -260,15 +253,7 @@ public class Robot extends TimedRobot {
 	
 	@Override
 	public void testInit(){
-		Timer.delay(2.0);
-		boolean passed = true;
-		//passed &= Intake.getInstance().checkSystem();
-		//passed &= Wrist.getInstance().checkSystem();
-		passed &= Elevator.getInstance().checkSystem();
-		if(passed)
-			System.out.println("All systems passed");
-		else
-			System.out.println("Some systems failed, check above output for details");
+		
 	}
 	
 	@Override
@@ -353,69 +338,53 @@ public class Robot extends TimedRobot {
 			swerve.resetVisionUpdates();
 			swerve.setVisionTrajectory();
 		}
-					
-		if(superstructure.driveTrainFlipped() && coDriver.leftTrigger.isBeingPressed()){
-			superstructure.sendManualInput(-coDriver.getY(Hand.kRight), elevatorInput.update(-coDriver.getY(Hand.kLeft)*0.5, timestamp));
-		}else if(superstructure.driveTrainFlipped()){
-			superstructure.sendManualInput(-coDriver.getY(Hand.kRight), elevatorInput.update(-coDriver.getY(Hand.kLeft), timestamp));
-		}else{
-			superstructure.sendManualInput(-coDriver.getY(Hand.kRight), elevatorInput.update(-coDriver.getY(Hand.kLeft), timestamp));
-		}
+
+		superstructure.sendManualInput(-coDriver.getY(Hand.kRight), elevatorInput.update(-coDriver.getY(Hand.kLeft), timestamp));
 		
-		if(!superstructure.driveTrainFlipped()){
-			if(coDriver.aButton.wasPressed()){
-				superstructure.request(superstructure.elevatorWristConfig(Constants.kElevatorIntakingHeight, 
-						Constants.kWristIntakingAngle));
-				superstructure.replaceQueue(Arrays.asList(new RequestList(intake.waitForCubeRequest()),
-						new RequestList(intake.stateRequest(IntakeState.CLAMPING)),
-						new RequestList(wrist.angleRequest(Constants.kWristPrimaryStowAngle))));
-			}else if(coDriver.aButton.longPressed()){
-				if(intake.getState() == IntakeState.INTAKING)
-					superstructure.replaceQueue(superstructure.elevatorWristIntakeConfig(0.31, 13.0, IntakeState.CLAMPING));
-				else
-					superstructure.request(superstructure.elevatorWristIntakeConfig(0.31, 13.0, IntakeState.CLAMPING));
-			}else if(coDriver.xButton.wasPressed()){
-				superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorHumanLoadHeight, 
-						20.0, IntakeState.CLAMPING));
-			}else if(coDriver.xButton.longPressed()){
-				superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorHumanLoadHeight, 
-						Constants.kWristIntakingAngle, IntakeState.OPEN));
-			}else if(coDriver.bButton.wasPressed()){
-				superstructure.request(superstructure.wristIntakeConfig(Constants.kWristPrimaryStowAngle, IntakeState.CLAMPING));
-			}else if(coDriver.bButton.longPressed()){
-				superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorIntakingHeight, 
-						Constants.kWristPrimaryStowAngle, IntakeState.OFF));
-			}else if(coDriver.yButton.wasPressed()){
-				superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kELevatorBalancedScaleHeight, 
-						20.0, IntakeState.CLAMPING));
-			}else if(coDriver.POV0.wasPressed()){
-				superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorHighScaleHeight, 
-						60.0, IntakeState.CLAMPING));
-			}else if(coDriver.POV180.wasPressed()){
-				superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorLowScaleHeight, 
-						25.0, IntakeState.CLAMPING));
-			}else if(coDriver.POV90.wasPressed()){
-				superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorTippingCubeHeight,
-						Constants.kWristIntakingAngle, IntakeState.OFF));
-			}else if(coDriver.rightCenterClick.wasPressed()){
-				superstructure.request(superstructure.elevatorWristConfig(Constants.kElevatorSecondCubeHeight, 
-						Constants.kWristIntakingAngle),
-						new RequestList(intake.stateRequest(IntakeState.INTAKING)));
-			}else if(coDriver.leftBumper.wasPressed()){
-				superstructure.request(superstructure.elevatorWristIntakeConfig(
-						Constants.kElevatorIntakingHeight, 
-						Constants.kWristIntakingAngle, 
-						IntakeState.OFF),
-						new RequestList(intake.stateRequest(IntakeState.OPEN)));
-			}
-		}else{
-			if(coDriver.POV0.isBeingPressed()){
-				superstructure.requestWinchOpenLoop(0.75);
-			}else if(coDriver.POV180.isBeingPressed()){
-				superstructure.requestWinchOpenLoop(-0.75);
-			}else{
-				superstructure.requestWinchOpenLoop(0.0);
-			}
+		if(coDriver.aButton.wasPressed()){
+			superstructure.request(superstructure.elevatorWristConfig(Constants.kElevatorIntakingHeight, 
+					Constants.kWristIntakingAngle));
+			superstructure.replaceQueue(Arrays.asList(new RequestList(intake.waitForCubeRequest()),
+					new RequestList(intake.stateRequest(IntakeState.CLAMPING)),
+					new RequestList(wrist.angleRequest(Constants.kWristPrimaryStowAngle))));
+		}else if(coDriver.aButton.longPressed()){
+			if(intake.getState() == IntakeState.INTAKING)
+				superstructure.replaceQueue(superstructure.elevatorWristIntakeConfig(0.31, 13.0, IntakeState.CLAMPING));
+			else
+				superstructure.request(superstructure.elevatorWristIntakeConfig(0.31, 13.0, IntakeState.CLAMPING));
+		}else if(coDriver.xButton.wasPressed()){
+			superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorHumanLoadHeight, 
+					20.0, IntakeState.CLAMPING));
+		}else if(coDriver.xButton.longPressed()){
+			superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorHumanLoadHeight, 
+					Constants.kWristIntakingAngle, IntakeState.OPEN));
+		}else if(coDriver.bButton.wasPressed()){
+			superstructure.request(superstructure.wristIntakeConfig(Constants.kWristPrimaryStowAngle, IntakeState.CLAMPING));
+		}else if(coDriver.bButton.longPressed()){
+			superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorIntakingHeight, 
+					Constants.kWristPrimaryStowAngle, IntakeState.OFF));
+		}else if(coDriver.yButton.wasPressed()){
+			superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kELevatorBalancedScaleHeight, 
+					20.0, IntakeState.CLAMPING));
+		}else if(coDriver.POV0.wasPressed()){
+			superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorHighScaleHeight, 
+					60.0, IntakeState.CLAMPING));
+		}else if(coDriver.POV180.wasPressed()){
+			superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorLowScaleHeight, 
+					25.0, IntakeState.CLAMPING));
+		}else if(coDriver.POV90.wasPressed()){
+			superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorTippingCubeHeight,
+					Constants.kWristIntakingAngle, IntakeState.OFF));
+		}else if(coDriver.rightCenterClick.wasPressed()){
+			superstructure.request(superstructure.elevatorWristConfig(Constants.kElevatorSecondCubeHeight, 
+					Constants.kWristIntakingAngle),
+					new RequestList(intake.stateRequest(IntakeState.INTAKING)));
+		}else if(coDriver.leftBumper.wasPressed()){
+			superstructure.request(superstructure.elevatorWristIntakeConfig(
+					Constants.kElevatorIntakingHeight, 
+					Constants.kWristIntakingAngle, 
+					IntakeState.OFF),
+					new RequestList(intake.stateRequest(IntakeState.OPEN)));
 		}
 		
 		if(coDriver.rightBumper.isBeingPressed()){
@@ -428,18 +397,6 @@ public class Robot extends TimedRobot {
 			superstructure.request(intake.ejectRequest(Constants.kIntakeEjectOutput));
 		}else if(coDriver.rightTrigger.longPressed() || driver.rightTrigger.longPressed()){
 			superstructure.request(intake.ejectRequest(Constants.kIntakeWeakEjectOutput));
-		}
-		
-		if(driver.POV0.wasPressed()){
-			superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kELevatorHangingHeight, 
-					Constants.kWristPrimaryStowAngle, IntakeState.OPEN),
-					new RequestList(elevator.gearShiftRequest(false)));
-			elevatorInput.setRampRate(0.75);
-		}else if(driver.POV180.wasPressed() && !elevator.isHighGear()){
-			//superstructure.request(elevator.lowGearHeightRequest(Constants.kElevatorMinimumHangingHeight));
-		}else if(driver.POV90.wasPressed() && !elevator.isHighGear()){
-			superstructure.flipDriveTrain();
-			//elevator.fireForks(true);
 		}
 		
 		if(intake.needsToNotifyDrivers()){
@@ -460,98 +417,6 @@ public class Robot extends TimedRobot {
 	}
 
 	private void oneControllerMode(){
-		if(driver.backButton.wasPressed() || coDriver.backButton.isBeingPressed()){
-			superstructure.request(intake.stateRequest(IntakeState.OFF));
-		}
 		
-		double swerveYInput = driver.getX(Hand.kLeft);
-		double swerveXInput = -driver.getY(Hand.kLeft);
-		double swerveRotationInput = (flickRotation ? 0.0 : driver.getX(Hand.kRight));
-		
-		swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, driver.rightCenterClick.isBeingPressed(), driver.leftTrigger.isBeingPressed());
-
-		if(flickRotation){
-			swerve.updateControllerDirection(new Translation2d(-driver.getY(Hand.kRight), driver.getX(Hand.kRight)));
-			if(!Util.epsilonEquals(Util.placeInAppropriate0To360Scope(swerve.getTargetHeading(), swerve.averagedDirection.getDegrees()), swerve.getTargetHeading(), swerve.rotationDivision / 2.0)){
-				swerve.rotate(swerve.averagedDirection.getDegrees());
-			}
-		}
-
-		if(driver.backButton.longPressed()){
-			swerve.temporarilyDisableHeadingController();
-			swerve.zeroSensors(Constants.kRobotLeftStartingPose);
-			swerve.resetAveragedDirection();
-		}
-		
-		if(!superstructure.driveTrainFlipped()){
-			if(driver.aButton.wasPressed() || coDriver.aButton.wasPressed()){
-				superstructure.request(superstructure.elevatorWristConfig(Constants.kElevatorIntakingHeight, 
-						Constants.kWristIntakingAngle));
-				superstructure.replaceQueue(Arrays.asList(new RequestList(intake.waitForCubeRequest()),
-						new RequestList(intake.stateRequest(IntakeState.CLAMPING)),
-						new RequestList(wrist.angleRequest(Constants.kWristPrimaryStowAngle))));
-			}else if(driver.xButton.wasPressed() || coDriver.xButton.wasPressed()){
-				superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorSwitchHeight, 
-						20.0, IntakeState.CLAMPING));
-			}else if(driver.bButton.wasPressed() || coDriver.bButton.wasPressed()){
-				superstructure.request(superstructure.wristIntakeConfig(Constants.kWristPrimaryStowAngle, IntakeState.CLAMPING));
-			}else if(driver.bButton.longPressed() || coDriver.bButton.longPressed()){
-				superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorIntakingHeight, 
-						Constants.kWristPrimaryStowAngle, IntakeState.OFF));
-			}else if(driver.yButton.wasPressed() || coDriver.yButton.wasPressed()){
-				superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kELevatorBalancedScaleHeight, 
-						20.0, IntakeState.CLAMPING));
-			}else if(driver.POV0.wasPressed() || coDriver.POV0.wasPressed()){
-				superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorHighScaleHeight, 
-						60.0, IntakeState.CLAMPING));
-			}else if(driver.POV180.wasPressed() || coDriver.POV180.wasPressed()){
-				superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorLowScaleHeight, 
-						25.0, IntakeState.CLAMPING));
-			}else if(driver.POV90.wasPressed() || coDriver.POV90.wasPressed()){
-				superstructure.request(superstructure.elevatorWristIntakeConfig(Constants.kElevatorTippingCubeHeight,
-						Constants.kWristIntakingAngle, IntakeState.OFF));
-			}else if(driver.rightCenterClick.wasPressed() || coDriver.rightCenterClick.wasPressed()){
-				superstructure.request(superstructure.elevatorWristConfig(Constants.kElevatorSecondCubeHeight, 
-						Constants.kWristIntakingAngle),
-						new RequestList(intake.stateRequest(IntakeState.INTAKING)));
-			}else if(driver.leftBumper.wasPressed() || coDriver.leftBumper.wasPressed()){
-				superstructure.request(superstructure.elevatorWristIntakeConfig(
-						Constants.kElevatorIntakingHeight, 
-						Constants.kWristIntakingAngle, 
-						IntakeState.OFF),
-						new RequestList(intake.stateRequest(IntakeState.INTAKING_WIDE)));
-			}
-		}
-
-		if(superstructure.driveTrainFlipped() && coDriver.leftTrigger.isBeingPressed())
-			superstructure.sendManualInput(-coDriver.getY(Hand.kRight), -coDriver.getY(Hand.kLeft)*0.5);
-		else
-			superstructure.sendManualInput(-coDriver.getY(Hand.kRight), -coDriver.getY(Hand.kLeft));
-		
-		if(driver.rightBumper.isBeingPressed() || coDriver.rightBumper.isBeingPressed()){
-			superstructure.addForemostActiveRequest(intake.stateRequest(IntakeState.FORCED_INTAKE));
-		}else if(intake.getState() == IntakeState.FORCED_INTAKE){
-			superstructure.addForemostActiveRequest(intake.stateRequest(IntakeState.OFF));
-		}else if(driver.leftTrigger.wasPressed() || coDriver.leftTrigger.wasPressed()){
-			superstructure.addForemostActiveRequest(intake.stateRequest(IntakeState.OPEN));
-		}else if(driver.rightTrigger.wasPressed() || coDriver.rightTrigger.wasPressed()){
-			superstructure.request(intake.ejectRequest(Constants.kIntakeEjectOutput));
-		}else if(driver.rightTrigger.longPressed() || coDriver.rightTrigger.longPressed()){
-			superstructure.addForemostActiveRequest(intake.ejectRequest(Constants.kIntakeWeakEjectOutput));
-		}
-		
-		if(intake.needsToNotifyDrivers()){
-			driver.rumble(1.0, 1.0);
-			coDriver.rumble(1.0, 1.0);
-		}
-
-		if(coDriver.startButton.longPressed()){
-			elevator.setManualSpeed(0.25);
-			superstructure.elevator.enableLimits(false);
-		}else if(!superstructure.elevator.limitsEnabled() && coDriver.getY(Hand.kLeft) == 0){
-			superstructure.elevator.zeroSensors();
-			superstructure.elevator.enableLimits(true);
-			elevator.setManualSpeed(Constants.kElevatorTeleopManualSpeed);
-		}
 	}
 }
