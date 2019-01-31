@@ -17,6 +17,8 @@ public class Ports {
         
     public static final int INTAKE_LEFT = 10;
     public static final int INTAKE_RIGHT = 9;
+
+    public static final int BALL_INTAKE = 9;
     
     public static final int WRIST = 5;
     public static final int WRIST_2 = 6;
