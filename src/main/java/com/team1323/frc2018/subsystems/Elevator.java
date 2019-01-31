@@ -29,7 +29,7 @@ public class Elevator extends Subsystem {
 		return instance;
 	}
 	
-	LazyTalonSRX master, motor2, motor3, motor4;
+	LazyTalonSRX master, motor2;
 	List<LazyTalonSRX> motors, slaves;
 	private double targetHeight = 0.0;
 	private boolean isHighGear = true;
@@ -66,11 +66,9 @@ public class Elevator extends Subsystem {
 	private Elevator(){
 		master = new LazyTalonSRX(Ports.ELEVATOR_1);
 		motor2 = new LazyTalonSRX(Ports.ELEVATOR_2);
-		motor3 = new LazyTalonSRX(Ports.ELEVATOR_3);
-		motor4 = new LazyTalonSRX(Ports.ELEVATOR_4);
 
-		motors = Arrays.asList(master, motor2, motor3, motor4);
-		slaves = Arrays.asList(motor2, motor3, motor4);
+		motors = Arrays.asList(master, motor2);
+		slaves = Arrays.asList(motor2);
 
 		slaves.forEach((s) -> s.set(ControlMode.Follower, Ports.ELEVATOR_1));
 		
@@ -83,13 +81,9 @@ public class Elevator extends Subsystem {
 		if(Constants.kIsUsingCompBot){
 			master.setInverted(false);
 			motor2.setInverted(true);
-			motor3.setInverted(false);
-			motor4.setInverted(true);
 		}else{
 			master.setInverted(true);
 			motor2.setInverted(true);
-			motor3.setInverted(true);
-			motor4.setInverted(false);
 		}
 		
 		master.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
@@ -100,12 +94,6 @@ public class Elevator extends Subsystem {
 		master.configForwardSoftLimitEnable(true, 10);
 		master.configReverseSoftLimitEnable(true, 10);
 		enableLimits(true);
-		
-		//This sensor is used as a remote for the winch.
-		if(Constants.kIsUsingCompBot)
-			motor3.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-		else
-			motor4.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 
 		setCurrentLimit(Constants.kELevatorCurrentLimit);
 		
@@ -361,11 +349,8 @@ public class Elevator extends Subsystem {
 		if(Constants.kDebuggingOutput){
 			SmartDashboard.putNumber("Elevator 1 Current", periodicIO.current);
 			SmartDashboard.putNumber("Elevator 2 Current", motor2.getOutputCurrent());
-			SmartDashboard.putNumber("Elevator 3 Current", motor3.getOutputCurrent());
-			SmartDashboard.putNumber("Elevator 4 Current", motor4.getOutputCurrent());
 			SmartDashboard.putNumber("Elevator Voltage", periodicIO.voltage);
 			SmartDashboard.putNumber("Elevator 2 Voltage", motor2.getMotorOutputVoltage());
-			SmartDashboard.putNumber("Elevator 3 Voltage", motor3.getMotorOutputVoltage());
 			SmartDashboard.putNumber("Elevator Height Graph", getHeight());
 			SmartDashboard.putNumber("Elevator Pulse Width Position", master.getSensorCollection().getPulseWidthPosition());
 			SmartDashboard.putNumber("Elevator Encoder", periodicIO.position);

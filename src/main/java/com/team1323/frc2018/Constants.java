@@ -150,7 +150,8 @@ public class Constants {
 	}
 	
 	//Wrist Constants
-	public static final double kWristMaxSpeed = /*41.58 * 4096.0 / 600.0*/300.0; //encoder units per 100 ms
+	public static final double kWristMaxSpeedHighGear = /*41.58 * 4096.0 / 600.0*/300.0; //encoder units per 100 ms
+	public static final double kWristMaxSpeedLowGear = 100.0;
 	public static final double kWristStartingAngle = 90.0;
 	/** Pulse width position of the wrist encoder when the wrist is upright (at 90 degrees, parallel to the elevator). */
 	public static final int kWristStartingEncoderPosition = kIsUsingCompBot ? 3249 : 559;
@@ -177,4 +178,7 @@ public class Constants {
 	public static final double kIntakeStrongHoldingOutput = 4.0/12.0;
 	public static final double kIntakingResuckingOutput = 6.0/12.0;
 	public static final double kIntakeRampRate = 0.25;
+
+	//Jack Constants
+	public static final double kJackMaxSpeed = 100.0;
 }

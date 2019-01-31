@@ -12,8 +12,12 @@ import com.team1323.lib.util.Util;
 import com.team254.drivers.LazyTalonSRX;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class Wrist extends Subsystem{
 	private static Wrist instance = null;
@@ -23,13 +27,22 @@ public class Wrist extends Subsystem{
 		return instance;
 	}
 
-	LazyTalonSRX wrist;
+	LazyTalonSRX master, slave;
+	List<LazyTalonSRX> motors;
+
 	private double targetAngle = 0.0;
 	private double maxAllowableAngle = Constants.kWristMaxControlAngle;
 	public void setMaxAllowableAngle(double angle){
 		maxAllowableAngle = angle;
 		lockAngle();
 	}
+
+	Solenoid shifter;
+
+	boolean isHighGear = true;
+	public boolean isHighGear(){ return isHighGear; }
+	boolean highGearConfig = true;
+
 	
 	public enum WristControlState{
 		OPEN_LOOP, POSITION
@@ -39,33 +52,78 @@ public class Wrist extends Subsystem{
 	PeriodicIO periodicIO = new PeriodicIO();
 	
 	private Wrist(){
-		wrist = new LazyTalonSRX(Ports.WRIST);
-		wrist.configVoltageCompSaturation(12.0, 10);
-		wrist.enableVoltageCompensation(true);
-		wrist.configNominalOutputForward(0.45/12.0, 10);
-		wrist.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-		wrist.setSensorPhase(false);
-		wrist.getSensorCollection().setPulseWidthPosition(0, 100);
+		master = new LazyTalonSRX(Ports.WRIST);
+		slave = new LazyTalonSRX(Ports.WRIST_2);
+
+		motors = Arrays.asList(master, slave);
+		for(LazyTalonSRX talon : motors){
+			talon.configVoltageCompSaturation(12.0, 10);
+			talon.enableVoltageCompensation(true);
+			talon.configNominalOutputForward(0.0/12.0, 10);
+			talon.configContinuousCurrentLimit(25, 10);
+			talon.configPeakCurrentLimit(30, 10);
+			talon.configPeakCurrentDuration(100, 10);
+			talon.enableCurrentLimit(true);
+		}
+		
+		master.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+		master.setSensorPhase(false);
+		master.getSensorCollection().setPulseWidthPosition(0, 100);
 		resetToAbsolutePosition();
-		wrist.selectProfileSlot(0, 0);
-		wrist.config_kP(0, 3.0, 10);
-		wrist.config_kI(0, 0.0, 10);
-		wrist.config_kD(0, 120.0, 10);
-		wrist.config_kF(0, 1023.0/Constants.kWristMaxSpeed, 10);
-		wrist.config_kP(1, 3.0, 10);
-		wrist.config_kI(1, 0.0, 10);
-		wrist.config_kD(1, 240.0, 10);
-		wrist.config_kF(1, 1023.0/Constants.kWristMaxSpeed, 10);
-		wrist.configMotionCruiseVelocity((int)(Constants.kWristMaxSpeed*1.0), 10);
-		wrist.configMotionAcceleration((int)(Constants.kWristMaxSpeed*3.0), 10);
-		wrist.configForwardSoftLimitThreshold(wristAngleToEncUnits(Constants.kWristMaxControlAngle), 10);
-		wrist.configReverseSoftLimitThreshold(wristAngleToEncUnits(Constants.kWristMinControlAngle), 10);
-		wrist.configForwardSoftLimitEnable(true, 10);
-		wrist.configReverseSoftLimitEnable(true, 10);
-		wrist.configContinuousCurrentLimit(25, 10);
-		wrist.configPeakCurrentLimit(30, 10);
-		wrist.configPeakCurrentDuration(100, 10);
-		wrist.enableCurrentLimit(true);
+		configForHighGear();
+		master.configForwardSoftLimitThreshold(wristAngleToEncUnits(Constants.kWristMaxControlAngle), 10);
+		master.configReverseSoftLimitThreshold(wristAngleToEncUnits(Constants.kWristMinControlAngle), 10);
+		master.configForwardSoftLimitEnable(true, 10);
+		master.configReverseSoftLimitEnable(true, 10);
+
+		setOpenLoop(0.0);
+		slave.set(ControlMode.Follower, Ports.WRIST);
+
+		shifter = new Solenoid(20, 0);
+	}
+
+	private void configForHighGear(){
+		master.selectProfileSlot(0, 0);
+		master.config_kP(0, 3.0, 10);
+		master.config_kI(0, 0.0, 10);
+		master.config_kD(0, 120.0, 10);
+		master.config_kF(0, 1023.0/Constants.kWristMaxSpeedHighGear, 10);
+		master.config_kP(1, 3.0, 10);
+		master.config_kI(1, 0.0, 10);
+		master.config_kD(1, 240.0, 10);
+		master.config_kF(1, 1023.0/Constants.kWristMaxSpeedHighGear, 10);
+		master.configMotionCruiseVelocity((int)(Constants.kWristMaxSpeedHighGear*1.0), 10);
+		master.configMotionAcceleration((int)(Constants.kWristMaxSpeedHighGear*3.0), 10);
+
+		highGearConfig = true;
+	}
+
+	public void configForLowGear(){
+		master.selectProfileSlot(0, 0);
+		master.config_kP(0, 3.0, 10);
+		master.config_kI(0, 0.0, 10);
+		master.config_kD(0, 120.0, 10);
+		master.config_kF(0, 1023.0/Constants.kWristMaxSpeedLowGear, 10);
+		master.config_kP(1, 3.0, 10);
+		master.config_kI(1, 0.0, 10);
+		master.config_kD(1, 240.0, 10);
+		master.config_kF(1, 1023.0/Constants.kWristMaxSpeedLowGear, 10);
+		master.configMotionCruiseVelocity((int)(Constants.kWristMaxSpeedLowGear*1.0), 10);
+		master.configMotionAcceleration((int)(Constants.kWristMaxSpeedLowGear*3.0), 10);
+
+		highGearConfig = false;
+	}
+
+	public void setHighGear(boolean high){
+		if(high && !isHighGear){
+			shifter.set(false);
+			configForHighGear();
+			isHighGear = false;
+		}else if(!high && isHighGear){
+			shifter.set(true);
+			configForLowGear();
+			isHighGear = true;
+		}
 	}
 	
 	public void setOpenLoop(double output){
@@ -79,15 +137,20 @@ public class Wrist extends Subsystem{
 	
 	public void setAngle(double angle){
 		if(isSensorConnected()){
+			if(isHighGear && !highGearConfig){
+				configForHighGear();
+			}else if(!isHighGear && highGearConfig){
+				configForLowGear();
+			}
 			if(angle <= maxAllowableAngle){
 				targetAngle = angle;
 			}else{
 				targetAngle = maxAllowableAngle;
 			}
 			if(angle > getAngle())
-				wrist.selectProfileSlot(1, 0);
+				master.selectProfileSlot(1, 0);
 			else
-				wrist.selectProfileSlot(0, 0);
+				master.selectProfileSlot(0, 0);
 			periodicIO.demand = wristAngleToEncUnits(targetAngle);
 			currentState = WristControlState.POSITION;
 		}else{
@@ -157,6 +220,17 @@ public class Wrist extends Subsystem{
 		};
 	}
 
+	public Request gearShiftRequest(boolean high){
+		return new Request(){
+		
+			@Override
+			public void act() {
+				setHighGear(high);
+			}
+
+		};
+	}
+
 	public Prerequisite angleReq(double angle, boolean above){
 		return new Prerequisite(){
 		
@@ -193,12 +267,12 @@ public class Wrist extends Subsystem{
 	}
 	
 	public boolean isSensorConnected(){
-		int pulseWidthPeriod = wrist.getSensorCollection().getPulseWidthRiseToRiseUs();
+		int pulseWidthPeriod = master.getSensorCollection().getPulseWidthRiseToRiseUs();
 		return pulseWidthPeriod != 0;
 	}
 	
 	public void resetToAbsolutePosition(){
-		int absolutePosition = (int) Util.boundToScope(0, 4096, wrist.getSensorCollection().getPulseWidthPosition());
+		int absolutePosition = (int) Util.boundToScope(0, 4096, master.getSensorCollection().getPulseWidthPosition());
 		if(encUnitsToWristAngle(absolutePosition) > Constants.kWristMaxPhysicalAngle){
 			absolutePosition -= 4096;
 		}
@@ -206,7 +280,7 @@ public class Wrist extends Subsystem{
 		if(wristAngle > Constants.kWristMaxPhysicalAngle || wristAngle < Constants.kWristMinPhysicalAngle){
 			DriverStation.reportError("Wrist angle is out of bounds", false);
 		}
-		wrist.setSelectedSensorPosition(absolutePosition, 0, 10);
+		master.setSelectedSensorPosition(absolutePosition, 0, 10);
 	}
 	
 	private final Loop loop = new Loop(){
@@ -218,7 +292,7 @@ public class Wrist extends Subsystem{
 
 		@Override
 		public void onLoop(double timestamp) {
-			if(wrist.getOutputCurrent() > Constants.kWristMaxCurrent){
+			if(master.getOutputCurrent() > Constants.kWristMaxCurrent){
 				//stop();
 				DriverStation.reportError("Wrist current high", false);
 			}
@@ -233,20 +307,20 @@ public class Wrist extends Subsystem{
 
 	@Override
 	public synchronized void readPeriodicInputs() {
-		periodicIO.position = wrist.getSelectedSensorPosition(0);
+		periodicIO.position = master.getSelectedSensorPosition(0);
 		if(Constants.kDebuggingOutput){
-			periodicIO.velocity = wrist.getSelectedSensorVelocity(0);
-			periodicIO.voltage = wrist.getMotorOutputVoltage();
-			periodicIO.current = wrist.getOutputCurrent();
+			periodicIO.velocity = master.getSelectedSensorVelocity(0);
+			periodicIO.voltage = master.getMotorOutputVoltage();
+			periodicIO.current = master.getOutputCurrent();
 		}
 	}
 
 	@Override
 	public synchronized void writePeriodicOutputs() {
 		if(currentState == WristControlState.POSITION)
-			wrist.set(ControlMode.MotionMagic, periodicIO.demand);
+			master.set(ControlMode.MotionMagic, periodicIO.demand);
 		else
-			wrist.set(ControlMode.PercentOutput, periodicIO.demand);
+			master.set(ControlMode.PercentOutput, periodicIO.demand);
 	}
 
 	@Override
@@ -269,13 +343,13 @@ public class Wrist extends Subsystem{
 		SmartDashboard.putNumber("Wrist Angle", getAngle());
 		if(Constants.kDebuggingOutput){
 			SmartDashboard.putNumber("Wrist Current", periodicIO.current);
-			SmartDashboard.putNumber("Wrist Voltage", wrist.getMotorOutputVoltage());
+			SmartDashboard.putNumber("Wrist Voltage", master.getMotorOutputVoltage());
 			SmartDashboard.putNumber("Wrist Encoder", periodicIO.position);
-			SmartDashboard.putNumber("Wrist Pulse Width Position", wrist.getSensorCollection().getPulseWidthPosition());
-			SmartDashboard.putNumber("Wrist Velocity", wrist.getSelectedSensorVelocity(0));
-			SmartDashboard.putNumber("Wrist Error", wrist.getClosedLoopError(0));
-			if(wrist.getControlMode() == ControlMode.MotionMagic)
-				SmartDashboard.putNumber("Wrist Setpoint", wrist.getClosedLoopTarget(0));
+			SmartDashboard.putNumber("Wrist Pulse Width Position", master.getSensorCollection().getPulseWidthPosition());
+			SmartDashboard.putNumber("Wrist Velocity", master.getSelectedSensorVelocity(0));
+			SmartDashboard.putNumber("Wrist Error", master.getClosedLoopError(0));
+			if(master.getControlMode() == ControlMode.MotionMagic)
+				SmartDashboard.putNumber("Wrist Setpoint", master.getClosedLoopTarget(0));
 		}
 	}
 	
@@ -290,12 +364,12 @@ public class Wrist extends Subsystem{
 			return false;
 		}
 		
-		double startingEncPosition = wrist.getSelectedSensorPosition(0);
-		wrist.set(ControlMode.PercentOutput, 3.0/12.0);
+		double startingEncPosition = master.getSelectedSensorPosition(0);
+		master.set(ControlMode.PercentOutput, 3.0/12.0);
 		Timer.delay(1.0);
-		double current = wrist.getOutputCurrent();
-		wrist.set(ControlMode.PercentOutput, 0.0);
-		if(Math.signum(wrist.getSelectedSensorPosition(0) - startingEncPosition) != 1.0){
+		double current = master.getOutputCurrent();
+		master.set(ControlMode.PercentOutput, 0.0);
+		if(Math.signum(master.getSelectedSensorPosition(0) - startingEncPosition) != 1.0){
 			System.out.println("Wrist needs to be reversed");
 			passed = false;
 		}
