@@ -761,8 +761,8 @@ public class Swerve extends Subsystem{
 		public void onLoop(double timestamp) {
 			synchronized(Swerve.this){
 				if(modulesReady || (getState() != ControlState.TRAJECTORY)){
-					updatePose(timestamp);
-					//alternatePoseUpdate();
+					//updatePose(timestamp);
+					alternatePoseUpdate();
 				}
 				updateControlCycle(timestamp);
 				lastUpdateTimestamp = timestamp;

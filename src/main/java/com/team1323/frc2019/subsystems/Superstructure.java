@@ -19,6 +19,7 @@ public class Superstructure extends Subsystem {
 	public Elevator elevator;
 	public Wrist wrist;
 	public BallIntake ballIntake;
+	public BallCarriage ballCarriage;
 	public DiskIntake diskIntake;
 	public Probe probe;
 	public Jacks jacks;
@@ -31,6 +32,7 @@ public class Superstructure extends Subsystem {
 		elevator = Elevator.getInstance();
 		wrist = Wrist.getInstance();
 		ballIntake = BallIntake.getInstance();
+		ballCarriage = BallCarriage.getInstance();
 		diskIntake = DiskIntake.getInstance();
 		probe = Probe.getInstance();
 		jacks = Jacks.getInstance();
@@ -104,6 +106,7 @@ public class Superstructure extends Subsystem {
 		allRequestsCompleted = false;
 	}
 	
+	/** Ill-advised */
 	public void addForemostActiveRequest(Request request){
 		activeRequests.addToForefront(request);
 		newRequests = true;

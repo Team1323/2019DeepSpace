@@ -22,8 +22,8 @@ public class Constants {
 	public static final boolean kDebuggingOutput = true;
 	
 	//Physical Robot Dimensions (including bumpers)
-	public static final double kRobotWidth = 39.0;
-	public static final double kRobotLength = 34.0;
+	public static final double kRobotWidth = 33.0;
+	public static final double kRobotLength = 33.0;
 	public static final double kRobotHalfWidth = kRobotWidth / 2.0;
 	public static final double kRobotHalfLength = kRobotLength / 2.0;
 	public static final double kRobotIntakeExtrusion = 11.0;//TODO update
@@ -118,15 +118,13 @@ public class Constants {
 	/** Pulse width position of the elevator encoder when it has fully descended. */
 	public static final int kElevatorEncoderStartingPosition = 0;
 	public static final double kElevatorTicksPerInch = 11983.0 / 2.5989583; //determined empirically
-	public static final double kElevatorHeightTolerance = 0.1; //inches
-	public static final double kElevatorIntakingHeight = kIsUsingCompBot ? 0.2 : 0.125; //inches
-	public static final double kElevatorSecondCubeHeight = 0.97 + 0.1;
-	public static final double kElevatorHumanLoadHeight = 1.836 + 0.1;
-	public static final double kElevatorSwitchHeight = 2.0; //inches
-	public static final double kELevatorBalancedScaleHeight = 5.05; //inches
-	public static final double kElevatorHighScaleHeight = 5.3;
-	public static final double kElevatorLowScaleHeight = 4.3;
-	public static final double kELevatorHangingHeight = 4.9;
+	public static final double kElevatorHeightTolerance = 1.0; //inches
+	public static final double kElevatorLowHatchHeight = 0.0;
+	public static final double kElevatorMidHatchHeight = 0.0;
+	public static final double kElevatorHighHatchHeight = 0.0;
+	public static final double kElevatorLowBallHeight = 0.0;
+	public static final double kElevatorMidBallHeight = 0.0;
+	public static final double kElevatorHighBallHeight = 0.0;
 	public static final double kElevatorMinHeight = 0.0; //inches
 	public static final double kElevatorMaxHeight = 5.4; //inches
 	public static final double kElevatorMaxCurrent = 50.0;//amps
@@ -136,16 +134,15 @@ public class Constants {
 	public static final double kElevatorHangingRampHeight = 3.452;
 	public static final double kElevatorTippingCubeHeight = 0.57;
 	public static final double kElevatorTeleopManualSpeed = 0.5;
-	//0.905
 	
 	//Swerve Speed Constraint Treemap
 	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kSwerveSpeedTreeMap = new InterpolatingTreeMap<>();
 	static{
-		kSwerveSpeedTreeMap.put(new InterpolatingDouble(-0.1), new InterpolatingDouble(1.0));
+		kSwerveSpeedTreeMap.put(new InterpolatingDouble(-1.0), new InterpolatingDouble(1.0));
 		kSwerveSpeedTreeMap.put(new InterpolatingDouble(0.0), new InterpolatingDouble(1.0));
-		kSwerveSpeedTreeMap.put(new InterpolatingDouble(kElevatorIntakingHeight), new InterpolatingDouble(1.0));
+		kSwerveSpeedTreeMap.put(new InterpolatingDouble(kElevatorLowHatchHeight), new InterpolatingDouble(1.0));
 		kSwerveSpeedTreeMap.put(new InterpolatingDouble(kElevatorMaxHeight), new InterpolatingDouble(0.5));
-		kSwerveSpeedTreeMap.put(new InterpolatingDouble(kElevatorMaxHeight + 0.2), new InterpolatingDouble(0.5));
+		kSwerveSpeedTreeMap.put(new InterpolatingDouble(kElevatorMaxHeight + 2.0), new InterpolatingDouble(0.5));
 	}
 	
 	//Wrist Constants
@@ -163,9 +160,7 @@ public class Constants {
 	public static final double kWristMaxPhysicalAngle = 110.0;//95.192
 	public static final double kWristIntakingAngle = kIsUsingCompBot ? 6.5 : 9.0;
 	public static final double kWristPrimaryStowAngle = 85.0;
-	public static final double kWristSecondaryStowAngle = 60.0;
 	public static final double kWristHangingAngle = 90.0;
-	public static final double kWristMaxStowHeight = 3.5; //height of the elevator
 	public static final double kWristMaxCurrent = 40.0;//amps
 	
 	//Ball Intake Constants
