@@ -25,8 +25,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- * 
- */
+ * Manages the ground disk intake
+ **/
 public class DiskIntake extends Subsystem {
   private static DiskIntake instance = null;
   public static DiskIntake getInstance() {
@@ -190,7 +190,7 @@ public class DiskIntake extends Subsystem {
           if(banner.get()) {
             if (timestamp - stateEnteredTimestamp > 2.0) {
               setRampRate(Constants.kDiskIntakeRampRate);
-              setRollers(Constants.kDiskIntakeStrongEjectOutput);
+              setRollers(Constants.kDiskIntakeWeakEjectOutput);
             }
           }
           break;
