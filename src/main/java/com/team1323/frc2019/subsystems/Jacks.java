@@ -7,10 +7,13 @@
 
 package com.team1323.frc2019.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.team1323.frc2019.Constants;
 import com.team1323.frc2019.Ports;
 import com.team254.drivers.LazyTalonSRX;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Jacks extends Subsystem {
     private static Jacks instance = null;
@@ -22,11 +25,16 @@ public class Jacks extends Subsystem {
 
     LazyTalonSRX motor;
 
+    PeriodicIO periodicIO = new PeriodicIO();
+
     public Jacks(){
         motor = new LazyTalonSRX(Ports.JACKS);
         motor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
         motor.setInverted(false);
         motor.setSensorPhase(false);
+
+        motor.configVoltageCompSaturation(12.0);
+        motor.enableVoltageCompensation(true);
 
         motor.config_kP(0, 0.0);
         motor.config_kI(0, 0.0);
@@ -34,15 +42,67 @@ public class Jacks extends Subsystem {
         motor.config_kF(0, 1023.0 / Constants.kJackMaxSpeed);
         motor.configMotionCruiseVelocity((int)(Constants.kJackMaxSpeed * 1.0));
         motor.configMotionAcceleration((int)(Constants.kJackMaxSpeed * 1.0));
+
+        setOpenLoop(0.0);
+    }
+
+    public synchronized void setOpenLoop(double percentOutput){
+        periodicIO.controlMode = ControlMode.PercentOutput;
+        periodicIO.setpoint = percentOutput;
+    }
+
+    public synchronized void setHeight(double height){
+        periodicIO.controlMode = ControlMode.MotionMagic;
+        periodicIO.setpoint = inchesToEncUnits(height);
+    }
+
+    private double encUnitsToInches(double encUnits){
+        return encUnits / Constants.kJackTicksPerInch;
+    }
+
+    private double inchesToEncUnits(double inches){
+        return inches * Constants.kJackTicksPerInch;
+    }
+    
+    @Override
+    public void readPeriodicInputs() {
+        periodicIO.position = motor.getSelectedSensorPosition();
+        if(Constants.kDebuggingOutput){
+            periodicIO.velocity = motor.getSelectedSensorVelocity();
+            periodicIO.voltage = motor.getMotorOutputVoltage();
+            periodicIO.current = motor.getOutputCurrent();
+        }
+    }
+
+    @Override
+    public void writePeriodicOutputs() {
+        motor.set(periodicIO.controlMode, periodicIO.setpoint);
     }
 
     @Override
     public void outputTelemetry() {
-
+        SmartDashboard.putNumber("Jack Height", periodicIO.position);
+        if(Constants.kDebuggingOutput){
+            SmartDashboard.putNumber("Jack Velocity", periodicIO.velocity);
+            SmartDashboard.putNumber("Jack Voltage", periodicIO.voltage);
+            SmartDashboard.putNumber("Jack Current", periodicIO.current);
+        }
     }
 
     @Override
     public void stop() {
+        setOpenLoop(0.0);
+    }
 
+    public static class PeriodicIO{
+        //inputs
+        public int position = 0;
+        public int velocity = 0;
+        public double voltage = 0.0;
+        public double current = 0.0;
+
+        //outputs
+        public double setpoint = 0.0;
+        public ControlMode controlMode = ControlMode.PercentOutput;
     }
 }

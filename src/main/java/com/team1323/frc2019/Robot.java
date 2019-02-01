@@ -17,6 +17,7 @@ import com.team1323.frc2019.loops.LimelightProcessor;
 import com.team1323.frc2019.loops.Looper;
 import com.team1323.frc2019.loops.QuinticPathTransmitter;
 import com.team1323.frc2019.loops.RobotStateEstimator;
+import com.team1323.frc2019.subsystems.BallCarriage;
 import com.team1323.frc2019.subsystems.BallIntake;
 import com.team1323.frc2019.subsystems.DiskIntake;
 import com.team1323.frc2019.subsystems.Elevator;
@@ -53,6 +54,7 @@ public class Robot extends TimedRobot {
 	private Elevator elevator;
 	private Wrist wrist;
 	private BallIntake ballIntake;
+	private BallCarriage ballCarriage;
 	private DiskIntake diskIntake;
 	private Probe probe;
 	private Jacks jacks;
@@ -91,12 +93,13 @@ public class Robot extends TimedRobot {
 		elevator = Elevator.getInstance();
 		wrist = Wrist.getInstance();
 		ballIntake = BallIntake.getInstance();
+		ballCarriage = BallCarriage.getInstance();
 		diskIntake = DiskIntake.getInstance();
 		probe = Probe.getInstance();
 		jacks = Jacks.getInstance();
 		subsystems = new SubsystemManager(
 			Arrays.asList(swerve, elevator, wrist,
-				ballIntake, diskIntake, probe, jacks));
+				ballIntake, ballCarriage, diskIntake, probe, jacks));
 		
 		if(useSwitchController){
 			switchController = new SwitchController(2);
@@ -124,7 +127,6 @@ public class Robot extends TimedRobot {
 		generator.generateTrajectories();		
 
 		AutoModeBase auto = new FarCloseBallMode(true);
-
 		//qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 	}
