@@ -1,9 +1,7 @@
 package com.team1323.frc2019.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
-import com.team1323.frc2019.Ports;
 import com.team254.lib.geometry.Rotation2d;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,16 +16,10 @@ public class Pigeon {
 	}
 	
 	private PigeonIMU pigeon;
-	private TalonSRX talon;
-
-	public TalonSRX getTalon(){
-		return talon;
-	}
     
 	private Pigeon(){
 		try{
-			talon = new TalonSRX(Ports.PIGEON_TALON);
-			pigeon = new PigeonIMU(talon);
+			pigeon = new PigeonIMU(Jacks.getInstance().getPigeonTalon());
 		}catch(Exception e){
 			System.out.println(e);
 		}
@@ -37,11 +29,23 @@ public class Pigeon {
 		return (pigeon.getState() == PigeonState.Ready) ? true : false;
 	}
 	
-	public Rotation2d getAngle(){
+	public Rotation2d getYaw(){
 		double [] ypr = new double[3];
 		pigeon.getYawPitchRoll(ypr);
 		PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
 		return Rotation2d.fromDegrees(-pigeon.getFusedHeading(fusionStatus)/*-ypr[0]*/);
+	}
+
+	public double getPitch(){
+		double [] ypr = new double[3];
+		pigeon.getYawPitchRoll(ypr);
+		return ypr[1];
+	}
+
+	public double getRoll(){
+		double [] ypr = new double[3];
+		pigeon.getYawPitchRoll(ypr);
+		return ypr[2];
 	}
 	
 	public void setAngle(double angle){

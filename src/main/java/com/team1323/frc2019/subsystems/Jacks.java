@@ -24,6 +24,9 @@ public class Jacks extends Subsystem {
     }
 
     LazyTalonSRX motor;
+    public LazyTalonSRX getPigeonTalon(){
+        return motor;
+    }
 
     PeriodicIO periodicIO = new PeriodicIO();
 
@@ -54,6 +57,10 @@ public class Jacks extends Subsystem {
     public synchronized void setHeight(double height){
         periodicIO.controlMode = ControlMode.MotionMagic;
         periodicIO.setpoint = inchesToEncUnits(height);
+    }
+
+    public double getHeight(){
+        return encUnitsToInches(periodicIO.position);
     }
 
     private double encUnitsToInches(double encUnits){

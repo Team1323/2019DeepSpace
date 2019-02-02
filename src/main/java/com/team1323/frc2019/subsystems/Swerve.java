@@ -504,7 +504,7 @@ public class Swerve extends Subsystem{
 	public synchronized void updatePose(double timestamp){
 		double x = 0.0;
 		double y = 0.0;
-		Rotation2d heading = pigeon.getAngle();
+		Rotation2d heading = pigeon.getYaw();
 		
 		double averageDistance = 0.0;
 		double[] distances = new double[4];
@@ -552,7 +552,7 @@ public class Swerve extends Subsystem{
 	public synchronized void alternatePoseUpdate(){
 		double x = 0.0;
 		double y = 0.0;
-		Rotation2d heading = pigeon.getAngle();
+		Rotation2d heading = pigeon.getYaw();
 		
 		double[][] distances = new double[4][2];
 		for(SwerveDriveModule m : modules){
