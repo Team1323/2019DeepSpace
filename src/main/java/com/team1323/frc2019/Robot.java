@@ -343,9 +343,13 @@ public class Robot extends TimedRobot {
 		}
 
 		s.sendManualInput(-coDriver.getY(Hand.kRight), elevatorInput.update(-coDriver.getY(Hand.kLeft), timestamp));
+
+		if(coDriver.aButton.wasPressed()){
+			s.request(s.ballIntakingState());
+		}
 		
 		if(coDriver.startButton.longPressed()){
-			elevator.setManualSpeed(0.75);//0.25
+			elevator.setManualSpeed(0.75);
 			elevator.enableLimits(false);
 			coDriver.rumble(1.0, 1.0);
 		}else if(!s.elevator.limitsEnabled() && coDriver.startButton.longReleased()){
