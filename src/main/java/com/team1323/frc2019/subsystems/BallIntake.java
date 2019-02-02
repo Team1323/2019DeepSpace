@@ -74,27 +74,27 @@ public class BallIntake extends Subsystem {
     intakeMotor.configOpenloopRamp(secondsToMax, 0);
   }
 
-  public enum IntakeState {
+  public enum State {
     OFF(0), INTAKING(Constants.kIntakingOutput), EJECTING(Constants.kIntakingOutput), HOLDING(Constants.kIntakeWeakHoldingOutput);
 
     public double intakeOutput = 0;
 
-    private IntakeState(double intakeSpeed) {
+    private State(double intakeSpeed) {
       intakeOutput = intakeSpeed;
     }
   }
-  private IntakeState currentState = IntakeState.OFF;
+  private State currentState = State.OFF;
   private boolean stateChanged = false;
   private double bannerSensorBeganTimestamp = Double.POSITIVE_INFINITY;
   private double stateEnteredTimestamp = 0;
   private double holdingOutput = Constants.kIntakeWeakHoldingOutput;
   private boolean isConstantSuck = false;
 
-  public IntakeState getState() {
+  public State getState() {
     return currentState;
   }
 
-  private synchronized void setState(IntakeState newState) {
+  private synchronized void setState(State newState) {
     if(newState != currentState)
       stateChanged = true;
     currentState = newState;
@@ -130,7 +130,7 @@ public class BallIntake extends Subsystem {
     public void onStart(double timestamp) {
       hasBall = false;
       needsToNotifyDrivers = false;
-      setState(IntakeState.OFF);
+      setState(State.OFF);
       stop();
     }
 
@@ -186,29 +186,29 @@ public class BallIntake extends Subsystem {
 
     @Override
     public void onStop(double timestamp) {
-      setState(IntakeState.OFF);
+      setState(State.OFF);
       stop();
     }
 
   };
 
   public void eject(double output) {
-    setState(IntakeState.EJECTING);
+    setState(State.EJECTING);
     setIntakeSpeed(output);
     hasBall = false;
   }
 
-  private void conformToState(IntakeState desiredState) {
+  private void conformToState(State desiredState) {
     setState(desiredState);
     setIntakeSpeed(desiredState.intakeOutput);
   }
 
-  private void conformToState(IntakeState desiredState, double outputOverride) {
+  private void conformToState(State desiredState, double outputOverride) {
     setState(desiredState);
     setIntakeSpeed(outputOverride);
   }
 
-  public Request stateRequest(IntakeState desiredState) {
+  public Request stateRequest(State desiredState) {
     return new Request() {
 
       @Override
@@ -225,7 +225,7 @@ public class BallIntake extends Subsystem {
     
       @Override
       public void act() {
-        conformToState(IntakeState.INTAKING);
+        conformToState(State.INTAKING);
       }
 
       @Override
@@ -241,7 +241,7 @@ public class BallIntake extends Subsystem {
     
       @Override
       public void act() {
-        conformToState(IntakeState.EJECTING, output);
+        conformToState(State.EJECTING, output);
       }
     };
   }
@@ -269,7 +269,7 @@ public class BallIntake extends Subsystem {
 
   @Override
   public synchronized void stop() {
-    conformToState(IntakeState.OFF);
+    conformToState(State.OFF);
   }
 
   @Override

@@ -58,7 +58,7 @@ public class Robot extends TimedRobot {
 	private DiskIntake diskIntake;
 	private Probe probe;
 	private Jacks jacks;
-	private Superstructure superstructure;
+	private Superstructure s;
 	private SubsystemManager subsystems;
 	
 	private InputRamp elevatorInput = new InputRamp(0.0, 0.05, 0.05);
@@ -89,6 +89,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void robotInit() {
+		s = Superstructure.getInstance();
 		swerve = Swerve.getInstance();
 		elevator = Elevator.getInstance();
 		wrist = Wrist.getInstance();
@@ -145,18 +146,18 @@ public class Robot extends TimedRobot {
 		swerve.requireModuleConfiguration();
 		swerve.set10VoltRotationMode(true);
 
-		superstructure.elevator.setCurrentLimit(15);
-		superstructure.elevator.configForAutoSpeed();
+		elevator.setCurrentLimit(15);
+		elevator.configForAutoSpeed();
 		
-		superstructure.enableCompressor(false);
+		s.enableCompressor(false);
 	}
 
 	public void teleopConfig(){
-		superstructure.enableCompressor(true);
+		s.enableCompressor(true);
 		swerve.setNominalDriveOutput(0.0);
 		swerve.set10VoltRotationMode(false);
-		superstructure.elevator.setCurrentLimit(15);
-		superstructure.elevator.configForTeleopSpeed();
+		elevator.setCurrentLimit(15);
+		elevator.configForTeleopSpeed();
 	}
 	
 	@Override
@@ -197,7 +198,7 @@ public class Robot extends TimedRobot {
 			teleopConfig();
 			SmartDashboard.putBoolean("Auto", false);
 
-			superstructure.request(wrist.angleRequest(95.0));
+			s.request(wrist.angleRequest(95.0));
 		}catch(Throwable t){
 			CrashTracker.logThrowableCrash(t);
 			throw t;
@@ -341,15 +342,15 @@ public class Robot extends TimedRobot {
 			swerve.setVisionTrajectory();
 		}
 
-		superstructure.sendManualInput(-coDriver.getY(Hand.kRight), elevatorInput.update(-coDriver.getY(Hand.kLeft), timestamp));
+		s.sendManualInput(-coDriver.getY(Hand.kRight), elevatorInput.update(-coDriver.getY(Hand.kLeft), timestamp));
 		
 		if(coDriver.startButton.longPressed()){
 			elevator.setManualSpeed(0.75);//0.25
-			superstructure.elevator.enableLimits(false);
+			elevator.enableLimits(false);
 			coDriver.rumble(1.0, 1.0);
-		}else if(!superstructure.elevator.limitsEnabled() && coDriver.startButton.longReleased()){
-			superstructure.elevator.zeroSensors();
-			superstructure.elevator.enableLimits(true);
+		}else if(!s.elevator.limitsEnabled() && coDriver.startButton.longReleased()){
+			elevator.zeroSensors();
+			elevator.enableLimits(true);
 			elevator.setManualSpeed(Constants.kElevatorTeleopManualSpeed);
 			elevator.lockHeight();
 		}

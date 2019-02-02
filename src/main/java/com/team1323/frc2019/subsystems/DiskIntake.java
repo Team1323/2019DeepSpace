@@ -80,22 +80,22 @@ public class DiskIntake extends Subsystem {
     diskMotor.configOpenloopRamp(secondsToMax, 0);
   }
 
-  public enum DiskIntakeState {
+  public enum State {
     OFF(0, false), INTAKING(Constants.kDiskIntakingOutput, false), EJECTING(Constants.kDiskIntakeStrongEjectOutput, true), 
     HANDOFF(Constants.kDiskIntakeWeakEjectOutput, true), HOLDING(Constants.kDiskStrongHoldingOutput, true);
 
     public double diskIntakeOutput = 0;
     public boolean lifted = false;
 
-    private DiskIntakeState(double output, boolean lift) {
+    private State(double output, boolean lift) {
       diskIntakeOutput = output;
       lifted = lift;
     }
 
   }
 
-  private DiskIntakeState currentState = DiskIntakeState.OFF;
-  public DiskIntakeState getState() {
+  private State currentState = State.OFF;
+  public State getState() {
     return currentState;
   }
 
@@ -106,7 +106,7 @@ public class DiskIntake extends Subsystem {
   private double holdingOutput = Constants.kDiskIntakeWeakEjectOutput;
   private boolean needsToNotifyDrivers = false;
 
-  private synchronized void setState(DiskIntakeState newState) {
+  private synchronized void setState(State newState) {
     if (newState != currentState) {
       stateChanged = true;
     }
@@ -145,7 +145,7 @@ public class DiskIntake extends Subsystem {
     public void onStart(double timestamp) {
       hasDisk = false;
       needsToNotifyDrivers = false;
-      setState(DiskIntakeState.OFF);
+      setState(State.OFF);
       stop();
     }
 
@@ -217,32 +217,32 @@ public class DiskIntake extends Subsystem {
 
     @Override
     public void onStop(double timestamp) {
-      setState(DiskIntakeState.OFF);
+      setState(State.OFF);
       stop();
     }
 
   };
 
   public void eject(double output) {
-    setState(DiskIntakeState.EJECTING);
+    setState(State.EJECTING);
     setRollers(output);
     fireLift(false);
     hasDisk = false;
   }
 
-  private void conformToState(DiskIntakeState desiredState) {
+  private void conformToState(State desiredState) {
     setState(desiredState);
     setRollers(desiredState.diskIntakeOutput);
     fireLift(desiredState.lifted);
   }
 
-  private void conformToState(DiskIntakeState desiredState, double outputOverride) {
+  private void conformToState(State desiredState, double outputOverride) {
     setState(desiredState);
     setRollers(outputOverride);
     fireLift(desiredState.lifted);
   }
 
-  public Request stateRequest(DiskIntakeState desiredState) {
+  public Request stateRequest(State desiredState) {
     return new Request(){
     
       @Override
@@ -257,7 +257,7 @@ public class DiskIntake extends Subsystem {
     
       @Override
       public void act() {
-        conformToState(DiskIntakeState.INTAKING);
+        conformToState(State.INTAKING);
       }
 
       @Override
@@ -273,7 +273,7 @@ public class DiskIntake extends Subsystem {
     
       @Override
       public void act() {
-        conformToState(DiskIntakeState.EJECTING, output);
+        conformToState(State.EJECTING, output);
       }
     };
   }
@@ -290,7 +290,7 @@ public class DiskIntake extends Subsystem {
 
   @Override
   public synchronized void stop() {
-    conformToState(DiskIntakeState.OFF);
+    conformToState(State.OFF);
   }
 
   @Override

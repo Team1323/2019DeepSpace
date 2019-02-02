@@ -252,4 +252,24 @@ public class Superstructure extends Subsystem {
 	public void outputTelemetry() {
 	}
 
+	/////States/////
+
+	public RequestList ballIntakingState(){
+		return new RequestList(Arrays.asList(
+			elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
+			wrist.angleRequest(Constants.kWristIntakingAngle),
+			ballCarriage.stateRequest(BallCarriage.State.OFF), 
+			ballIntake.stateRequest(BallIntake.State.INTAKING),
+			diskIntake.stateRequest(DiskIntake.State.OFF)), true);
+	}
+
+	public RequestList diskIntakingState(){
+		return new RequestList(Arrays.asList(
+			elevator.heightRequest(Constants.kElevatorDiskIntakeHeight),
+			probe.stateRequest(Probe.State.STOWED),
+			diskIntake.stateRequest(DiskIntake.State.INTAKING),
+			ballIntake.stateRequest(BallIntake.State.OFF),
+			ballCarriage.stateRequest(BallCarriage.State.OFF)), true);
+	}
+
 }

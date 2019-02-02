@@ -119,9 +119,11 @@ public class Constants {
 	public static final int kElevatorEncoderStartingPosition = 0;
 	public static final double kElevatorTicksPerInch = 11983.0 / 2.5989583; //determined empirically
 	public static final double kElevatorHeightTolerance = 1.0; //inches
+	public static final double kElevatorDiskIntakeHeight = 0.0;
 	public static final double kElevatorLowHatchHeight = 0.0;
 	public static final double kElevatorMidHatchHeight = 0.0;
 	public static final double kElevatorHighHatchHeight = 0.0;
+	public static final double kElevatorBallIntakeHeight = 0.0;
 	public static final double kElevatorLowBallHeight = 0.0;
 	public static final double kElevatorMidBallHeight = 0.0;
 	public static final double kElevatorHighBallHeight = 0.0;
@@ -172,6 +174,10 @@ public class Constants {
 	public static final double kIntakeStrongHoldingOutput = 4.0/12.0;
 	public static final double kIntakingResuckingOutput = 6.0/12.0;
 	public static final double kIntakeRampRate = 0.25;
+
+	//Ball Carriage Constants
+	public static final double kBallCarriageEjectOutput = -0.5;
+	public static final double kBallCarriageHoldOutput = 0.0;
 
 	//Disk Intake Constants
 	public static final double kDiskIntakingOutput = 1.0;
