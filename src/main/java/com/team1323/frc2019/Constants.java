@@ -117,7 +117,7 @@ public class Constants {
 	public static final double kElevatorMaxSpeedLowGear = 169.67 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
 	public static final int kElevatorEncoderStartingPosition = 0;
-	public static final double kElevatorTicksPerInch = 11983.0 / 2.5989583; //determined empirically
+	public static final double kElevatorTicksPerInch = 11983.0 / 2.5989583; //determined empirically TODO measure
 	public static final double kElevatorHeightTolerance = 1.0; //inches
 	public static final double kElevatorDiskIntakeHeight = 0.0;
 	public static final double kElevatorLowHatchHeight = 0.0;
@@ -177,7 +177,7 @@ public class Constants {
 
 	//Ball Carriage Constants
 	public static final double kBallCarriageEjectOutput = -0.5;
-	public static final double kBallCarriageHoldOutput = 0.0;
+	public static final double kBallCarriageReceiveOutput = 0.0;
 
 	//Disk Intake Constants
 	public static final double kDiskIntakingOutput = 1.0;
@@ -190,5 +190,6 @@ public class Constants {
 	//Jack Constants
 	public static final double kJackMaxSpeed = 100.0;
 	public static final double kJackTicksPerInch = 0.0; //TODO measure
+	public static final double kJackHeightTolerance = 1.0; //inches
 
 }

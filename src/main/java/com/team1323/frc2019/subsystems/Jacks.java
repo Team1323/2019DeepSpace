@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.team1323.frc2019.Constants;
 import com.team1323.frc2019.Ports;
+import com.team1323.frc2019.subsystems.requests.Request;
 import com.team254.drivers.LazyTalonSRX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,6 +30,8 @@ public class Jacks extends Subsystem {
     }
 
     PeriodicIO periodicIO = new PeriodicIO();
+
+    double targetHeight = 0.0;
 
     public Jacks(){
         motor = new LazyTalonSRX(Ports.JACKS);
@@ -49,18 +52,55 @@ public class Jacks extends Subsystem {
         setOpenLoop(0.0);
     }
 
+    public enum ControlState{
+        OPEN_LOOP, POSITION
+    }
+    ControlState state = ControlState.OPEN_LOOP;
+    public ControlState getState(){ return state; }
+
+    public boolean isOpenLoop(){
+        return state == ControlState.OPEN_LOOP;
+    }
+
     public synchronized void setOpenLoop(double percentOutput){
+        state = ControlState.OPEN_LOOP;
         periodicIO.controlMode = ControlMode.PercentOutput;
         periodicIO.setpoint = percentOutput;
     }
 
     public synchronized void setHeight(double height){
+        state = ControlState.POSITION;
         periodicIO.controlMode = ControlMode.MotionMagic;
         periodicIO.setpoint = inchesToEncUnits(height);
+        targetHeight = height;
+    }
+
+    public synchronized void lockHeight(){
+        setHeight(getHeight());
+    }
+
+    public Request heightRequest(double height){
+        return new Request(){
+        
+            @Override
+            public void act() {
+                setHeight(height);    
+            }
+
+            @Override
+            public boolean isFinished(){
+                return hasReachedTargetHeight() || isOpenLoop();
+            }
+
+        };
     }
 
     public double getHeight(){
         return encUnitsToInches(periodicIO.position);
+    }
+
+    public boolean hasReachedTargetHeight(){
+        return Math.abs(targetHeight - getHeight()) <= Constants.kJackHeightTolerance;
     }
 
     private double encUnitsToInches(double encUnits){

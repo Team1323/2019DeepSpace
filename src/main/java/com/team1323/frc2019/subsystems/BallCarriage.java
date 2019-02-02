@@ -8,6 +8,7 @@
 package com.team1323.frc2019.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1323.frc2019.Constants;
 import com.team1323.frc2019.Ports;
 import com.team1323.frc2019.subsystems.requests.Request;
@@ -32,12 +33,13 @@ public class BallCarriage extends Subsystem{
         motor = new LazyTalonSRX(Ports.BALL_CARRIAGE);
         motor.configVoltageCompSaturation(12.0);
         motor.enableVoltageCompensation(true);
+        motor.setNeutralMode(NeutralMode.Brake);
         setOpenLoop(0.0);
     }
 
     public enum State{
         EJECTING(Constants.kBallCarriageEjectOutput), 
-        HOLDING(Constants.kBallCarriageHoldOutput), 
+        RECEIVING(Constants.kBallCarriageReceiveOutput), 
         OFF(0.0);
 
         double output = 0.0;
