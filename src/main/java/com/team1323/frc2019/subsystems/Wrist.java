@@ -231,7 +231,7 @@ public class Wrist extends Subsystem{
 		};
 	}
 
-	public Prerequisite angleReq(double angle, boolean above){
+	public Prerequisite angleRequisite(double angle, boolean above){
 		return new Prerequisite(){
 		
 			@Override

@@ -246,7 +246,7 @@ public class BallIntake extends Subsystem {
     };
   }
 
-  public Prerequisite ballReq() {
+  public Prerequisite ballRequisite() {
     return new Prerequisite(){
     
       @Override

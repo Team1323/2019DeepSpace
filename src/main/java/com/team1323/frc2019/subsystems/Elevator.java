@@ -90,7 +90,7 @@ public class Elevator extends Subsystem {
 		master.setSensorPhase(!Constants.kIsUsingCompBot);
 		zeroSensors();
 		master.configReverseSoftLimitThreshold(Constants.kElevatorEncoderStartingPosition, 10);
-		master.configForwardSoftLimitThreshold(Constants.kElevatorEncoderStartingPosition + feetToEncUnits(Constants.kElevatorMaxHeight), 10);
+		master.configForwardSoftLimitThreshold(Constants.kElevatorEncoderStartingPosition + inchesToEncUnits(Constants.kElevatorMaxHeight), 10);
 		master.configForwardSoftLimitEnable(true, 10);
 		master.configReverseSoftLimitEnable(true, 10);
 		enableLimits(true);
@@ -164,7 +164,7 @@ public class Elevator extends Subsystem {
 			else
 				master.selectProfileSlot(1, 0);
 			targetHeight = heightFeet;
-			periodicIO.demand = Constants.kElevatorEncoderStartingPosition + feetToEncUnits(heightFeet);
+			periodicIO.demand = Constants.kElevatorEncoderStartingPosition + inchesToEncUnits(heightFeet);
 			onTarget = false;
 			startTime = Timer.getFPGATimestamp();
 		}else{
@@ -180,7 +180,7 @@ public class Elevator extends Subsystem {
 				master.selectProfileSlot(0, 0);
 			else
 				master.selectProfileSlot(1, 0);
-			periodicIO.demand = master.getSelectedSensorPosition(0) + feetToEncUnits(deltaHeightFeet);
+			periodicIO.demand = master.getSelectedSensorPosition(0) + inchesToEncUnits(deltaHeightFeet);
 		}else{
 			DriverStation.reportError("Elevator encoder not detected!", false);
 			stop();
@@ -236,7 +236,7 @@ public class Elevator extends Subsystem {
 		};
 	}
 	
-	public Prerequisite heightReq(double height, boolean above){
+	public Prerequisite heightRequisite(double height, boolean above){
 		return new Prerequisite(){
 		
 			@Override
@@ -248,11 +248,11 @@ public class Elevator extends Subsystem {
 	}
 
 	public double getHeight(){
-		return encUnitsToFeet(periodicIO.position - Constants.kElevatorEncoderStartingPosition);
+		return encUnitsToInches(periodicIO.position - Constants.kElevatorEncoderStartingPosition);
 	}
 	
 	public double getVelocityFeetPerSecond(){
-		return encUnitsToFeet(periodicIO.velocity) * 10.0;
+		return encUnitsToInches(periodicIO.velocity) * 10.0;
 	}
 	
 	boolean onTarget = false;
@@ -270,11 +270,11 @@ public class Elevator extends Subsystem {
 		return false;
 	}
 	
-	public int feetToEncUnits(double feet){
-		return (int) (feet * Constants.kElevatorTicksPerInch);
+	public int inchesToEncUnits(double inches){
+		return (int) (inches * Constants.kElevatorTicksPerInch);
 	}
 	
-	public double encUnitsToFeet(double encUnits){
+	public double encUnitsToInches(double encUnits){
 		return encUnits / Constants.kElevatorTicksPerInch;
 	}
 	

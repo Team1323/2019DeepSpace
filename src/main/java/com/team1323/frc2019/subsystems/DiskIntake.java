@@ -274,7 +274,7 @@ public class DiskIntake extends Subsystem {
     };
   }
 
-  public Prerequisite diskReq() {
+  public Prerequisite diskRequisite() {
     return new Prerequisite(){
     
       @Override
