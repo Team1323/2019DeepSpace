@@ -178,25 +178,6 @@ public class Wrist extends Subsystem{
 			
 		};
 	}
-
-	public Request angleRequest(double angle, double terminationPoint){
-		return new Request(){
-
-			double startingSide;
-
-			@Override
-			public void act() {
-				setAngle(angle);
-				startingSide = Math.signum(terminationPoint - getAngle());
-			}
-
-			@Override
-			public boolean isFinished() {
-				return !Util.epsilonEquals(Math.signum(terminationPoint - getAngle()), startingSide);
-			}
-			
-		};
-	}
 	
 	public Request lockAngleRequest(){
 		return new Request(){
