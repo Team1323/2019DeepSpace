@@ -37,7 +37,7 @@ public class BallIntake extends Subsystem {
 		return hasBall;
   }
   
-  private LazyTalonSRX intakeMotor;
+  private LazyTalonSRX grabber, feeder;
   private DigitalInput banner;
   
   public boolean getBanner() {
@@ -45,42 +45,63 @@ public class BallIntake extends Subsystem {
   }
 
   private BallIntake() {
-    intakeMotor = new LazyTalonSRX(Ports.BALL_INTAKE);
+    grabber = new LazyTalonSRX(Ports.BALL_INTAKE);
+    feeder = new LazyTalonSRX(Ports.BALL_FEEDER);
     banner = new DigitalInput(Ports.BALL_INTAKE_BANNER);
 
-    intakeMotor.setInverted(false);
+    grabber.setInverted(false);
 
-    intakeMotor.setNeutralMode(NeutralMode.Brake);
+    grabber.setNeutralMode(NeutralMode.Brake);
 
-    intakeMotor.configVoltageCompSaturation(12.0, 10);
-    intakeMotor.enableVoltageCompensation(true);
+    grabber.configVoltageCompSaturation(12.0, 10);
+    grabber.enableVoltageCompensation(true);
     
-    intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20, 10);
-    intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20, 10);
+    grabber.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20, 10);
+    grabber.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20, 10);
 
+    feeder.setInverted(false);
+
+    feeder.setNeutralMode(NeutralMode.Brake);
+
+    feeder.configVoltageCompSaturation(12.0, 10);
+    feeder.enableVoltageCompensation(true);
+
+    feeder.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20, 10);
+    feeder.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20, 10);
   }
 
   public void setCurrentLimit(int amps) {
-    intakeMotor.configContinuousCurrentLimit(amps, 10);
-    intakeMotor.configPeakCurrentDuration(10, 10);
-    intakeMotor.enableCurrentLimit(true);
+    grabber.configContinuousCurrentLimit(amps, 10);
+    grabber.configPeakCurrentDuration(10, 10);
+    grabber.enableCurrentLimit(true);
+
+    feeder.configContinuousCurrentLimit(amps, 10);
+    feeder.configPeakCurrentDuration(10, 10);
+    feeder.enableCurrentLimit(true);
   }
 
   public void enableCurrrentLimit(boolean enable) {
-    intakeMotor.enableCurrentLimit(enable);
+    grabber.enableCurrentLimit(enable);
+    feeder.enableCurrentLimit(enable);
   }
 
   private void setRampRate(double secondsToMax) {
-    intakeMotor.configOpenloopRamp(secondsToMax, 0);
+    grabber.configOpenloopRamp(secondsToMax, 0);
+    feeder.configOpenloopRamp(secondsToMax, 0);
   }
 
   public enum State {
-    OFF(0), INTAKING(Constants.kIntakingOutput), EJECTING(Constants.kIntakingOutput), HOLDING(Constants.kIntakeWeakHoldingOutput);
+    OFF(0, 0), 
+    INTAKING(Constants.kIntakingOutput, Constants.kIntakingOutput), 
+    EJECTING(Constants.kIntakeEjectOutput, Constants.kIntakeEjectOutput), 
+    HOLDING(Constants.kIntakeWeakHoldingOutput, Constants.kIntakeWeakHoldingOutput);
 
-    public double intakeOutput = 0;
+    public double grabberOutput = 0;
+    public double feederOutput = 0;
 
-    private State(double intakeSpeed) {
-      intakeOutput = intakeSpeed;
+    private State(double grabberSpeed, double feederSpeed) {
+      grabberOutput = grabberSpeed;
+      feederOutput = feederSpeed;
     }
   }
   private State currentState = State.OFF;
@@ -115,13 +136,17 @@ public class BallIntake extends Subsystem {
     return false;
   }
 
-  private void setIntakeSpeed(double output) {
+  private void setGrabberSpeed(double output) {
     setRampRate(0.0);
-    intakeMotor.set(ControlMode.PercentOutput, output);
+    grabber.set(ControlMode.PercentOutput, output);
+  }
+
+  private void setFeederSpeed(double output){
+    feeder.set(ControlMode.PercentOutput, output);
   }
 
   private void holdRollers() {
-    setIntakeSpeed(holdingOutput);
+    setGrabberSpeed(holdingOutput);
   }
 
   private final Loop loop = new Loop() {
@@ -173,7 +198,7 @@ public class BallIntake extends Subsystem {
             }
           } else {
             if(!isConstantSuck) {
-              setIntakeSpeed(Constants.kIntakingResuckingOutput);
+              setGrabberSpeed(Constants.kIntakingResuckingOutput);
               isConstantSuck = true;
             }
           }
@@ -194,18 +219,20 @@ public class BallIntake extends Subsystem {
 
   public void eject(double output) {
     setState(State.EJECTING);
-    setIntakeSpeed(output);
+    setGrabberSpeed(output);
     hasBall = false;
   }
 
   private void conformToState(State desiredState) {
     setState(desiredState);
-    setIntakeSpeed(desiredState.intakeOutput);
+    setGrabberSpeed(desiredState.grabberOutput);
+    setFeederSpeed(desiredState.feederOutput);
   }
 
   private void conformToState(State desiredState, double outputOverride) {
     setState(desiredState);
-    setIntakeSpeed(outputOverride);
+    setGrabberSpeed(outputOverride);
+    setFeederSpeed(outputOverride);
   }
 
   public Request stateRequest(State desiredState) {
@@ -259,8 +286,10 @@ public class BallIntake extends Subsystem {
   @Override
   public void outputTelemetry() {
     if(Constants.kDebuggingOutput) {
-      SmartDashboard.putNumber("Intake Current", intakeMotor.getOutputCurrent());
-      SmartDashboard.putNumber("Intake Voltage", intakeMotor.getMotorOutputVoltage());
+      SmartDashboard.putNumber("Intake Grabber Current", grabber.getOutputCurrent());
+      SmartDashboard.putNumber("Intake Grabber Voltage", grabber.getMotorOutputVoltage());
+      SmartDashboard.putNumber("Intake Feeder Current", feeder.getOutputCurrent());
+      SmartDashboard.putNumber("Intake Feeder Voltage", feeder.getMotorOutputVoltage());
       SmartDashboard.putBoolean("Intake Has Ball", hasBall);
       SmartDashboard.putBoolean("Intake Banner", banner.get());
     }

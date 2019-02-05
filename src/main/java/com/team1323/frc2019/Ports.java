@@ -15,13 +15,13 @@ public class Ports {
     public static final int ELEVATOR_2 = 2;
 
     public static final int BALL_INTAKE = 14;
+    public static final int BALL_FEEDER = 6;
 
     public static final int BALL_CARRIAGE = 9;
     
     public static final int DISK_INTAKE = 10;
     
     public static final int WRIST = 5;
-    public static final int WRIST_2 = 6;
 
     public static final int JACKS = 13;
     
