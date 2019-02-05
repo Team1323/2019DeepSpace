@@ -72,10 +72,12 @@ public class BallIntake extends Subsystem {
 
   public void setCurrentLimit(int amps) {
     grabber.configContinuousCurrentLimit(amps, 10);
+    grabber.configPeakCurrentLimit(amps);
     grabber.configPeakCurrentDuration(10, 10);
     grabber.enableCurrentLimit(true);
 
     feeder.configContinuousCurrentLimit(amps, 10);
+    feeder.configPeakCurrentLimit(amps);
     feeder.configPeakCurrentDuration(10, 10);
     feeder.enableCurrentLimit(true);
   }

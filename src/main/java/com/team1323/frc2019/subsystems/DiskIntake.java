@@ -81,8 +81,11 @@ public class DiskIntake extends Subsystem {
   }
 
   public enum State {
-    OFF(0, false), INTAKING(Constants.kDiskIntakingOutput, false), EJECTING(Constants.kDiskIntakeStrongEjectOutput, true), 
-    HANDOFF(Constants.kDiskIntakeWeakEjectOutput, true), HOLDING(Constants.kDiskStrongHoldingOutput, true);
+    OFF(0, false), 
+    INTAKING(Constants.kDiskIntakingOutput, false), 
+    EJECTING(Constants.kDiskIntakeStrongEjectOutput, true), 
+    HANDOFF(Constants.kDiskIntakeWeakEjectOutput, true), 
+    HOLDING(Constants.kDiskStrongHoldingOutput, true);
 
     public double diskIntakeOutput = 0;
     public boolean lifted = false;
