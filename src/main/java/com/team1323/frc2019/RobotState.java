@@ -58,7 +58,7 @@ public class RobotState {
 	}
 	
 	private static final Pose2d kVehicleToCamera = new Pose2d(
-            new Translation2d(Constants.kCameraXOffset, Constants.kCameraYOffset), new Rotation2d());
+            new Translation2d(Constants.kCameraXOffset, Constants.kCameraYOffset), Rotation2d.fromDegrees(0.0));
 	
 	private RobotState() {
         reset(0, new Pose2d());

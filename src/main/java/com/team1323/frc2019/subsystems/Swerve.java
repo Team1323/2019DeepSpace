@@ -863,6 +863,7 @@ public class Swerve extends Subsystem{
 			SmartDashboard.putNumber("Robot Velocity", currentVelocity);
 			SmartDashboard.putString("Swerve State", currentState.toString());
 			SmartDashboard.putBoolean("Vision Updates Allowed", visionUpdatesAllowed);
+			SmartDashboard.putNumberArray("Pigeon YPR", pigeon.getYPR());
 		}
 	}
 }

@@ -47,6 +47,12 @@ public class Pigeon {
 		pigeon.getYawPitchRoll(ypr);
 		return ypr[2];
 	}
+
+	public double[] getYPR(){
+		double[] ypr = new double[3];
+		pigeon.getYawPitchRoll(ypr);
+		return ypr;
+	}
 	
 	public void setAngle(double angle){
 		pigeon.setFusedHeading(-angle, 10);

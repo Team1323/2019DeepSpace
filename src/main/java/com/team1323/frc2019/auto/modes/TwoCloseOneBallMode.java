@@ -3,13 +3,16 @@ package com.team1323.frc2019.auto.modes;
 import java.util.Arrays;
 import java.util.List;
 
+import com.team1323.frc2019.Constants;
 import com.team1323.frc2019.auto.AutoModeBase;
 import com.team1323.frc2019.auto.AutoModeEndedException;
 import com.team1323.frc2019.auto.actions.ResetPoseAction;
 import com.team1323.frc2019.auto.actions.SetTrajectoryAction;
 import com.team1323.frc2019.auto.actions.WaitAction;
 import com.team1323.frc2019.auto.actions.WaitToFinishPathAction;
+import com.team1323.frc2019.auto.actions.WaitToLeaveRampAction;
 import com.team1323.frc2019.subsystems.Superstructure;
+import com.team1323.frc2019.subsystems.Swerve;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
@@ -41,6 +44,10 @@ public class TwoCloseOneBallMode extends AutoModeBase {
 
         runAction(new ResetPoseAction(left));
         runAction(new SetTrajectoryAction(trajectories.startToCloseHatch.get(left), 30.0 * directionFactor, 1.0));
+        WaitToLeaveRampAction rampAction = new WaitToLeaveRampAction(2.0);
+        runAction(rampAction);
+        if(!rampAction.timedOut())
+            Swerve.getInstance().resetPosition(left ? Constants.kRobotLeftRampExitPose : Constants.kRobotRightRampExitPose);
         runAction(new WaitToFinishPathAction());
         runAction(new WaitAction(0.5));
         runAction(new SetTrajectoryAction(trajectories.closeHatchToHumanLoader.get(left), 180.0 * directionFactor, 1.0));
