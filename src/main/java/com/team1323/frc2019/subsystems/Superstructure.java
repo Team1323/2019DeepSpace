@@ -201,7 +201,7 @@ public class Superstructure extends Subsystem {
 		
 	};
 	
-	public void sendManualInput(double wristOutput, double elevatorOutput){
+	public void sendManualInput(double wristOutput, double elevatorOutput, double jackOutput){
 		RequestList list = RequestList.emptyList();
 		if(wristOutput != 0){
 			list.add(wrist.openLoopRequest(wristOutput));
@@ -213,7 +213,26 @@ public class Superstructure extends Subsystem {
 		}else if(elevator.isOpenLoop()){
 			list.add(elevator.lockHeightRequest());
 		}
+		if(jackOutput != 0){
+			list.add(jacks.openLoopRequest(jackOutput));
+		}else if(jacks.isOpenLoop()){
+			list.add(jacks.lockHeightRequest());
+		}
 		
+		if(!list.isEmpty()){
+			request(list);
+		}
+	}
+
+	public void sendJackInput(double input){
+		RequestList list = RequestList.emptyList();
+		/*if(input != 0){
+			list.add(jacks.openLoopRequest(input));
+		}else if(jacks.isOpenLoop()){
+			list.add(jacks.lockHeightRequest());
+		}*/
+		list.add(jacks.openLoopRequest(input));
+
 		if(!list.isEmpty()){
 			request(list);
 		}

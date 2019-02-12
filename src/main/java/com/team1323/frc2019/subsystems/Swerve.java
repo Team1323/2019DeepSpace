@@ -138,8 +138,8 @@ public class Swerve extends Subsystem{
 		
 		//rearLeft.disableDriveEncoder();
 		
-		rearLeft.invertDriveMotor(true);
-		frontLeft.invertDriveMotor(true);
+		rearLeft.invertDriveMotor(false);
+		frontLeft.invertDriveMotor(false);
 		
 		modules.forEach((m) -> m.reverseRotationSensor(true));
 				

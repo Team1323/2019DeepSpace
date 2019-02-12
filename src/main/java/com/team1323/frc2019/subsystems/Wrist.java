@@ -66,6 +66,7 @@ public class Wrist extends Subsystem{
 		}
 		
 		wrist.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+		wrist.setInverted(false);
 		wrist.setSensorPhase(false);
 		wrist.getSensorCollection().setPulseWidthPosition(0, 100);
 		resetToAbsolutePosition();
@@ -82,13 +83,13 @@ public class Wrist extends Subsystem{
 
 	private void configForHighGear(){
 		wrist.selectProfileSlot(0, 0);
-		wrist.config_kP(0, 3.0, 10);
+		wrist.config_kP(0, /*3.0*/0.0, 10);
 		wrist.config_kI(0, 0.0, 10);
-		wrist.config_kD(0, 120.0, 10);
+		wrist.config_kD(0, /*120.0*/0.0, 10);
 		wrist.config_kF(0, 1023.0/Constants.kWristMaxSpeedHighGear, 10);
-		wrist.config_kP(1, 3.0, 10);
+		wrist.config_kP(1, /*3.0*/0.0, 10);
 		wrist.config_kI(1, 0.0, 10);
-		wrist.config_kD(1, 240.0, 10);
+		wrist.config_kD(1, /*240.0*/0.0, 10);
 		wrist.config_kF(1, 1023.0/Constants.kWristMaxSpeedHighGear, 10);
 		wrist.configMotionCruiseVelocity((int)(Constants.kWristMaxSpeedHighGear*1.0), 10);
 		wrist.configMotionAcceleration((int)(Constants.kWristMaxSpeedHighGear*3.0), 10);
@@ -97,31 +98,33 @@ public class Wrist extends Subsystem{
 	}
 
 	public void configForLowGear(){
-		wrist.selectProfileSlot(0, 0);
-		wrist.config_kP(0, 3.0, 10);
-		wrist.config_kI(0, 0.0, 10);
-		wrist.config_kD(0, 120.0, 10);
-		wrist.config_kF(0, 1023.0/Constants.kWristMaxSpeedLowGear, 10);
-		wrist.config_kP(1, 3.0, 10);
-		wrist.config_kI(1, 0.0, 10);
-		wrist.config_kD(1, 240.0, 10);
-		wrist.config_kF(1, 1023.0/Constants.kWristMaxSpeedLowGear, 10);
+		wrist.selectProfileSlot(2, 0);
+		wrist.config_kP(2, 3.0, 10);
+		wrist.config_kI(2, 0.0, 10);
+		wrist.config_kD(2, 30.0, 10);
+		wrist.config_kF(2, 1023.0/Constants.kWristMaxSpeedLowGear, 10);
+		wrist.config_kP(3, 3.0, 10);
+		wrist.config_kI(3, 0.0, 10);
+		wrist.config_kD(3, 60.0, 10);
+		wrist.config_kF(3, 1023.0/Constants.kWristMaxSpeedLowGear, 10);
 		wrist.configMotionCruiseVelocity((int)(Constants.kWristMaxSpeedLowGear*1.0), 10);
 		wrist.configMotionAcceleration((int)(Constants.kWristMaxSpeedLowGear*3.0), 10);
 
 		highGearConfig = false;
+		System.out.println("Low gear set");
 	}
 
 	public void setHighGear(boolean high){
 		if(high && !isHighGear){
 			shifter.set(false);
 			configForHighGear();
-			isHighGear = false;
+			isHighGear = true;
 		}else if(!high && isHighGear){
 			shifter.set(true);
 			configForLowGear();
-			isHighGear = true;
+			isHighGear = false;
 		}
+		DriverStation.reportError("Wrist shifted to: " + (high ? "high" : "low"), true);
 	}
 	
 	public void setOpenLoop(double output){
@@ -146,9 +149,9 @@ public class Wrist extends Subsystem{
 				targetAngle = maxAllowableAngle;
 			}
 			if(angle > getAngle())
-				wrist.selectProfileSlot(1, 0);
+				wrist.selectProfileSlot(isHighGear ? 1 : 3, 0);
 			else
-				wrist.selectProfileSlot(0, 0);
+				wrist.selectProfileSlot(isHighGear ? 0 : 2, 0);
 			periodicIO.demand = wristAngleToEncUnits(targetAngle);
 			currentState = WristControlState.POSITION;
 		}else{
@@ -326,9 +329,10 @@ public class Wrist extends Subsystem{
 			SmartDashboard.putNumber("Wrist Encoder", periodicIO.position);
 			SmartDashboard.putNumber("Wrist Pulse Width Position", wrist.getSensorCollection().getPulseWidthPosition());
 			SmartDashboard.putNumber("Wrist Velocity", periodicIO.velocity);
-			SmartDashboard.putNumber("Wrist Error", wrist.getClosedLoopError(0));
+			SmartDashboard.putNumber("Wrist Error", encUnitsToDegrees(wrist.getClosedLoopError(0)));
 			if(wrist.getControlMode() == ControlMode.MotionMagic)
 				SmartDashboard.putNumber("Wrist Setpoint", wrist.getClosedLoopTarget(0));
+			SmartDashboard.putBoolean("Wrist High Gear", isHighGear);
 		}
 	}
 	

@@ -115,8 +115,8 @@ public class SwerveDriveModule extends Subsystem{
 		driveMotor.configOpenloopRamp(0.25, 10);
 		driveMotor.configClosedloopRamp(0.0);
     	driveMotor.configAllowableClosedloopError(0, 0, 10);
-    	driveMotor.setInverted(false);
-    	driveMotor.setSensorPhase(false);
+    	driveMotor.setInverted(true);
+    	driveMotor.setSensorPhase(true);
     	driveMotor.setNeutralMode(NeutralMode.Brake);
     	// Slot 0 is reserved for MotionMagic
     	driveMotor.selectProfileSlot(0, 0);

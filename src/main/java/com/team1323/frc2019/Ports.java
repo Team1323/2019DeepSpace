@@ -11,19 +11,19 @@ public class Ports {
     public static final int REAR_RIGHT_ROTATION = 4;
     public static final int REAR_RIGHT_DRIVE    = 0;
     
-    public static final int ELEVATOR_1 = 1;
+    public static final int ELEVATOR_1 = 13;
     public static final int ELEVATOR_2 = 2;
 
-    public static final int BALL_INTAKE = 14;
-    public static final int BALL_FEEDER = 6;
+    public static final int BALL_INTAKE = 6;
+    public static final int BALL_FEEDER = 9;
 
-    public static final int BALL_CARRIAGE = 9;
+    public static final int BALL_CARRIAGE = 10;
     
-    public static final int DISK_INTAKE = 10;
+    public static final int DISK_INTAKE = 5;
     
-    public static final int WRIST = 5;
+    public static final int WRIST = 1;
 
-    public static final int JACKS = 13;
+    public static final int JACKS = 14;
     
     public static final int PIGEON_TALON = 6;
     

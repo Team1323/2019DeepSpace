@@ -39,6 +39,10 @@ public class BallIntake extends Subsystem {
   
   private LazyTalonSRX grabber, feeder;
   private DigitalInput banner;
+
+  public LazyTalonSRX getPigeonTalon(){
+    return feeder;
+  }
   
   public boolean getBanner() {
     return banner.get();
@@ -68,6 +72,8 @@ public class BallIntake extends Subsystem {
 
     feeder.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20, 10);
     feeder.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20, 10);
+
+    setCurrentLimit(20);
   }
 
   public void setCurrentLimit(int amps) {
@@ -225,13 +231,13 @@ public class BallIntake extends Subsystem {
     hasBall = false;
   }
 
-  private void conformToState(State desiredState) {
+  public void conformToState(State desiredState) {
     setState(desiredState);
     setGrabberSpeed(desiredState.grabberOutput);
     setFeederSpeed(desiredState.feederOutput);
   }
 
-  private void conformToState(State desiredState, double outputOverride) {
+  public void conformToState(State desiredState, double outputOverride) {
     setState(desiredState);
     setGrabberSpeed(outputOverride);
     setFeederSpeed(outputOverride);

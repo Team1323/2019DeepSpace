@@ -34,12 +34,14 @@ public class BallCarriage extends Subsystem{
         motor.configVoltageCompSaturation(12.0);
         motor.enableVoltageCompensation(true);
         motor.setNeutralMode(NeutralMode.Brake);
+        motor.setInverted(true);
         setOpenLoop(0.0);
     }
 
     public enum State{
         EJECTING(Constants.kBallCarriageEjectOutput), 
         RECEIVING(Constants.kBallCarriageReceiveOutput), 
+        SUCKING(0.5),
         OFF(0.0);
 
         double output = 0.0;
@@ -54,7 +56,7 @@ public class BallCarriage extends Subsystem{
         motor.set(ControlMode.PercentOutput, percentOutput);
     }
 
-    private void conformToState(State newState){
+    public void conformToState(State newState){
         setOpenLoop(newState.output);
         state = newState;
     }

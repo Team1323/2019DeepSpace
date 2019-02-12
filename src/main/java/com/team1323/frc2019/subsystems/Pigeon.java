@@ -19,7 +19,7 @@ public class Pigeon {
     
 	private Pigeon(){
 		try{
-			pigeon = new PigeonIMU(Jacks.getInstance().getPigeonTalon());
+			pigeon = new PigeonIMU(BallIntake.getInstance().getPigeonTalon());
 		}catch(Exception e){
 			System.out.println(e);
 		}

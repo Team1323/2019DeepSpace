@@ -42,7 +42,7 @@ public class Jacks extends Subsystem {
         motor.configVoltageCompSaturation(12.0);
         motor.enableVoltageCompensation(true);
 
-        motor.config_kP(0, 0.0);
+        motor.config_kP(0, 0.1);
         motor.config_kI(0, 0.0);
         motor.config_kD(0, 0.0);
         motor.config_kF(0, 1023.0 / Constants.kJackMaxSpeed);
@@ -71,12 +71,22 @@ public class Jacks extends Subsystem {
     public synchronized void setHeight(double height){
         state = ControlState.POSITION;
         periodicIO.controlMode = ControlMode.MotionMagic;
-        periodicIO.setpoint = inchesToEncUnits(height);
+        periodicIO.setpoint = jackHeightToEncUnits(height);
         targetHeight = height;
     }
 
     public synchronized void lockHeight(){
         setHeight(getHeight());
+    }
+
+    public Request openLoopRequest(double input){
+        return new Request(){
+        
+            @Override
+            public void act() {
+                setOpenLoop(input);
+            }
+        };
     }
 
     public Request heightRequest(double height){
@@ -95,8 +105,18 @@ public class Jacks extends Subsystem {
         };
     }
 
+    public Request lockHeightRequest(){
+        return new Request(){
+        
+            @Override
+            public void act() {
+                lockHeight();
+            }
+        };
+    }
+
     public double getHeight(){
-        return encUnitsToInches(periodicIO.position);
+        return encUnitsToJackHeight(periodicIO.position);
     }
 
     public boolean hasReachedTargetHeight(){
@@ -109,6 +129,14 @@ public class Jacks extends Subsystem {
 
     private double inchesToEncUnits(double inches){
         return inches * Constants.kJackTicksPerInch;
+    }
+
+    private double encUnitsToJackHeight(double encUnits){
+        return encUnitsToInches(encUnits - Constants.kJackStartingEncPosition);
+    }
+
+    private double jackHeightToEncUnits(double jackHeight){
+        return Constants.kJackStartingEncPosition + inchesToEncUnits(jackHeight);
     }
     
     @Override
@@ -128,11 +156,12 @@ public class Jacks extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        SmartDashboard.putNumber("Jack Height", periodicIO.position);
+        SmartDashboard.putNumber("Jack Height", getHeight());
         if(Constants.kDebuggingOutput){
             SmartDashboard.putNumber("Jack Velocity", periodicIO.velocity);
             SmartDashboard.putNumber("Jack Voltage", periodicIO.voltage);
             SmartDashboard.putNumber("Jack Current", periodicIO.current);
+            SmartDashboard.putNumber("Jack Encoder", periodicIO.position);
         }
     }
 

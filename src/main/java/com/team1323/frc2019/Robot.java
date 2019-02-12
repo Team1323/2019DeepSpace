@@ -100,7 +100,7 @@ public class Robot extends TimedRobot {
 		jacks = Jacks.getInstance();
 		subsystems = new SubsystemManager(
 			Arrays.asList(swerve, elevator, wrist,
-				ballIntake, ballCarriage, diskIntake, probe, jacks));
+				ballIntake, ballCarriage, diskIntake, probe, jacks, s));
 		
 		if(useSwitchController){
 			switchController = new SwitchController(2);
@@ -198,7 +198,7 @@ public class Robot extends TimedRobot {
 			teleopConfig();
 			SmartDashboard.putBoolean("Auto", false);
 
-			s.request(wrist.angleRequest(95.0));
+			wrist.setHighGear(false);
 		}catch(Throwable t){
 			CrashTracker.logThrowableCrash(t);
 			throw t;
@@ -212,7 +212,7 @@ public class Robot extends TimedRobot {
 	public void teleopPeriodic() {
 		try{
 			driver.update();
-			//coDriver.update();
+			coDriver.update();
 
 			if(useSwitchController){
 				switchController.update();
@@ -273,7 +273,7 @@ public class Robot extends TimedRobot {
 		double swerveXInput = -driver.getY(Hand.kLeft);
 		double swerveRotationInput = (flickRotation ? 0.0 : driver.getX(Hand.kRight));
 
-		if(useSwitchController){
+		/*if(useSwitchController){
 			swerveYInput = switchController.getX(Hand.kLeft);
 			swerveXInput = -switchController.getY(Hand.kLeft);
 			swerveRotationInput = (flickRotation ? 0.0 : switchController.getX(Hand.kRight));
@@ -295,11 +295,11 @@ public class Robot extends TimedRobot {
 				swerve.rotate(180);
 			else if(switchController.yButton.isBeingPressed())
 				swerve.rotate(270);
-		}
+		}*/
 		
 		swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, driver.leftTrigger.isBeingPressed());
 
-		if(driver.rightCenterClick.wasPressed()){
+		/*if(driver.rightCenterClick.wasPressed()){
 			if(flickRotation){
 				driver.rumble(3, 1);
 			}else{
@@ -340,11 +340,32 @@ public class Robot extends TimedRobot {
 		}else if(driver.startButton.wasPressed()){
 			swerve.resetVisionUpdates();
 			swerve.setVisionTrajectory();
-		}
+		}*/
 
-		s.sendManualInput(-coDriver.getY(Hand.kRight), elevatorInput.update(-coDriver.getY(Hand.kLeft), timestamp));
+		s.sendManualInput(-coDriver.getY(Hand.kRight), /*elevatorInput.update(-coDriver.getY(Hand.kLeft), timestamp)*/0.0, -coDriver.getY(Hand.kLeft));
+		//s.sendJackInput(-coDriver.getY(Hand.kLeft));
 
 		if(coDriver.aButton.wasPressed()){
+			s.request(wrist.angleRequest(0.0));
+		}else if(coDriver.yButton.wasPressed()){
+			s.request(wrist.angleRequest(75.0));
+		}
+
+		if(coDriver.rightBumper.isBeingPressed()){
+			ballIntake.conformToState(BallIntake.State.INTAKING);
+		}else{
+			ballIntake.conformToState(BallIntake.State.OFF);
+		}
+
+		if(coDriver.rightTrigger.isBeingPressed()){
+			ballCarriage.conformToState(BallCarriage.State.EJECTING);
+		}else if(coDriver.leftTrigger.isBeingPressed()){
+			ballCarriage.conformToState(BallCarriage.State.SUCKING);
+		}else{
+			ballCarriage.conformToState(BallCarriage.State.OFF);
+		}
+
+		/*if(coDriver.aButton.wasPressed()){
 			s.request(s.ballIntakingState());
 		}
 		
@@ -357,7 +378,7 @@ public class Robot extends TimedRobot {
 			elevator.enableLimits(true);
 			elevator.setManualSpeed(Constants.kElevatorTeleopManualSpeed);
 			elevator.lockHeight();
-		}
+		}*/
 	}
 
 	private void oneControllerMode(){

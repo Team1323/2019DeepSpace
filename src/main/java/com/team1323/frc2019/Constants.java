@@ -16,7 +16,7 @@ public class Constants {
 	
 	public static final double kEpsilon = 0.0001;
 	
-	public static final boolean kIsUsingCompBot = true;
+	public static final boolean kIsUsingCompBot = false;
 	public static final boolean kIsUsingTractionWheels = true;
 
 	public static final boolean kDebuggingOutput = true;
@@ -45,8 +45,8 @@ public class Constants {
 	public static final Pose2d kRobotRightRampExitPose = new Pose2d(new Translation2d(48.0 + kRobotHalfLength, 75.25 + kRobotHalfWidth), Rotation2d.fromDegrees(0));
 	
 	//Swerve Calculations Constants (measurements are in inches)
-    public static final double kWheelbaseLength = 18.5;
-    public static final double kWheelbaseWidth  = 23.5;
+    public static final double kWheelbaseLength = 21.0;
+    public static final double kWheelbaseWidth  = 21.0;
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
     
     //Camera Constants
@@ -79,10 +79,10 @@ public class Constants {
     public static final double kSwerveRotationSpeedScalar = ((1.0 / 0.125) - 1.0) / kSwerveMaxSpeedInchesPerSecond;
     
     //Swerve Module Wheel Offsets (Rotation encoder values when the wheels are facing 0 degrees)
-	public static final int kFrontRightEncoderStartingPos = kIsUsingCompBot ? -3799 : -3614;
-	public static final int kFrontLeftEncoderStartingPos = kIsUsingCompBot ? -198 : -2578;
-	public static final int kRearLeftEncoderStartingPos = kIsUsingCompBot ? -2825 : -1504;
-	public static final int kRearRightEncoderStartingPos = kIsUsingCompBot ? -2013 : -3209;
+	public static final int kFrontRightEncoderStartingPos = kIsUsingCompBot ? -3799 : 249 - 1024;
+	public static final int kFrontLeftEncoderStartingPos = kIsUsingCompBot ? -198 : -2895 - 1024;
+	public static final int kRearLeftEncoderStartingPos = kIsUsingCompBot ? -2825 : 636 - 1024;
+	public static final int kRearRightEncoderStartingPos = kIsUsingCompBot ? -2013 : -1739 - 1024;
 	
 	//Swerve Module Positions (relative to the center of the drive base)
 	public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength/2, kWheelbaseWidth/2);
@@ -151,17 +151,17 @@ public class Constants {
 	
 	//Wrist Constants
 	public static final double kWristMaxSpeedHighGear = /*41.58 * 4096.0 / 600.0*/300.0; //encoder units per 100 ms
-	public static final double kWristMaxSpeedLowGear = 100.0;
-	public static final double kWristStartingAngle = 90.0;
+	public static final double kWristMaxSpeedLowGear = 200.0;
+	public static final double kWristStartingAngle = 0.0;
 	/** Pulse width position of the wrist encoder when the wrist is upright (at 90 degrees, parallel to the elevator). */
-	public static final int kWristStartingEncoderPosition = kIsUsingCompBot ? 3249 : 559;
+	public static final int kWristStartingEncoderPosition = kIsUsingCompBot ? 3249 : 156;
 	/** The number of rotations the wrist encoder undergoes for every rotation of the wrist. */
-	public static final double kWristEncoderToOutputRatio = 41.58 / 19.19;
+	public static final double kWristEncoderToOutputRatio = 30.0 / 12.0;
 	public static final double kWristAngleTolerance = 10.0; //degrees
-	public static final double kWristMinControlAngle = -2.0; //degrees
-	public static final double kWristMaxControlAngle = 100.0; //degrees
-	public static final double kWristMinPhysicalAngle = -20.0;
-	public static final double kWristMaxPhysicalAngle = 110.0;//95.192
+	public static final double kWristMinControlAngle = -80.0; //degrees
+	public static final double kWristMaxControlAngle = 85.0; //degrees
+	public static final double kWristMinPhysicalAngle = -40.0;
+	public static final double kWristMaxPhysicalAngle = 90.0;//95.192
 	public static final double kWristIntakingAngle = kIsUsingCompBot ? 6.5 : 9.0;
 	public static final double kWristPrimaryStowAngle = 85.0;
 	public static final double kWristHangingAngle = 90.0;
@@ -190,8 +190,10 @@ public class Constants {
 	public static final double kDiskIntakingResuckingOutput = 6.0/12.0;
 
 	//Jack Constants
-	public static final double kJackMaxSpeed = 100.0;
-	public static final double kJackTicksPerInch = 0.0; //TODO measure
+	public static final double kJackMaxSpeed = 1000.0;
+	public static final double kJackTicksPerInch = (2804 + 15974) / 4.25; //TODO measure
 	public static final double kJackHeightTolerance = 1.0; //inches
+	public static final int kJackStartingEncPosition = 2804;
+	public static final double kJackStartingHeight = 0.0;
 
 }
