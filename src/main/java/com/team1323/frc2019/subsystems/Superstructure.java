@@ -27,6 +27,11 @@ public class Superstructure extends Subsystem {
 	private Compressor compressor;
 	
 	private Swerve swerve;
+
+	private boolean isClimbing = false;
+	public boolean isClimbing(){ return isClimbing; }
+	public void startClimbing(){ isClimbing = true; }
+	public void stopClimbing(){ isClimbing = false; }
 	
 	public Superstructure(){
 		elevator = Elevator.getInstance();
@@ -147,6 +152,9 @@ public class Superstructure extends Subsystem {
 			
 				double elevatorHeight = elevator.getHeight();
 				swerve.setMaxSpeed(Constants.kSwerveSpeedTreeMap.getInterpolated(new InterpolatingDouble(elevatorHeight)).value);
+
+				if(isClimbing())
+					jacks.setHeight(Constants.kJackHeightTreeMap.getInterpolated(new InterpolatingDouble(wrist.getAngle())).value);
 				
 				if(!activeRequestsCompleted){
 					if(newRequests){
@@ -289,6 +297,19 @@ public class Superstructure extends Subsystem {
 			diskIntake.stateRequest(DiskIntake.State.INTAKING),
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			ballCarriage.stateRequest(BallCarriage.State.OFF)), true);
+	}
+
+	public RequestList climbingState(){
+		RequestList state = new RequestList(Arrays.asList(
+			elevator.heightRequest(Constants.kElevatorDiskIntakeHeight),
+			probe.stateRequest(Probe.State.STOWED),
+			diskIntake.stateRequest(DiskIntake.State.OFF),
+			ballIntake.stateRequest(BallIntake.State.HOLDING),
+			ballCarriage.stateRequest(BallCarriage.State.OFF),
+			wrist.angleRequest(Constants.kWristHangingAngle)), true);
+		request(state);
+		isClimbing = true;
+		return state;
 	}
 
 }

@@ -80,14 +80,14 @@ public class Elevator extends Subsystem {
 		
 		if(Constants.kIsUsingCompBot){
 			master.setInverted(false);
-			motor2.setInverted(true);
+			motor2.setInverted(false);
 		}else{
-			master.setInverted(true);
-			motor2.setInverted(true);
+			master.setInverted(false);
+			motor2.setInverted(false);
 		}
 		
 		master.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-		master.setSensorPhase(!Constants.kIsUsingCompBot);
+		master.setSensorPhase(false);
 		zeroSensors();
 		master.configReverseSoftLimitThreshold(Constants.kElevatorEncoderStartingPosition, 10);
 		master.configForwardSoftLimitThreshold(Constants.kElevatorEncoderStartingPosition + inchesToEncUnits(Constants.kElevatorMaxHeight), 10);
@@ -105,18 +105,18 @@ public class Elevator extends Subsystem {
 		manualSpeed = Constants.kElevatorTeleopManualSpeed;
 
 		master.selectProfileSlot(0, 0);
-		master.config_kP(0, /*1.5*/0.0, 10);
+		master.config_kP(0, 1.25, 10);
 		master.config_kI(0, 0.0, 10);
-		master.config_kD(0, /*9*/0.0, 10);
+		master.config_kD(0, 20.0, 10);
 		master.config_kF(0, 1023.0/Constants.kElevatorMaxSpeedHighGear, 10);
 		
-		master.config_kP(1, /*1.5*/0.0, 10);
+		master.config_kP(1, 1.0, 10);
 		master.config_kI(1, 0.0, 10);
-		master.config_kD(1, /*45.0*/0.0, 10);//90.0
+		master.config_kD(1, 10.0, 10);//90.0
 		master.config_kF(1, 1023.0/Constants.kElevatorMaxSpeedHighGear, 10);
 
 		master.configMotionCruiseVelocity((int)(Constants.kElevatorMaxSpeedHighGear * 1.0), 10);
-		master.configMotionAcceleration((int)(Constants.kElevatorMaxSpeedHighGear * 1.5), 10);
+		master.configMotionAcceleration((int)(Constants.kElevatorMaxSpeedHighGear * 3.0), 10);
 	}
 	
 	public void configForTeleopSpeed(){
@@ -167,20 +167,6 @@ public class Elevator extends Subsystem {
 			periodicIO.demand = Constants.kElevatorEncoderStartingPosition + inchesToEncUnits(heightFeet);
 			onTarget = false;
 			startTime = Timer.getFPGATimestamp();
-		}else{
-			DriverStation.reportError("Elevator encoder not detected!", false);
-			stop();
-		}
-	}
-	
-	public synchronized void changeHeight(double deltaHeightFeet){
-		setState(ControlState.Position);
-		if(isSensorConnected()){
-			if(deltaHeightFeet > 0)
-				master.selectProfileSlot(0, 0);
-			else
-				master.selectProfileSlot(1, 0);
-			periodicIO.demand = master.getSelectedSensorPosition(0) + inchesToEncUnits(deltaHeightFeet);
 		}else{
 			DriverStation.reportError("Elevator encoder not detected!", false);
 			stop();

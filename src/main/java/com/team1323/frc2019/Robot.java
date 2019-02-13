@@ -156,7 +156,7 @@ public class Robot extends TimedRobot {
 		s.enableCompressor(true);
 		swerve.setNominalDriveOutput(0.0);
 		swerve.set10VoltRotationMode(false);
-		elevator.setCurrentLimit(15);
+		elevator.setCurrentLimit(40);
 		elevator.configForTeleopSpeed();
 	}
 	
@@ -267,6 +267,7 @@ public class Robot extends TimedRobot {
 
 	private void twoControllerMode(){
 		if(coDriver.backButton.isBeingPressed()){
+			s.stopClimbing();
 		}
 		
 		double swerveYInput = driver.getX(Hand.kLeft);
@@ -299,7 +300,7 @@ public class Robot extends TimedRobot {
 		
 		swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, driver.leftTrigger.isBeingPressed());
 
-		/*if(driver.rightCenterClick.wasPressed()){
+		if(driver.rightCenterClick.wasPressed()){
 			if(flickRotation){
 				driver.rumble(3, 1);
 			}else{
@@ -340,20 +341,23 @@ public class Robot extends TimedRobot {
 		}else if(driver.startButton.wasPressed()){
 			swerve.resetVisionUpdates();
 			swerve.setVisionTrajectory();
-		}*/
+		}
 
-		s.sendManualInput(-coDriver.getY(Hand.kRight), /*elevatorInput.update(-coDriver.getY(Hand.kLeft), timestamp)*/0.0, -coDriver.getY(Hand.kLeft));
-		//s.sendJackInput(-coDriver.getY(Hand.kLeft));
+		s.sendManualInput(-coDriver.getY(Hand.kRight), /*elevatorInput.update(*/-coDriver.getY(Hand.kLeft)/*, timestamp)*/, /*-coDriver.getY(Hand.kLeft)*/0.0);
 
 		if(coDriver.aButton.wasPressed()){
-			s.request(wrist.angleRequest(0.0));
+			//s.request(wrist.angleRequest(0.0));
+			//s.request(jacks.heightRequest(-12.0));
+			//s.climbingState();
+			s.request(elevator.heightRequest(6.0));
 		}else if(coDriver.yButton.wasPressed()){
-			s.request(wrist.angleRequest(75.0));
+			//s.request(wrist.angleRequest(75.0));
+			s.request(elevator.heightRequest(Constants.kElevatorHighHatchHeight));
 		}
 
 		if(coDriver.rightBumper.isBeingPressed()){
 			ballIntake.conformToState(BallIntake.State.INTAKING);
-		}else{
+		}else if(ballIntake.getState() != BallIntake.State.HOLDING){
 			ballIntake.conformToState(BallIntake.State.OFF);
 		}
 

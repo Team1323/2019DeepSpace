@@ -115,22 +115,21 @@ public class Constants {
 	public static final double kSwerveEncUnitsPerInch = kSwerveEncUnitsPerWheelRev / (Math.PI * kSwerveWheelDiameter);
 	
 	//Elevator Constants
-	public static final double kElevatorMaxSpeedHighGear = 535.6785 * 4096.0 / 600.0; //encoder units per 100 ms
-	public static final double kElevatorMaxSpeedLowGear = 169.67 * 4096.0 / 600.0; //encoder units per 100 ms
+	public static final double kElevatorMaxSpeedHighGear = 541.18 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
 	public static final int kElevatorEncoderStartingPosition = 0;
-	public static final double kElevatorTicksPerInch = 11983.0 / 2.5989583; //determined empirically TODO measure
+	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically TODO measure
 	public static final double kElevatorHeightTolerance = 1.0; //inches
 	public static final double kElevatorDiskIntakeHeight = 0.0;
-	public static final double kElevatorLowHatchHeight = 0.0;
-	public static final double kElevatorMidHatchHeight = 0.0;
-	public static final double kElevatorHighHatchHeight = 0.0;
+	public static final double kElevatorLowHatchHeight = 5.2;
+	public static final double kElevatorMidHatchHeight = 35.0;
+	public static final double kElevatorHighHatchHeight = 63.7;
 	public static final double kElevatorBallIntakeHeight = 0.0;
-	public static final double kElevatorLowBallHeight = 0.0;
-	public static final double kElevatorMidBallHeight = 0.0;
-	public static final double kElevatorHighBallHeight = 0.0;
+	public static final double kElevatorLowBallHeight = 4.3;
+	public static final double kElevatorMidBallHeight = 32.0;
+	public static final double kElevatorHighBallHeight = 60.4;
 	public static final double kElevatorMinHeight = 0.0; //inches
-	public static final double kElevatorMaxHeight = 5.4; //inches
+	public static final double kElevatorMaxHeight = 65.0; //inches
 	public static final double kElevatorMaxCurrent = 50.0;//amps
 	public static final int kELevatorCurrentLimit = 20;
 	public static final double kElevatorMinimumHangingHeight = 0.795 + 0.08;
@@ -164,7 +163,7 @@ public class Constants {
 	public static final double kWristMaxPhysicalAngle = 90.0;//95.192
 	public static final double kWristIntakingAngle = kIsUsingCompBot ? 6.5 : 9.0;
 	public static final double kWristPrimaryStowAngle = 85.0;
-	public static final double kWristHangingAngle = 90.0;
+	public static final double kWristHangingAngle = -71.5;
 	public static final double kWristMaxCurrent = 40.0;//amps
 	
 	//Ball Intake Constants
@@ -172,7 +171,7 @@ public class Constants {
 	public static final double kIntakeEjectOutput = kIsUsingCompBot ? -0.6 : -0.9;
 	public static final double kIntakeStrongEjectOutput = -1.0;
 	public static final double kIntakingOutput = 1.0;
-	public static final double kIntakeWeakHoldingOutput = 1.25/12.0;
+	public static final double kIntakeWeakHoldingOutput = 4.0/12.0;
 	public static final double kIntakeStrongHoldingOutput = 4.0/12.0;
 	public static final double kIntakingResuckingOutput = 6.0/12.0;
 	public static final double kIntakeRampRate = 0.25;
@@ -190,10 +189,23 @@ public class Constants {
 	public static final double kDiskIntakingResuckingOutput = 6.0/12.0;
 
 	//Jack Constants
-	public static final double kJackMaxSpeed = 1000.0;
-	public static final double kJackTicksPerInch = (2804 + 15974) / 4.25; //TODO measure
+	public static final double kJackMaxSpeed = 5000.0;
+	public static final double kJackTicksPerInch = 24.9629356 * 4096.0 / 30.4444882;//1.219 inches before wrap
 	public static final double kJackHeightTolerance = 1.0; //inches
-	public static final int kJackStartingEncPosition = 2804;
+	public static final int kJackStartingEncPosition = 3555;//2804;
 	public static final double kJackStartingHeight = 0.0;
+	public static final double kJackMaxPhysicalHeight = 0.2;
+	public static final double kJackMinPhysicalHeight = -1.0;
+	public static final double kJackMaxControlHeight = 0.0;
+	public static final double kJackMinControlHeight = -24.5; //-31.0
+
+	//Jack Height Treemap
+	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kJackHeightTreeMap = new InterpolatingTreeMap<>();
+	static{
+		kJackHeightTreeMap.put(new InterpolatingDouble(90.0), new InterpolatingDouble(kJackMaxControlHeight));
+		kJackHeightTreeMap.put(new InterpolatingDouble(60.0), new InterpolatingDouble(kJackMaxControlHeight));
+		kJackHeightTreeMap.put(new InterpolatingDouble(kWristMinControlAngle), new InterpolatingDouble(kJackMinControlHeight));
+		kJackHeightTreeMap.put(new InterpolatingDouble(kWristMinControlAngle - 10.0), new InterpolatingDouble(kJackMinControlHeight));
+	}
 
 }

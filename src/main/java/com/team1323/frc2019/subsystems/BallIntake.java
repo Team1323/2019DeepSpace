@@ -199,7 +199,7 @@ public class BallIntake extends Subsystem {
           }
           break;
         case HOLDING:
-          if(banner.get()) {
+          /*if(banner.get()) {
             if(isConstantSuck) {
               holdRollers();
               isConstantSuck = false;
@@ -209,7 +209,7 @@ public class BallIntake extends Subsystem {
               setGrabberSpeed(Constants.kIntakingResuckingOutput);
               isConstantSuck = true;
             }
-          }
+          }*/
         default:
           break;
       }

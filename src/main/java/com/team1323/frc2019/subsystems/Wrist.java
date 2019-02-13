@@ -39,9 +39,9 @@ public class Wrist extends Subsystem{
 
 	Solenoid shifter;
 
-	boolean isHighGear = true;
+	boolean isHighGear = false;
 	public boolean isHighGear(){ return isHighGear; }
-	boolean highGearConfig = true;
+	boolean highGearConfig = false;
 
 	
 	public enum WristControlState{
@@ -116,11 +116,11 @@ public class Wrist extends Subsystem{
 
 	public void setHighGear(boolean high){
 		if(high && !isHighGear){
-			shifter.set(false);
+			shifter.set(true);
 			configForHighGear();
 			isHighGear = true;
 		}else if(!high && isHighGear){
-			shifter.set(true);
+			shifter.set(false);
 			configForLowGear();
 			isHighGear = false;
 		}

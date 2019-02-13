@@ -13,7 +13,9 @@ import com.team1323.frc2019.Constants;
 import com.team1323.frc2019.Ports;
 import com.team1323.frc2019.subsystems.requests.Request;
 import com.team254.drivers.LazyTalonSRX;
+import com.team1323.lib.util.Util;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Jacks extends Subsystem {
@@ -35,19 +37,25 @@ public class Jacks extends Subsystem {
 
     public Jacks(){
         motor = new LazyTalonSRX(Ports.JACKS);
-        motor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
+        motor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
         motor.setInverted(false);
         motor.setSensorPhase(false);
+        resetToAbsolutePosition();
 
         motor.configVoltageCompSaturation(12.0);
         motor.enableVoltageCompensation(true);
 
-        motor.config_kP(0, 0.1);
+        motor.config_kP(0, 0.5);
         motor.config_kI(0, 0.0);
-        motor.config_kD(0, 0.0);
+        motor.config_kD(0, 5.0);
         motor.config_kF(0, 1023.0 / Constants.kJackMaxSpeed);
         motor.configMotionCruiseVelocity((int)(Constants.kJackMaxSpeed * 1.0));
-        motor.configMotionAcceleration((int)(Constants.kJackMaxSpeed * 1.0));
+        motor.configMotionAcceleration((int)(Constants.kJackMaxSpeed * 3.0));
+
+        motor.configForwardSoftLimitThreshold((int)(jackHeightToEncUnits(Constants.kJackMaxControlHeight)));
+        motor.configReverseSoftLimitThreshold((int)(jackHeightToEncUnits(Constants.kJackMinControlHeight)));
+        motor.configForwardSoftLimitEnable(true);
+        motor.configReverseSoftLimitEnable(true);
 
         setOpenLoop(0.0);
     }
@@ -69,6 +77,11 @@ public class Jacks extends Subsystem {
     }
 
     public synchronized void setHeight(double height){
+        if(height > Constants.kJackMaxControlHeight)
+            height = Constants.kJackMaxControlHeight;
+        else if(height < Constants.kJackMinControlHeight)
+            height = Constants.kJackMinControlHeight;
+
         state = ControlState.POSITION;
         periodicIO.controlMode = ControlMode.MotionMagic;
         periodicIO.setpoint = jackHeightToEncUnits(height);
@@ -138,6 +151,20 @@ public class Jacks extends Subsystem {
     private double jackHeightToEncUnits(double jackHeight){
         return Constants.kJackStartingEncPosition + inchesToEncUnits(jackHeight);
     }
+
+    public void resetToAbsolutePosition(){
+		int absolutePosition = (int) Util.boundToScope(0, 4096, motor.getSensorCollection().getPulseWidthPosition());
+		if(encUnitsToJackHeight(absolutePosition) > Constants.kJackMaxPhysicalHeight){
+			absolutePosition -= 4096;
+		}else if(encUnitsToJackHeight(absolutePosition) < Constants.kJackMinPhysicalHeight){
+            absolutePosition += 4096;
+        }
+		double jackHeight = encUnitsToJackHeight(absolutePosition);
+		if(jackHeight > Constants.kWristMaxPhysicalAngle || jackHeight < Constants.kWristMinPhysicalAngle){
+			DriverStation.reportError("Jack height is out of bounds", false);
+		}
+		motor.setSelectedSensorPosition(absolutePosition, 0, 10);
+	}
     
     @Override
     public void readPeriodicInputs() {
@@ -162,6 +189,8 @@ public class Jacks extends Subsystem {
             SmartDashboard.putNumber("Jack Voltage", periodicIO.voltage);
             SmartDashboard.putNumber("Jack Current", periodicIO.current);
             SmartDashboard.putNumber("Jack Encoder", periodicIO.position);
+            SmartDashboard.putNumber("Jack Pulse Width", motor.getSensorCollection().getPulseWidthPosition());
+            SmartDashboard.putNumber("Jack Error", encUnitsToInches(motor.getClosedLoopError()));
         }
     }
 
