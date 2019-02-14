@@ -53,7 +53,7 @@ public class DiskIntake extends Subsystem {
     lift = new Solenoid(Ports.DRIVEBASE_PCM, Ports.DISK_INTAKE_LIFT);
     banner = new DigitalInput(Ports.DISK_INTAKE_BANNER);
 
-    diskMotor.setInverted(false);
+    diskMotor.setInverted(true);
 
     diskMotor.setNeutralMode(NeutralMode.Brake);
 
@@ -63,6 +63,7 @@ public class DiskIntake extends Subsystem {
     diskMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20, 10);
     diskMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20, 10);
 
+    setCurrentLimit(15);
   }
 
   public void setCurrentLimit(int amps) {
@@ -81,11 +82,12 @@ public class DiskIntake extends Subsystem {
   }
 
   public enum State {
-    OFF(0, false), 
+    OFF(0, true), 
     INTAKING(Constants.kDiskIntakingOutput, false), 
     EJECTING(Constants.kDiskIntakeStrongEjectOutput, true), 
     HANDOFF(Constants.kDiskIntakeWeakEjectOutput, true), 
-    HOLDING(Constants.kDiskStrongHoldingOutput, true);
+    HOLDING(Constants.kDiskStrongHoldingOutput, true),
+    DEPLOYED(0, false);
 
     public double diskIntakeOutput = 0;
     public boolean lifted = false;
@@ -229,13 +231,13 @@ public class DiskIntake extends Subsystem {
     hasDisk = false;
   }
 
-  private void conformToState(State desiredState) {
+  public void conformToState(State desiredState) {
     setState(desiredState);
     setRollers(desiredState.diskIntakeOutput);
     fireLift(desiredState.lifted);
   }
 
-  private void conformToState(State desiredState, double outputOverride) {
+  public void conformToState(State desiredState, double outputOverride) {
     setState(desiredState);
     setRollers(outputOverride);
     fireLift(desiredState.lifted);

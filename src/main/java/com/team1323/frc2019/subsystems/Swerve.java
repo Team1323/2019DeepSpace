@@ -218,7 +218,7 @@ public class Swerve extends Subsystem{
 				direction.sin() * scaledMagnitude);
 		
 		rotate = (Math.abs(rotate) < deadband) ? 0 : rotate;
-		rotate = Math.pow(Math.abs(rotate), 1.75)*Math.signum(rotate);
+		rotate = Math.pow(Math.abs(rotate), 1.25)*Math.signum(rotate);
 		
 		translationalInput = translationalInput.scale(maxSpeedFactor);
 		rotate *= maxSpeedFactor;

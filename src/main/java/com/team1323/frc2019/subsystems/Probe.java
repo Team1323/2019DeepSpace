@@ -49,7 +49,7 @@ public class Probe extends Subsystem {
         return state;
     }
 
-    private void conformToState(State newState){
+    public void conformToState(State newState){
         extender.set(newState.extended);
         scorer.set(newState.scoring);
         fingers.set(!newState.fingers);

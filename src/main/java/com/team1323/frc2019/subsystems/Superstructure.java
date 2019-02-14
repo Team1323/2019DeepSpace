@@ -204,7 +204,7 @@ public class Superstructure extends Subsystem {
 
 		@Override
 		public void onStop(double timestamp) {
-			
+			neutralState();
 		}
 		
 	};
@@ -281,25 +281,71 @@ public class Superstructure extends Subsystem {
 
 	/////States/////
 
-	public RequestList ballIntakingState(){
-		return new RequestList(Arrays.asList(
+	public void neutralState(){
+		RequestList state = new RequestList(Arrays.asList(
+			ballCarriage.stateRequest(BallCarriage.State.OFF), 
+			ballIntake.stateRequest(BallIntake.State.OFF),
+			diskIntake.stateRequest(DiskIntake.State.OFF)), true);
+		request(state);
+	}
+
+	public void ballIntakingState(){
+		RequestList state = new RequestList(Arrays.asList(
 			elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
 			wrist.angleRequest(Constants.kWristIntakingAngle),
 			ballCarriage.stateRequest(BallCarriage.State.OFF), 
 			ballIntake.stateRequest(BallIntake.State.INTAKING),
-			diskIntake.stateRequest(DiskIntake.State.OFF)), true);
+			diskIntake.stateRequest(DiskIntake.State.OFF),
+			ballIntake.waitForBallRequest()), true);
+		RequestList queue = new RequestList(Arrays.asList(
+			elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
+			wrist.angleRequest(Constants.kWristBallHoldingAngle),
+			ballCarriage.stateRequest(BallCarriage.State.OFF), 
+			ballIntake.stateRequest(BallIntake.State.HOLDING)), true);
+		request(state, queue);
 	}
 
-	public RequestList diskIntakingState(){
-		return new RequestList(Arrays.asList(
+	public void ballHoldingState(){
+		RequestList state = new RequestList(Arrays.asList(
+			elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
+			wrist.angleRequest(Constants.kWristBallHoldingAngle),
+			ballCarriage.stateRequest(BallCarriage.State.OFF), 
+			ballIntake.stateRequest(BallIntake.State.HOLDING),
+			diskIntake.stateRequest(DiskIntake.State.OFF)), true);
+		request(state); 
+	}
+
+	public void ballFeedingState(){
+		RequestList state = new RequestList(Arrays.asList(
+			elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
+			wrist.angleRequest(Constants.kWristBallFeedingAngle, 0.1),
+			ballCarriage.stateRequest(BallCarriage.State.RECEIVING), 
+			ballIntake.stateRequest(BallIntake.State.FEEDING),
+			diskIntake.stateRequest(DiskIntake.State.OFF)), true);
+		request(state);
+	}
+
+	public void diskIntakingState(){
+		RequestList state = new RequestList(Arrays.asList(
 			elevator.heightRequest(Constants.kElevatorDiskIntakeHeight),
 			probe.stateRequest(Probe.State.STOWED),
 			diskIntake.stateRequest(DiskIntake.State.INTAKING),
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			ballCarriage.stateRequest(BallCarriage.State.OFF)), true);
+		request(state); 
 	}
 
-	public RequestList climbingState(){
+	public void diskReceivingState(){
+		RequestList state = new RequestList(Arrays.asList(
+			elevator.heightRequest(Constants.kElevatorLowHatchHeight),
+			probe.stateRequest(Probe.State.RECEIVING),
+			diskIntake.stateRequest(DiskIntake.State.OFF),
+			ballIntake.stateRequest(BallIntake.State.OFF),
+			ballCarriage.stateRequest(BallCarriage.State.OFF)), true);
+		request(state); 
+	}
+
+	public void climbingState(){
 		RequestList state = new RequestList(Arrays.asList(
 			elevator.heightRequest(Constants.kElevatorDiskIntakeHeight),
 			probe.stateRequest(Probe.State.STOWED),
@@ -309,7 +355,6 @@ public class Superstructure extends Subsystem {
 			wrist.angleRequest(Constants.kWristHangingAngle)), true);
 		request(state);
 		isClimbing = true;
-		return state;
 	}
 
 }

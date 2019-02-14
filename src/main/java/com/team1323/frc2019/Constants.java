@@ -50,11 +50,11 @@ public class Constants {
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
     
     //Camera Constants
-    public static final double kCameraYOffset = kRobotHalfWidth - 16.0 - 3.0;
-    public static final double kCameraXOffset = kRobotHalfLength - 8.0 - 3.0;
-    public static final double kCameraZOffset = 20.0;
-    public static final double kCameraYawAngleDegrees = 1.0;
-    public static final double kCameraPitchAngleDegrees = -1.9;
+    public static final double kCameraYOffset = 0.0;
+    public static final double kCameraXOffset = (29.5 / 2.0) - 17.4375;
+    public static final double kCameraZOffset = 39.906;
+    public static final double kCameraYawAngleDegrees = 0.0;
+    public static final double kCameraPitchAngleDegrees = -16.0;
     
     //Goal tracker constants
     public static double kMaxGoalTrackAge = 1.0;
@@ -120,11 +120,11 @@ public class Constants {
 	public static final int kElevatorEncoderStartingPosition = 0;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 1.0; //inches
-	public static final double kElevatorDiskIntakeHeight = 0.0;
-	public static final double kElevatorLowHatchHeight = 5.2;
+	public static final double kElevatorDiskIntakeHeight = 2.5;
+	public static final double kElevatorLowHatchHeight = 5.5;
 	public static final double kElevatorMidHatchHeight = 35.0;
 	public static final double kElevatorHighHatchHeight = 63.7;
-	public static final double kElevatorBallIntakeHeight = 0.0;
+	public static final double kElevatorBallIntakeHeight = 0.1;
 	public static final double kElevatorLowBallHeight = 4.3;
 	public static final double kElevatorMidBallHeight = 32.0;
 	public static final double kElevatorHighBallHeight = 60.4;
@@ -149,11 +149,11 @@ public class Constants {
 	}
 	
 	//Wrist Constants
-	public static final double kWristMaxSpeedHighGear = /*41.58 * 4096.0 / 600.0*/300.0; //encoder units per 100 ms
+	public static final double kWristMaxSpeedHighGear = 600.0; //encoder units per 100 ms
 	public static final double kWristMaxSpeedLowGear = 200.0;
 	public static final double kWristStartingAngle = 0.0;
 	/** Pulse width position of the wrist encoder when the wrist is upright (at 90 degrees, parallel to the elevator). */
-	public static final int kWristStartingEncoderPosition = kIsUsingCompBot ? 3249 : 156;
+	public static final int kWristStartingEncoderPosition = kIsUsingCompBot ? 3249 : 1179;
 	/** The number of rotations the wrist encoder undergoes for every rotation of the wrist. */
 	public static final double kWristEncoderToOutputRatio = 30.0 / 12.0; // 144 degrees before wrap
 	public static final double kWristAngleTolerance = 10.0; //degrees
@@ -161,9 +161,11 @@ public class Constants {
 	public static final double kWristMaxControlAngle = 85.0; //degrees
 	public static final double kWristMinPhysicalAngle = -40.0;
 	public static final double kWristMaxPhysicalAngle = 90.0;//95.192
-	public static final double kWristIntakingAngle = kIsUsingCompBot ? 6.5 : 9.0;
+	public static final double kWristIntakingAngle = kIsUsingCompBot ? 0.0 : 0.0;
 	public static final double kWristPrimaryStowAngle = 85.0;
 	public static final double kWristHangingAngle = -71.5;
+	public static final double kWristBallHoldingAngle = 38.0;
+	public static final double kWristBallFeedingAngle = 60.5;
 	public static final double kWristMaxCurrent = 40.0;//amps
 	
 	//Ball Intake Constants
@@ -171,7 +173,7 @@ public class Constants {
 	public static final double kIntakeEjectOutput = kIsUsingCompBot ? -0.6 : -0.9;
 	public static final double kIntakeStrongEjectOutput = -1.0;
 	public static final double kIntakingOutput = 1.0;
-	public static final double kIntakeWeakHoldingOutput = 4.0/12.0;
+	public static final double kIntakeWeakHoldingOutput = 2.0/12.0;
 	public static final double kIntakeStrongHoldingOutput = 4.0/12.0;
 	public static final double kIntakingResuckingOutput = 6.0/12.0;
 	public static final double kIntakeRampRate = 0.25;
@@ -179,7 +181,7 @@ public class Constants {
 
 	//Ball Carriage Constants
 	public static final double kBallCarriageEjectOutput = -0.5;
-	public static final double kBallCarriageReceiveOutput = 0.0;
+	public static final double kBallCarriageReceiveOutput = -0.6;
 
 	//Disk Intake Constants
 	public static final double kDiskIntakingOutput = 1.0;

@@ -344,7 +344,7 @@ public class SwerveDriveModule extends Subsystem{
 	@Override
 	public void outputTelemetry() {
 		SmartDashboard.putNumber(name + "Angle", getModuleAngle().getDegrees());
-		SmartDashboard.putNumber(name + "Inches Driven", getDriveDistanceInches());
+		SmartDashboard.putNumber(name + "Inches Driven", /*getDriveDistanceInches()*/periodicIO.drivePosition);
 		if(Constants.kDebuggingOutput){
 			SmartDashboard.putNumber(name + "Pulse Width", rotationMotor.getSelectedSensorPosition(0));
 			SmartDashboard.putNumber(name + "Drive Voltage", periodicIO.driveVoltage);

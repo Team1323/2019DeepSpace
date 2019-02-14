@@ -198,7 +198,7 @@ public class Robot extends TimedRobot {
 			teleopConfig();
 			SmartDashboard.putBoolean("Auto", false);
 
-			wrist.setHighGear(false);
+			wrist.setHighGear(true);
 		}catch(Throwable t){
 			CrashTracker.logThrowableCrash(t);
 			throw t;
@@ -267,14 +267,16 @@ public class Robot extends TimedRobot {
 
 	private void twoControllerMode(){
 		if(coDriver.backButton.isBeingPressed()){
-			s.stopClimbing();
+			//s.stopClimbing();
+			//diskIntake.conformToState(DiskIntake.State.DEPLOYED);
+			s.neutralState();
 		}
 		
 		double swerveYInput = driver.getX(Hand.kLeft);
 		double swerveXInput = -driver.getY(Hand.kLeft);
 		double swerveRotationInput = (flickRotation ? 0.0 : driver.getX(Hand.kRight));
 
-		/*if(useSwitchController){
+		if(useSwitchController){
 			swerveYInput = switchController.getX(Hand.kLeft);
 			swerveXInput = -switchController.getY(Hand.kLeft);
 			swerveRotationInput = (flickRotation ? 0.0 : switchController.getX(Hand.kRight));
@@ -296,7 +298,7 @@ public class Robot extends TimedRobot {
 				swerve.rotate(180);
 			else if(switchController.yButton.isBeingPressed())
 				swerve.rotate(270);
-		}*/
+		}
 		
 		swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, driver.leftTrigger.isBeingPressed());
 
@@ -332,41 +334,54 @@ public class Robot extends TimedRobot {
 			swerve.temporarilyDisableHeadingController();
 			swerve.zeroSensors(Constants.kRobotLeftStartingPose);
 			swerve.resetAveragedDirection();
-		}else if(driver.rightTrigger.wasPressed()){
+		}/*else if(driver.rightTrigger.wasPressed()){
 			swerve.temporarilyDisableHeadingController();
 			swerve.zeroSensors(Constants.kRobotLeftStartingPose);
 			swerve.requireModuleConfiguration();
-			swerve.setTrajectory(generator.getTrajectorySet().startToCloseHatch.get(true), -30.0, 1.0);
+			//swerve.setTrajectory(generator.getTrajectorySet().startToCloseHatch.get(true), -30.0, 1.0);
+			swerve.setTrajectory(generator.getTrajectorySet().straightPath, 0.0, 1.0);
 			//swerve.setVelocity(new Rotation2d(), 24.0);
-		}else if(driver.startButton.wasPressed()){
+		}*/else if(driver.startButton.wasPressed()){
 			swerve.resetVisionUpdates();
 			swerve.setVisionTrajectory();
 		}
 
-		s.sendManualInput(-coDriver.getY(Hand.kRight), /*elevatorInput.update(*/-coDriver.getY(Hand.kLeft)/*, timestamp)*/, /*-coDriver.getY(Hand.kLeft)*/0.0);
+		s.sendManualInput(-coDriver.getY(Hand.kRight), -coDriver.getY(Hand.kLeft), /*-coDriver.getY(Hand.kLeft)*/0.0);
 
 		if(coDriver.aButton.wasPressed()){
 			//s.request(wrist.angleRequest(0.0));
 			//s.request(jacks.heightRequest(-12.0));
 			//s.climbingState();
-			s.request(elevator.heightRequest(6.0));
+			//s.request(elevator.heightRequest(6.0));
+			//diskIntake.conformToState(DiskIntake.State.INTAKING);
+			//s.ballIntakingState();
+			//s.diskIntakingState();
+			s.diskReceivingState();
 		}else if(coDriver.yButton.wasPressed()){
 			//s.request(wrist.angleRequest(75.0));
 			s.request(elevator.heightRequest(Constants.kElevatorHighHatchHeight));
+		}else if(coDriver.bButton.wasPressed()){
+			//diskIntake.conformToState(DiskIntake.State.OFF);
+			//s.ballFeedingState();
+			//s.request(elevator.heightRequest(2.0));
+			diskIntake.conformToState(DiskIntake.State.OFF);
+		}else if(coDriver.xButton.wasPressed()){
+			s.request(elevator.heightRequest(Constants.kElevatorMidHatchHeight));
+		}else if(coDriver.aButton.longPressed()){
+			s.diskIntakingState();
 		}
 
-		if(coDriver.rightBumper.isBeingPressed()){
+		/*if(coDriver.rightBumper.isBeingPressed()){
 			ballIntake.conformToState(BallIntake.State.INTAKING);
 		}else if(ballIntake.getState() != BallIntake.State.HOLDING){
 			ballIntake.conformToState(BallIntake.State.OFF);
-		}
+		}*/
 
-		if(coDriver.rightTrigger.isBeingPressed()){
-			ballCarriage.conformToState(BallCarriage.State.EJECTING);
-		}else if(coDriver.leftTrigger.isBeingPressed()){
-			ballCarriage.conformToState(BallCarriage.State.SUCKING);
-		}else{
-			ballCarriage.conformToState(BallCarriage.State.OFF);
+		if(coDriver.rightTrigger.wasPressed()){
+			//ballCarriage.conformToState(BallCarriage.State.EJECTING);
+			probe.conformToState(Probe.State.HOLDING);
+		}else if(coDriver.rightTrigger.longPressed() || driver.rightTrigger.wasPressed()){
+			probe.conformToState(Probe.State.SCORING);
 		}
 
 		/*if(coDriver.aButton.wasPressed()){

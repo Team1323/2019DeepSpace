@@ -54,7 +54,7 @@ public class BallIntake extends Subsystem {
     feeder = new LazyTalonSRX(Ports.BALL_FEEDER);
     banner = new DigitalInput(Ports.BALL_INTAKE_BANNER);
 
-    grabber.setInverted(false);
+    grabber.setInverted(true);
 
     grabber.setNeutralMode(NeutralMode.Brake);
 
@@ -100,10 +100,11 @@ public class BallIntake extends Subsystem {
   }
 
   public enum State {
-    OFF(0, 0), INTAKING(Constants.kIntakingOutput, Constants.kIntakingOutput),
+    OFF(0, 0), INTAKING(Constants.kIntakingOutput, 0),
     EJECTING(Constants.kIntakeEjectOutput, Constants.kIntakeEjectOutput),
-    HOLDING(Constants.kIntakeWeakHoldingOutput, Constants.kIntakeWeakHoldingOutput),
-    CLIMBING(Constants.kIntakeClimbOutput, 0);
+    HOLDING(Constants.kIntakingOutput, 0),
+    CLIMBING(Constants.kIntakeClimbOutput, 0),
+    FEEDING(Constants.kIntakeWeakHoldingOutput, Constants.kIntakingOutput);
 
     public double grabberOutput = 0;
     public double feederOutput = 0;
@@ -177,18 +178,17 @@ public class BallIntake extends Subsystem {
       case INTAKING:
         if (stateChanged)
           hasBall = false;
-        if (banner.get()) {
+        if (/*banner.get()*/ (grabber.getOutputCurrent() >= 10.0) && ((timestamp - stateEnteredTimestamp) >= 0.5)) {
           if (Double.isInfinite(bannerSensorBeganTimestamp)) {
             bannerSensorBeganTimestamp = timestamp;
           } else {
-            if (timestamp - bannerSensorBeganTimestamp > 0.1) {
+            if (timestamp - bannerSensorBeganTimestamp > 0.3) {
               hasBall = true;
               needsToNotifyDrivers = true;
             }
           }
         } else if (!Double.isFinite(bannerSensorBeganTimestamp)) {
           bannerSensorBeganTimestamp = Double.POSITIVE_INFINITY;
-          ;
         }
         break;
       case EJECTING:
@@ -202,7 +202,7 @@ public class BallIntake extends Subsystem {
         }
         break;
       case HOLDING:
-        if (banner.get()) {
+        /*if (banner.get()) {
           if (isConstantSuck) {
             holdRollers();
             isConstantSuck = false;
@@ -212,7 +212,11 @@ public class BallIntake extends Subsystem {
             setGrabberSpeed(Constants.kIntakingResuckingOutput);
             isConstantSuck = true;
           }
+        }*/
+        if((timestamp - stateEnteredTimestamp) >= 1.0){
+          setGrabberSpeed(Constants.kIntakeWeakHoldingOutput);
         }
+        break;
       case CLIMBING:
         break;
       default:
