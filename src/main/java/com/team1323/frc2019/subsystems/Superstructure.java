@@ -304,7 +304,7 @@ public class Superstructure extends Subsystem {
 			elevator.heightRequest(Constants.kElevatorDiskIntakeHeight),
 			probe.stateRequest(Probe.State.STOWED),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
-			ballIntake.stateRequest(BallIntake.State.HOLDING),
+			ballIntake.stateRequest(BallIntake.State.CLIMBING),
 			ballCarriage.stateRequest(BallCarriage.State.OFF),
 			wrist.angleRequest(Constants.kWristHangingAngle)), true);
 		request(state);

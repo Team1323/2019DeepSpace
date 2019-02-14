@@ -23,27 +23,28 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-
 public class BallIntake extends Subsystem {
   private static BallIntake instance = null;
-	public static BallIntake getInstance(){
-		if(instance == null)
-			instance = new BallIntake();
-		return instance;
+
+  public static BallIntake getInstance() {
+    if (instance == null)
+      instance = new BallIntake();
+    return instance;
   }
-  
+
   boolean hasBall = false;
-	public synchronized boolean hasBall(){
-		return hasBall;
+
+  public synchronized boolean hasBall() {
+    return hasBall;
   }
-  
+
   private LazyTalonSRX grabber, feeder;
   private DigitalInput banner;
 
-  public LazyTalonSRX getPigeonTalon(){
+  public LazyTalonSRX getPigeonTalon() {
     return feeder;
   }
-  
+
   public boolean getBanner() {
     return banner.get();
   }
@@ -59,7 +60,7 @@ public class BallIntake extends Subsystem {
 
     grabber.configVoltageCompSaturation(12.0, 10);
     grabber.enableVoltageCompensation(true);
-    
+
     grabber.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20, 10);
     grabber.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20, 10);
 
@@ -99,10 +100,10 @@ public class BallIntake extends Subsystem {
   }
 
   public enum State {
-    OFF(0, 0), 
-    INTAKING(Constants.kIntakingOutput, Constants.kIntakingOutput), 
-    EJECTING(Constants.kIntakeEjectOutput, Constants.kIntakeEjectOutput), 
-    HOLDING(Constants.kIntakeWeakHoldingOutput, Constants.kIntakeWeakHoldingOutput);
+    OFF(0, 0), INTAKING(Constants.kIntakingOutput, Constants.kIntakingOutput),
+    EJECTING(Constants.kIntakeEjectOutput, Constants.kIntakeEjectOutput),
+    HOLDING(Constants.kIntakeWeakHoldingOutput, Constants.kIntakeWeakHoldingOutput),
+    CLIMBING(Constants.kIntakeClimbOutput, 0);
 
     public double grabberOutput = 0;
     public double feederOutput = 0;
@@ -112,6 +113,7 @@ public class BallIntake extends Subsystem {
       feederOutput = feederSpeed;
     }
   }
+
   private State currentState = State.OFF;
   private boolean stateChanged = false;
   private double bannerSensorBeganTimestamp = Double.POSITIVE_INFINITY;
@@ -124,7 +126,7 @@ public class BallIntake extends Subsystem {
   }
 
   private synchronized void setState(State newState) {
-    if(newState != currentState)
+    if (newState != currentState)
       stateChanged = true;
     currentState = newState;
     stateEnteredTimestamp = Timer.getFPGATimestamp();
@@ -149,7 +151,7 @@ public class BallIntake extends Subsystem {
     grabber.set(ControlMode.PercentOutput, output);
   }
 
-  private void setFeederSpeed(double output){
+  private void setFeederSpeed(double output) {
     feeder.set(ControlMode.PercentOutput, output);
   }
 
@@ -169,49 +171,52 @@ public class BallIntake extends Subsystem {
 
     @Override
     public void onLoop(double timestamp) {
-      switch(currentState) {
-        case OFF:
-          break;
-        case INTAKING:
-          if(stateChanged)
-            hasBall = false;
-          if(banner.get()) {
-            if(Double.isInfinite(bannerSensorBeganTimestamp)) {
-              bannerSensorBeganTimestamp = timestamp;
-            } else {
-              if(timestamp - bannerSensorBeganTimestamp > 0.1) {
-                hasBall = true;
-                needsToNotifyDrivers = true;
-              }
-            }
-          } else if(!Double.isFinite(bannerSensorBeganTimestamp)) {
-            bannerSensorBeganTimestamp = Double.POSITIVE_INFINITY;;
-          }
-          break;
-        case EJECTING:
-          if(stateChanged) {
-            setRampRate(0.0);
-            hasBall = false;
-          }
-          if(timestamp - stateEnteredTimestamp > 2.0) {
-            stop();
-            setRampRate(Constants.kIntakeRampRate);
-          }
-          break;
-        case HOLDING:
-          /*if(banner.get()) {
-            if(isConstantSuck) {
-              holdRollers();
-              isConstantSuck = false;
-            }
+      switch (currentState) {
+      case OFF:
+        break;
+      case INTAKING:
+        if (stateChanged)
+          hasBall = false;
+        if (banner.get()) {
+          if (Double.isInfinite(bannerSensorBeganTimestamp)) {
+            bannerSensorBeganTimestamp = timestamp;
           } else {
-            if(!isConstantSuck) {
-              setGrabberSpeed(Constants.kIntakingResuckingOutput);
-              isConstantSuck = true;
+            if (timestamp - bannerSensorBeganTimestamp > 0.1) {
+              hasBall = true;
+              needsToNotifyDrivers = true;
             }
-          }*/
-        default:
-          break;
+          }
+        } else if (!Double.isFinite(bannerSensorBeganTimestamp)) {
+          bannerSensorBeganTimestamp = Double.POSITIVE_INFINITY;
+          ;
+        }
+        break;
+      case EJECTING:
+        if (stateChanged) {
+          setRampRate(0.0);
+          hasBall = false;
+        }
+        if (timestamp - stateEnteredTimestamp > 2.0) {
+          stop();
+          setRampRate(Constants.kIntakeRampRate);
+        }
+        break;
+      case HOLDING:
+        if (banner.get()) {
+          if (isConstantSuck) {
+            holdRollers();
+            isConstantSuck = false;
+          }
+        } else {
+          if (!isConstantSuck) {
+            setGrabberSpeed(Constants.kIntakingResuckingOutput);
+            isConstantSuck = true;
+          }
+        }
+      case CLIMBING:
+        break;
+      default:
+        break;
       }
       if (stateChanged)
         stateChanged = false;
@@ -256,8 +261,8 @@ public class BallIntake extends Subsystem {
   }
 
   public Request waitForBallRequest() {
-    return new Request(){
-    
+    return new Request() {
+
       @Override
       public void act() {
         conformToState(State.INTAKING);
@@ -272,8 +277,8 @@ public class BallIntake extends Subsystem {
   }
 
   public Request ejectRequest(double output) {
-    return new Request(){
-    
+    return new Request() {
+
       @Override
       public void act() {
         conformToState(State.EJECTING, output);
@@ -282,8 +287,8 @@ public class BallIntake extends Subsystem {
   }
 
   public Prerequisite ballRequisite() {
-    return new Prerequisite(){
-    
+    return new Prerequisite() {
+
       @Override
       public boolean met() {
         return hasBall();
@@ -293,7 +298,7 @@ public class BallIntake extends Subsystem {
 
   @Override
   public void outputTelemetry() {
-    if(Constants.kDebuggingOutput) {
+    if (Constants.kDebuggingOutput) {
       SmartDashboard.putNumber("Intake Grabber Current", grabber.getOutputCurrent());
       SmartDashboard.putNumber("Intake Grabber Voltage", grabber.getMotorOutputVoltage());
       SmartDashboard.putNumber("Intake Feeder Current", feeder.getOutputCurrent());

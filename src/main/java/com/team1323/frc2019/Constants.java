@@ -175,6 +175,7 @@ public class Constants {
 	public static final double kIntakeStrongHoldingOutput = 4.0/12.0;
 	public static final double kIntakingResuckingOutput = 6.0/12.0;
 	public static final double kIntakeRampRate = 0.25;
+	public static final double kIntakeClimbOutput = 6.0/12.0;
 
 	//Ball Carriage Constants
 	public static final double kBallCarriageEjectOutput = -0.5;
