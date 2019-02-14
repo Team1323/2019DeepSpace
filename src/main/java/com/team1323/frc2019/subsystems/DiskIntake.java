@@ -50,7 +50,7 @@ public class DiskIntake extends Subsystem {
 
   private DiskIntake() {
     diskMotor = new LazyTalonSRX(Ports.DISK_INTAKE);
-    lift = new Solenoid(Ports.DISK_INTAKE_LIFT);
+    lift = new Solenoid(Ports.DRIVEBASE_PCM, Ports.DISK_INTAKE_LIFT);
     banner = new DigitalInput(Ports.DISK_INTAKE_BANNER);
 
     diskMotor.setInverted(false);

@@ -107,7 +107,7 @@ public class Constants {
 		{{1.84, -4.70, 2.56}, {1.85, 5.34, -2.89}}};
 	
 	//Swerve Odometry Constants
-	public static final double kSwerveWheelDiameter = 3.93; //inches
+	public static final double kSwerveWheelDiameter = 4.0; //inches
 	public static final double kSwerveDriveEncoderResolution = 4096.0;
 	/** The number of rotations the swerve drive encoder undergoes for every rotation of the wheel. */
 	public static final double kSwerveEncoderToWheelRatio = 10.0/9.0;
@@ -118,7 +118,7 @@ public class Constants {
 	public static final double kElevatorMaxSpeedHighGear = 541.18 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
 	public static final int kElevatorEncoderStartingPosition = 0;
-	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically TODO measure
+	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 1.0; //inches
 	public static final double kElevatorDiskIntakeHeight = 0.0;
 	public static final double kElevatorLowHatchHeight = 5.2;
@@ -155,7 +155,7 @@ public class Constants {
 	/** Pulse width position of the wrist encoder when the wrist is upright (at 90 degrees, parallel to the elevator). */
 	public static final int kWristStartingEncoderPosition = kIsUsingCompBot ? 3249 : 156;
 	/** The number of rotations the wrist encoder undergoes for every rotation of the wrist. */
-	public static final double kWristEncoderToOutputRatio = 30.0 / 12.0;
+	public static final double kWristEncoderToOutputRatio = 30.0 / 12.0; // 144 degrees before wrap
 	public static final double kWristAngleTolerance = 10.0; //degrees
 	public static final double kWristMinControlAngle = -80.0; //degrees
 	public static final double kWristMaxControlAngle = 85.0; //degrees

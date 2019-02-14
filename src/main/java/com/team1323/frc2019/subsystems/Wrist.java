@@ -78,7 +78,7 @@ public class Wrist extends Subsystem{
 
 		setOpenLoop(0.0);
 
-		shifter = new Solenoid(20, 0);
+		shifter = new Solenoid(Ports.DRIVEBASE_PCM, Ports.WRIST_SHIFTER);
 	}
 
 	private void configForHighGear(){

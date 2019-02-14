@@ -25,9 +25,9 @@ public class Probe extends Subsystem {
     Solenoid fingers, scorer, extender;
 
     public Probe(){
-        extender = new Solenoid(20, Ports.PROBE_EXTENDER);
-        scorer = new Solenoid(20, Ports.PROBE_SCORER);
-        fingers = new Solenoid(20, Ports.PROBE_FINGERS);
+        extender = new Solenoid(Ports.CARRIAGE_PCM, Ports.PROBE_EXTENDER);
+        scorer = new Solenoid(Ports.CARRIAGE_PCM, Ports.PROBE_SCORER);
+        fingers = new Solenoid(Ports.CARRIAGE_PCM, Ports.PROBE_FINGERS);
     }
 
     public enum State{

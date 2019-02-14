@@ -27,12 +27,18 @@ public class Ports {
     
     public static final int PIGEON_TALON = 6;
     
+    //PCM's
+    public static final int DRIVEBASE_PCM = 20;
+    public static final int CARRIAGE_PCM = 21;
+
     //Solenoids
-    public static final int DISK_INTAKE_LIFT = 0;
+    public static final int WRIST_SHIFTER = 0;
+
+    public static final int DISK_INTAKE_LIFT = 1;
 
     public static final int PROBE_EXTENDER = 1;
-    public static final int PROBE_SCORER = 2;
-    public static final int PROBE_FINGERS = 3;
+    public static final int PROBE_SCORER = 3;
+    public static final int PROBE_FINGERS = 2;
     
     //Digital Inputs
     public static final int BALL_INTAKE_BANNER  = 0;
