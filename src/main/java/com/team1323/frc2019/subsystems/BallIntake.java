@@ -102,7 +102,8 @@ public class BallIntake extends Subsystem {
     OFF(0, 0), 
     INTAKING(Constants.kIntakingOutput, Constants.kIntakingOutput), 
     EJECTING(Constants.kIntakeEjectOutput, Constants.kIntakeEjectOutput), 
-    HOLDING(Constants.kIntakeWeakHoldingOutput, Constants.kIntakeWeakHoldingOutput);
+    HOLDING(Constants.kIntakeWeakHoldingOutput, Constants.kIntakeWeakHoldingOutput),
+    CLIMBING(Constants.kIntakeClimbOutput, 0);
 
     public double grabberOutput = 0;
     public double feederOutput = 0;
@@ -199,7 +200,7 @@ public class BallIntake extends Subsystem {
           }
           break;
         case HOLDING:
-          /*if(banner.get()) {
+          if(banner.get()) {
             if(isConstantSuck) {
               holdRollers();
               isConstantSuck = false;
@@ -209,7 +210,9 @@ public class BallIntake extends Subsystem {
               setGrabberSpeed(Constants.kIntakingResuckingOutput);
               isConstantSuck = true;
             }
-          }*/
+          }
+        case CLIMBING:
+        
         default:
           break;
       }
