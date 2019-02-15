@@ -321,8 +321,12 @@ public class Superstructure extends Subsystem {
 			wrist.angleRequest(Constants.kWristBallFeedingAngle, 0.1),
 			ballCarriage.stateRequest(BallCarriage.State.RECEIVING), 
 			ballIntake.stateRequest(BallIntake.State.FEEDING),
-			diskIntake.stateRequest(DiskIntake.State.OFF)), true);
-		request(state);
+			diskIntake.stateRequest(DiskIntake.State.OFF),
+			ballCarriage.waitForBallRequest()), true);
+		RequestList queue = new RequestList(Arrays.asList(
+			ballIntake.stateRequest(BallIntake.State.OFF),
+			ballCarriage.stateRequest(BallCarriage.State.SUCKING)), true);
+		request(state, queue);
 	}
 
 	public void diskIntakingState(){

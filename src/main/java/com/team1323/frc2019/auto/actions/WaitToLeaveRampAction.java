@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 public class WaitToLeaveRampAction implements Action{
     Pigeon pigeon;
     boolean startedDescent = false;
+    double startingPitch = 0.0;
     double timeout = 1.0;
     boolean timedOut = false;
     public boolean timedOut(){ return timedOut; }
@@ -29,10 +30,10 @@ public class WaitToLeaveRampAction implements Action{
 
     @Override
     public boolean isFinished() {
-        double rollAngle = pigeon.getRoll();
-        if(Math.abs(rollAngle) >= kMinExitAngle && !startedDescent)
+        double pitchAngle = pigeon.getPitch();
+        if(Math.abs(pitchAngle) >= (startingPitch + kMinExitAngle) && !startedDescent)
             startedDescent = true;
-        if(startedDescent && Math.abs(rollAngle) <= kAngleTolerance){
+        if(startedDescent && Math.abs(pitchAngle - startingPitch) <= kAngleTolerance){
             timedOut = false;
             return true;
         }
@@ -49,6 +50,7 @@ public class WaitToLeaveRampAction implements Action{
     @Override
     public void start() {
         startTime = Timer.getFPGATimestamp();
+        startingPitch = pigeon.getPitch();
     }
 
     @Override

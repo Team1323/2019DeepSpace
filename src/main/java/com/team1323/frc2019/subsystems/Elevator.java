@@ -256,12 +256,20 @@ public class Elevator extends Subsystem {
 		return false;
 	}
 	
-	public int inchesToEncUnits(double inches){
+	private int inchesToEncUnits(double inches){
 		return (int) (inches * Constants.kElevatorTicksPerInch);
 	}
 	
-	public double encUnitsToInches(double encUnits){
+	private double encUnitsToInches(double encUnits){
 		return encUnits / Constants.kElevatorTicksPerInch;
+	}
+
+	private double elevatorHeightToEncUnits(double elevatorHeight){
+		return Constants.kElevatorEncoderStartingPosition + inchesToEncUnits(elevatorHeight);
+	}
+
+	private double encUnitsToElevatorHeight(double encUnits){
+		return encUnitsToInches(encUnits - Constants.kElevatorEncoderStartingPosition);
 	}
 	
 	private boolean getMotorsWithHighCurrent(){

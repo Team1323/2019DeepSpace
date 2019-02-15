@@ -127,10 +127,10 @@ public class SwerveDriveModule extends Subsystem{
 		driveMotor.configMotionCruiseVelocity((int)(Constants.kSwerveDriveMaxSpeed*0.9), 10);
 		driveMotor.configMotionAcceleration((int)(Constants.kSwerveDriveMaxSpeed), 10);
     	// Slot 1 corresponds to velocity mode
-    	driveMotor.config_kP(1, 0.2, 10);
+    	driveMotor.config_kP(1, 0.1, 10);
     	driveMotor.config_kI(1, 0.0, 10);
     	driveMotor.config_kD(1, 0.0, 10);
-    	driveMotor.config_kF(1, 1023.0/Constants.kSwerveDriveMaxSpeed*0.8, 10);
+    	driveMotor.config_kF(1, 1023.0/Constants.kSwerveDriveMaxSpeed*0.9, 10);
 		if(!isDriveSensorConnected())
 			DriverStation.reportError(name + "drive encoder not detected!", false);
 	}
@@ -265,8 +265,8 @@ public class SwerveDriveModule extends Subsystem{
 		Rotation2d currentWheelAngle = getFieldCentricAngle(robotHeading);
 		Translation2d deltaPosition = new Translation2d(currentWheelAngle.cos()*deltaEncDistance, 
 				currentWheelAngle.sin()*deltaEncDistance);
-		deltaPosition = new Translation2d(deltaPosition.x() * ((Math.signum(deltaPosition.x()) == -1.0) ? 1.0 : Constants.kXScrubFactor),
-			deltaPosition.y() * ((Math.signum(deltaPosition.y()) == -1.0) ? 1.0 : Constants.kYScrubFactor));
+		deltaPosition = new Translation2d(deltaPosition.x() * ((Math.signum(deltaPosition.x()) == 1.0) ? 1.0 : Constants.kXScrubFactor),
+			deltaPosition.y() * ((Math.signum(deltaPosition.y()) == 1.0) ? 1.0 : Constants.kYScrubFactor));
 		Translation2d updatedPosition = position.translateBy(deltaPosition);
 		Pose2d staticWheelPose = new Pose2d(updatedPosition, robotHeading);
 		Pose2d robotPose = staticWheelPose.transformBy(Pose2d.fromTranslation(startingPosition).inverse());
@@ -344,7 +344,7 @@ public class SwerveDriveModule extends Subsystem{
 	@Override
 	public void outputTelemetry() {
 		SmartDashboard.putNumber(name + "Angle", getModuleAngle().getDegrees());
-		SmartDashboard.putNumber(name + "Inches Driven", /*getDriveDistanceInches()*/periodicIO.drivePosition);
+		SmartDashboard.putNumber(name + "Inches Driven", getDriveDistanceInches());
 		if(Constants.kDebuggingOutput){
 			SmartDashboard.putNumber(name + "Pulse Width", rotationMotor.getSelectedSensorPosition(0));
 			SmartDashboard.putNumber(name + "Drive Voltage", periodicIO.driveVoltage);

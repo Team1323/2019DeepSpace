@@ -46,11 +46,13 @@ public class TwoCloseOneBallMode extends AutoModeBase {
         runAction(new SetTrajectoryAction(trajectories.startToCloseHatch.get(left), 30.0 * directionFactor, 1.0));
         WaitToLeaveRampAction rampAction = new WaitToLeaveRampAction(2.0);
         runAction(rampAction);
-        if(!rampAction.timedOut())
+        if(!rampAction.timedOut()){
             Swerve.getInstance().resetPosition(left ? Constants.kRobotLeftRampExitPose : Constants.kRobotRightRampExitPose);
+            System.out.println("Position reset off of ramp");
+        }
         runAction(new WaitToFinishPathAction());
         runAction(new WaitAction(0.5));
-        runAction(new SetTrajectoryAction(trajectories.closeHatchToHumanLoader.get(left), 180.0 * directionFactor, 1.0));
+        /*runAction(new SetTrajectoryAction(trajectories.closeHatchToHumanLoader.get(left), 180.0 * directionFactor, 1.0));
         runAction(new WaitToFinishPathAction());
         runAction(new WaitAction(0.5));
         runAction(new SetTrajectoryAction(trajectories.humanLoaderToCloseHatch.get(left), 30.0 * directionFactor, 1.0));
@@ -63,7 +65,7 @@ public class TwoCloseOneBallMode extends AutoModeBase {
         runAction(new WaitToFinishPathAction());
         runAction(new WaitAction(0.5));
         runAction(new SetTrajectoryAction(trajectories.rocketPortToHumanLoader.get(left), 180.0 * directionFactor, 1.0));
-        runAction(new WaitToFinishPathAction());
+        runAction(new WaitToFinishPathAction());*/
 
         System.out.println("Auto mode finished in " + currentTime() + " seconds");
 	}

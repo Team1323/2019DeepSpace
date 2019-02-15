@@ -22,11 +22,11 @@ public class Constants {
 	public static final boolean kDebuggingOutput = true;
 	
 	//Physical Robot Dimensions (including bumpers)
-	public static final double kRobotWidth = 33.0;
-	public static final double kRobotLength = 33.0;
+	public static final double kRobotWidth = 29.5;
+	public static final double kRobotLength = 29.5 + 2.625;
 	public static final double kRobotHalfWidth = kRobotWidth / 2.0;
 	public static final double kRobotHalfLength = kRobotLength / 2.0;
-	public static final double kRobotIntakeExtrusion = 11.0;//TODO update
+	public static final double kRobotProbeExtrusion = 11.0;//TODO update
 
 	public static final double kBallRadius = 6.5;
 	
@@ -41,8 +41,10 @@ public class Constants {
 	
 	public static final Pose2d kRobotLeftStartingPose = new Pose2d(new Translation2d(48.0 + kRobotHalfLength, 97.0 + kRobotHalfWidth - 162.0), Rotation2d.fromDegrees(0));
 	public static final Pose2d kRobotRightStartingPose = new Pose2d(new Translation2d(48.0 + kRobotHalfLength, -(97.0 + kRobotHalfWidth - 162.0)), Rotation2d.fromDegrees(0));
-	public static final Pose2d kRobotLeftRampExitPose = new Pose2d(new Translation2d(48.0 + kRobotHalfLength, -75.25 - kRobotHalfWidth), Rotation2d.fromDegrees(0));
-	public static final Pose2d kRobotRightRampExitPose = new Pose2d(new Translation2d(48.0 + kRobotHalfLength, 75.25 + kRobotHalfWidth), Rotation2d.fromDegrees(0));
+	public static final Pose2d kRobotLeftRampExitPose = new Pose2d(new Translation2d(95.25 + kRobotHalfLength, 97.0 + kRobotHalfWidth - 162.0), Rotation2d.fromDegrees(0));
+	public static final Pose2d kRobotRightRampExitPose = new Pose2d(new Translation2d(95.25 + kRobotHalfLength, -(97.0 + kRobotHalfWidth - 162.0)), Rotation2d.fromDegrees(0));
+	//public static final Pose2d kRobotLeftRampExitPose = new Pose2d(new Translation2d(48.0 + kRobotHalfLength, -75.25 - kRobotHalfWidth), Rotation2d.fromDegrees(0));
+	//public static final Pose2d kRobotRightRampExitPose = new Pose2d(new Translation2d(48.0 + kRobotHalfLength, 75.25 + kRobotHalfWidth), Rotation2d.fromDegrees(0));
 	
 	//Swerve Calculations Constants (measurements are in inches)
     public static final double kWheelbaseLength = 21.0;
@@ -50,11 +52,11 @@ public class Constants {
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
     
     //Camera Constants
-    public static final double kCameraYOffset = 0.0;
+    public static final double kCameraYOffset = 7.75;
     public static final double kCameraXOffset = (29.5 / 2.0) - 17.4375;
-    public static final double kCameraZOffset = 39.906;
+    public static final double kCameraZOffset = 37.906;
     public static final double kCameraYawAngleDegrees = 0.0;
-    public static final double kCameraPitchAngleDegrees = -16.0;
+    public static final double kCameraPitchAngleDegrees = -15.4;
     
     //Goal tracker constants
     public static double kMaxGoalTrackAge = 1.0;
@@ -72,7 +74,7 @@ public class Constants {
 	public static final double kPathMinLookaheadDistance = 6.0;  // inches 24.0 (we've been using 3.0)
     
     //Swerve Speed Constants
-    public static final double kSwerveDriveMaxSpeed = 5432.0;
+    public static final double kSwerveDriveMaxSpeed = 28000.0;
     public static final double kSwerveMaxSpeedInchesPerSecond = 12.5 * 12.0;
 	public static final double kSwerveRotationMaxSpeed = 1250.0 * 0.8; //The 0.8 is to request a speed that is always achievable
 	public static final double kSwerveRotation10VoltMaxSpeed = 1350.0;
@@ -95,8 +97,8 @@ public class Constants {
 	
 	//Scrub Factors
 	public static final double[] kWheelScrubFactors = new double[]{1.0, 1.0, 1.0, 1.0};
-	public static final double kXScrubFactor = 1.0 - (0.5665 / 13.4356);
-	public static final double kYScrubFactor = 1.0 - (0.57527 / 20.4593);
+	public static final double kXScrubFactor = 1.0 / (1.0 - (9549.0 / 293093.0));
+	public static final double kYScrubFactor = 1.0 / (1.0 - (4.4736 / 119.9336));
 
 	//Voltage-Velocity equation constants {m, b, x-intercept}
 	//First set is the positive direction, second set is negative
@@ -107,10 +109,10 @@ public class Constants {
 		{{1.84, -4.70, 2.56}, {1.85, 5.34, -2.89}}};
 	
 	//Swerve Odometry Constants
-	public static final double kSwerveWheelDiameter = 4.0; //inches
+	public static final double kSwerveWheelDiameter = 4.0901; //inches (actual diamter is closer to 3.87)
 	public static final double kSwerveDriveEncoderResolution = 4096.0;
 	/** The number of rotations the swerve drive encoder undergoes for every rotation of the wheel. */
-	public static final double kSwerveEncoderToWheelRatio = 10.0/9.0;
+	public static final double kSwerveEncoderToWheelRatio = 6.0;
 	public static final double kSwerveEncUnitsPerWheelRev = kSwerveDriveEncoderResolution * kSwerveEncoderToWheelRatio;
 	public static final double kSwerveEncUnitsPerInch = kSwerveEncUnitsPerWheelRev / (Math.PI * kSwerveWheelDiameter);
 	
@@ -153,7 +155,7 @@ public class Constants {
 	public static final double kWristMaxSpeedLowGear = 200.0;
 	public static final double kWristStartingAngle = 0.0;
 	/** Pulse width position of the wrist encoder when the wrist is upright (at 90 degrees, parallel to the elevator). */
-	public static final int kWristStartingEncoderPosition = kIsUsingCompBot ? 3249 : 1179;
+	public static final int kWristStartingEncoderPosition = kIsUsingCompBot ? 3249 : 2520;
 	/** The number of rotations the wrist encoder undergoes for every rotation of the wrist. */
 	public static final double kWristEncoderToOutputRatio = 30.0 / 12.0; // 144 degrees before wrap
 	public static final double kWristAngleTolerance = 10.0; //degrees

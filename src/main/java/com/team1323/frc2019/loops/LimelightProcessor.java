@@ -9,6 +9,7 @@ import com.team1323.frc2019.vision.TargetInfo;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LimelightProcessor implements Loop{
 	static LimelightProcessor instance = new LimelightProcessor();
@@ -18,6 +19,7 @@ public class LimelightProcessor implements Loop{
 	NetworkTableEntry pipeline;
 	NetworkTableEntry camMode;
 	public List<NetworkTableEntry> target1, target2, combinedTarget;
+	NetworkTableEntry camtran;
 	
 	public static LimelightProcessor getInstance(){
 		return instance;
@@ -38,6 +40,7 @@ public class LimelightProcessor implements Loop{
 			table.getEntry("ta1"));
 		combinedTarget = Arrays.asList(table.getEntry("tx"), table.getEntry("ty"),
 			table.getEntry("ta"), table.getEntry("tv"));
+		camtran = table.getEntry("camtran");
 		setPipeline(0);
 	}
 	
@@ -49,6 +52,8 @@ public class LimelightProcessor implements Loop{
 			targets.add(getTargetInfo(target2));
 			targets.add(new TargetInfo(Math.tan(Math.toRadians(combinedTarget.get(0).getDouble(0))), Math.tan(Math.toRadians(combinedTarget.get(1).getDouble(0)))));
 		}
+
+		SmartDashboard.putNumber("Limelight Pitch", camtran.getDoubleArray(new double[]{0.0,0.0,0.0,0.0,0.0,0.0})[3]);
 
 		robotState.addVisionUpdate(timestamp, targets);		
 	}

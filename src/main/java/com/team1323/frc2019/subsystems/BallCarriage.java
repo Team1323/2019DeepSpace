@@ -11,11 +11,13 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1323.frc2019.Constants;
 import com.team1323.frc2019.Ports;
+import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.requests.Request;
 import com.team254.drivers.LazyTalonSRX;
-import edu.wpi.first.wpilibj.Timer;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -30,9 +32,15 @@ public class BallCarriage extends Subsystem{
     }
 
     LazyTalonSRX motor;
+    DigitalInput banner;
+
+    private boolean getBanner(){
+        return banner.get();
+    }
 
     public BallCarriage(){
         motor = new LazyTalonSRX(Ports.BALL_CARRIAGE);
+        banner = new DigitalInput(Ports.BALL_CARRIAGE_BANNER);
         motor.configVoltageCompSaturation(12.0);
         motor.enableVoltageCompensation(true);
         motor.setNeutralMode(NeutralMode.Brake);
@@ -72,6 +80,18 @@ public class BallCarriage extends Subsystem{
     private double bannerSensorBeganTimestamp = Double.POSITIVE_INFINITY;
     private double stateEnteredTimestamp = 0;
 
+    private boolean hasBall = false;
+    public boolean hasBall(){ return hasBall; }
+
+    private boolean needsToNotifyDrivers = false;
+    public boolean needsToNotifyDrivers() {
+        if (needsToNotifyDrivers) {
+        needsToNotifyDrivers = false;
+        return true;
+        }
+        return false;
+    }
+
     public synchronized void setOpenLoop(double percentOutput){
         motor.set(ControlMode.PercentOutput, percentOutput);
     }
@@ -88,12 +108,35 @@ public class BallCarriage extends Subsystem{
             switch(currentState){
                 case EJECTING:
                     if((timestamp - stateEnteredTimestamp) > 1.0){
-                        setOpenLoop(0.0);
+                        conformToState(State.OFF);
+                    }
+                    break;
+                case RECEIVING:
+                    if (stateChanged)
+                        hasBall = false;
+                    if (getBanner()) {
+                        if (Double.isInfinite(bannerSensorBeganTimestamp)) {
+                            bannerSensorBeganTimestamp = timestamp;
+                        } else {
+                            if (timestamp - bannerSensorBeganTimestamp >= 0.0) {
+                                hasBall = true;
+                                needsToNotifyDrivers = true;
+                            }
+                        }
+                    } else if (!Double.isFinite(bannerSensorBeganTimestamp)) {
+                        bannerSensorBeganTimestamp = Double.POSITIVE_INFINITY;
+                    }
+                    break;
+                case SUCKING:
+                    if(banner.get()){
+                        conformToState(State.OFF);
                     }
                     break;
                 default:
                     break;
             }
+            if(stateChanged)
+                stateChanged = false;
         }
 
         @Override
@@ -118,12 +161,35 @@ public class BallCarriage extends Subsystem{
         };
     }
 
+    public Request waitForBallRequest(){
+        return new Request(){
+
+            @Override
+            public void act(){
+
+            }
+
+            @Override
+            public boolean isFinished(){
+                return hasBall();
+            }
+
+        };
+    }
+
     @Override
     public void outputTelemetry() {
         if(Constants.kDebuggingOutput){
             SmartDashboard.putNumber("Ball Carriage Voltage", motor.getMotorOutputVoltage());
             SmartDashboard.putNumber("Ball Carriage Current", motor.getOutputCurrent());
+            SmartDashboard.putBoolean("Ball Carriage Banner", getBanner());
+            SmartDashboard.putBoolean("Ball Carriage Has Ball", hasBall());
         }
+    }
+
+    @Override
+    public void registerEnabledLoops(ILooper enabledLooper) {
+        enabledLooper.register(loop);
     }
 
     @Override
