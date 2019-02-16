@@ -21,7 +21,7 @@ public class WaitToLeaveRampAction implements Action{
     double startTime = 0.0;
 
     final double kAngleTolerance = 2.0;
-    final double kMinExitAngle = 10.0;
+    final double kMinExitAngle = 8.0;
 
     public WaitToLeaveRampAction(double timeout){
         pigeon = Pigeon.getInstance();

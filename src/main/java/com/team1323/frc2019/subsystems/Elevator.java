@@ -88,7 +88,7 @@ public class Elevator extends Subsystem {
 		
 		master.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 		master.setSensorPhase(false);
-		zeroSensors();
+		//zeroSensors();
 		master.configReverseSoftLimitThreshold(Constants.kElevatorEncoderStartingPosition, 10);
 		master.configForwardSoftLimitThreshold(Constants.kElevatorEncoderStartingPosition + inchesToEncUnits(Constants.kElevatorMaxHeight), 10);
 		master.configForwardSoftLimitEnable(true, 10);
@@ -97,7 +97,7 @@ public class Elevator extends Subsystem {
 
 		setCurrentLimit(Constants.kELevatorCurrentLimit);
 		
-		//resetToAbsolutePosition();
+		resetToAbsolutePosition();
 		configForLifting();
 	}
 	
@@ -164,7 +164,7 @@ public class Elevator extends Subsystem {
 			else
 				master.selectProfileSlot(1, 0);
 			targetHeight = heightFeet;
-			periodicIO.demand = Constants.kElevatorEncoderStartingPosition + inchesToEncUnits(heightFeet);
+			periodicIO.demand = elevatorHeightToEncUnits(heightFeet);
 			onTarget = false;
 			startTime = Timer.getFPGATimestamp();
 		}else{
@@ -234,7 +234,7 @@ public class Elevator extends Subsystem {
 	}
 
 	public double getHeight(){
-		return encUnitsToInches(periodicIO.position - Constants.kElevatorEncoderStartingPosition);
+		return encUnitsToElevatorHeight(periodicIO.position);
 	}
 	
 	public double getVelocityFeetPerSecond(){
@@ -303,6 +303,20 @@ public class Elevator extends Subsystem {
 		return pulseWidthPeriod != 0;
 	}
 
+	public void resetToAbsolutePosition(){
+		int absolutePosition = (int) Util.boundToScope(0, 4096, master.getSensorCollection().getPulseWidthPosition());
+		if(encUnitsToElevatorHeight(absolutePosition) > Constants.kElevatorMaxInitialHeight){
+			absolutePosition -= 4096;
+		}else if(encUnitsToElevatorHeight(absolutePosition) < Constants.kElevatorMinInitialHeight){
+			absolutePosition += 4096;
+		}
+		double height = encUnitsToElevatorHeight(absolutePosition);
+		if(height > Constants.kElevatorMaxInitialHeight || height < Constants.kElevatorMinInitialHeight){
+			DriverStation.reportError("Elevator height is out of bounds", false);
+		}
+		master.setSelectedSensorPosition(absolutePosition, 0, 10);
+	}
+
 	@Override
 	public synchronized void readPeriodicInputs(){
 		periodicIO.position = master.getSelectedSensorPosition(0);
@@ -329,7 +343,8 @@ public class Elevator extends Subsystem {
 
 	@Override
 	public void zeroSensors() {
-		master.setSelectedSensorPosition(0, 0, 10);
+		//master.setSelectedSensorPosition(0, 0, 10);
+		resetToAbsolutePosition();
 	}
 
 	@Override

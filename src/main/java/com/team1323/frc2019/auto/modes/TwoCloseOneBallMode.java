@@ -47,7 +47,7 @@ public class TwoCloseOneBallMode extends AutoModeBase {
         WaitToLeaveRampAction rampAction = new WaitToLeaveRampAction(2.0);
         runAction(rampAction);
         if(!rampAction.timedOut()){
-            Swerve.getInstance().resetPosition(left ? Constants.kRobotLeftRampExitPose : Constants.kRobotRightRampExitPose);
+            //Swerve.getInstance().resetPosition(left ? Constants.kRobotLeftRampExitPose : Constants.kRobotRightRampExitPose);
             System.out.println("Position reset off of ramp");
         }
         runAction(new WaitToFinishPathAction());

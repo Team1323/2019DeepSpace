@@ -44,4 +44,7 @@ public class Ports {
     public static final int BALL_INTAKE_BANNER  = 2;
     public static final int DISK_INTAKE_BANNER = 1;
     public static final int BALL_CARRIAGE_BANNER = 0;
+
+    //CANifier
+    public static final int CANIFIER = 23;
 }

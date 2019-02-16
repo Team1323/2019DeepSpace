@@ -329,14 +329,42 @@ public class Superstructure extends Subsystem {
 		request(state, queue);
 	}
 
+	public void fullBallCycleState(){
+		RequestList state = new RequestList(Arrays.asList(
+			elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
+			wrist.angleRequest(Constants.kWristBallHoldingAngle),
+			ballCarriage.stateRequest(BallCarriage.State.OFF), 
+			ballIntake.stateRequest(BallIntake.State.HOLDING),
+			diskIntake.stateRequest(DiskIntake.State.OFF)), true);
+		List<RequestList> queue = Arrays.asList(
+			new RequestList(Arrays.asList(
+				elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
+				wrist.angleRequest(Constants.kWristBallFeedingAngle, 0.1),
+				ballCarriage.stateRequest(BallCarriage.State.RECEIVING), 
+				ballIntake.stateRequest(BallIntake.State.FEEDING),
+				diskIntake.stateRequest(DiskIntake.State.OFF),
+				ballCarriage.waitForBallRequest()), true),
+			new RequestList(Arrays.asList(
+				ballIntake.stateRequest(BallIntake.State.OFF),
+				ballCarriage.stateRequest(BallCarriage.State.SUCKING)), true)
+		);
+		request(state);
+		replaceQueue(queue);
+	}
+
 	public void diskIntakingState(){
 		RequestList state = new RequestList(Arrays.asList(
 			elevator.heightRequest(Constants.kElevatorDiskIntakeHeight),
 			probe.stateRequest(Probe.State.STOWED),
 			diskIntake.stateRequest(DiskIntake.State.INTAKING),
 			ballIntake.stateRequest(BallIntake.State.OFF),
-			ballCarriage.stateRequest(BallCarriage.State.OFF)), true);
-		request(state); 
+			ballCarriage.stateRequest(BallCarriage.State.OFF),
+			diskIntake.waitForDiskRequest()), true);
+		RequestList queue = new RequestList(Arrays.asList(
+			diskIntake.stateRequest(DiskIntake.State.OFF),
+			probe.waitForDiskRequest(),
+			probe.stateRequest(Probe.State.STOWED_HOLDING)), false);
+		request(state, queue); 
 	}
 
 	public void diskReceivingState(){
@@ -345,13 +373,27 @@ public class Superstructure extends Subsystem {
 			probe.stateRequest(Probe.State.RECEIVING),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
 			ballIntake.stateRequest(BallIntake.State.OFF),
+			ballCarriage.stateRequest(BallCarriage.State.OFF),
+			probe.waitForDiskRequest()), true);
+		RequestList queue = new RequestList(Arrays.asList(
+			probe.stateRequest(Probe.State.STOWED_HOLDING)), true);
+		request(state, queue); 
+	}
+
+	public void diskScoringState(double elevatorHeight){
+		RequestList state = new RequestList(Arrays.asList(
+			elevator.heightRequest(elevatorHeight),
+			probe.stateRequest(Probe.State.HOLDING),
+			diskIntake.stateRequest(DiskIntake.State.OFF),
+			ballIntake.stateRequest(BallIntake.State.OFF),
 			ballCarriage.stateRequest(BallCarriage.State.OFF)), true);
 		request(state); 
 	}
 
 	public void climbingState(){
 		RequestList state = new RequestList(Arrays.asList(
-			elevator.heightRequest(Constants.kElevatorDiskIntakeHeight),
+			wrist.gearShiftRequest(false),
+			elevator.heightRequest(Constants.kElevatorBallIntakeHeight),
 			probe.stateRequest(Probe.State.STOWED),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
 			ballIntake.stateRequest(BallIntake.State.CLIMBING),

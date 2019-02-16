@@ -37,6 +37,9 @@ public class BallIntake extends Subsystem {
   public synchronized boolean hasBall() {
     return hasBall;
   }
+  public void feignBall(){
+    hasBall = true;
+  }
 
   private LazyTalonSRX grabber, feeder;
   private DigitalInput banner;

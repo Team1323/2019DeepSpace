@@ -12,7 +12,11 @@ import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.requests.Request;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.team1323.frc2019.Constants;
 
 public class Probe extends Subsystem {
     private static Probe instance = null;
@@ -23,16 +27,24 @@ public class Probe extends Subsystem {
     }
 
     Solenoid fingers, scorer, extender;
+    DigitalInput banner;
+
+    private boolean getBanner(){
+        return banner.get();
+    }
 
     public Probe(){
         extender = new Solenoid(Ports.CARRIAGE_PCM, Ports.PROBE_EXTENDER);
         scorer = new Solenoid(Ports.CARRIAGE_PCM, Ports.PROBE_SCORER);
         fingers = new Solenoid(Ports.CARRIAGE_PCM, Ports.PROBE_FINGERS);
+
+        banner = new DigitalInput(Ports.DISK_INTAKE_BANNER);
     }
 
     public enum State{
         SCORING(true, true, false), STOWED(false, false, true),
-        HOLDING(true, true, true), RECEIVING(true, false, true);
+        HOLDING(true, true, true), RECEIVING(true, false, true),
+        STOWED_HOLDING(false, true, true);
 
         boolean extended;
         boolean scoring;
@@ -44,15 +56,36 @@ public class Probe extends Subsystem {
             this.fingers = fingers;
         }
     }
-    State state = State.STOWED;
-    public State getState(){
-        return state;
+    private State currentState = State.STOWED;
+    public State getState(){ return currentState; }
+    private synchronized void setState(State newState) {
+        if (newState != currentState)
+          stateChanged = true;
+        currentState = newState;
+        stateEnteredTimestamp = Timer.getFPGATimestamp();
+    }
+
+    private boolean stateChanged = false;
+    private double bannerSensorBeganTimestamp = Double.POSITIVE_INFINITY;
+    private double stateEnteredTimestamp = 0;
+
+    private boolean hasDisk = false;
+    public boolean hasDisk(){ return hasDisk; }
+
+    private boolean needsToNotifyDrivers = false;
+    public boolean needsToNotifyDrivers() {
+        if (needsToNotifyDrivers) {
+        needsToNotifyDrivers = false;
+        return true;
+        }
+        return false;
     }
 
     public void conformToState(State newState){
         extender.set(newState.extended);
         scorer.set(newState.scoring);
         fingers.set(!newState.fingers);
+        setState(newState);
     }
 
     public Request stateRequest(State newState){
@@ -61,6 +94,22 @@ public class Probe extends Subsystem {
             @Override
             public void act() {
                 conformToState(newState);
+            }
+
+        };
+    }
+
+    public Request waitForDiskRequest(){
+        return new Request(){
+
+            @Override
+            public void act(){
+
+            }
+
+            @Override
+            public boolean isFinished(){
+                return hasDisk() && !stateChanged;
             }
 
         };
@@ -75,18 +124,34 @@ public class Probe extends Subsystem {
     
         @Override
         public void onLoop(double timestamp) {
-            switch(state){
+            switch(currentState){
                 case SCORING:
-                break;
+                    break;
                 case STOWED:
-                break;
+                    break;
                 case HOLDING:
-                break;
+                    break;
                 case RECEIVING:
-                break;
+                    if (stateChanged)
+                        hasDisk = false;
+                    if (getBanner()) {
+                        if (Double.isInfinite(bannerSensorBeganTimestamp)) {
+                            bannerSensorBeganTimestamp = timestamp;
+                        } else {
+                            if (timestamp - bannerSensorBeganTimestamp >= 0.0) {
+                                hasDisk = true;
+                                needsToNotifyDrivers = true;
+                            }
+                        }
+                    } else if (!Double.isFinite(bannerSensorBeganTimestamp)) {
+                        bannerSensorBeganTimestamp = Double.POSITIVE_INFINITY;
+                    }
+                    break;
                 default:
-                break;
+                    break;
             }
+            if(stateChanged)
+                stateChanged = false;
         }
 
         @Override
@@ -103,7 +168,10 @@ public class Probe extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-
+        if(Constants.kDebuggingOutput){
+            SmartDashboard.putBoolean("Probe Has Disk", hasDisk());
+            SmartDashboard.putBoolean("Probe Banner", getBanner());
+        }
     }
 
     @Override

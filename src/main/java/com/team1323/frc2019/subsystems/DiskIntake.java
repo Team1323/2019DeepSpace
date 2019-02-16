@@ -42,16 +42,10 @@ public class DiskIntake extends Subsystem {
 
   private LazyTalonSRX diskMotor;
   private Solenoid lift;
-  private DigitalInput banner;
-
-  public boolean getBanner() {
-    return banner.get();
-  }
 
   private DiskIntake() {
     diskMotor = new LazyTalonSRX(Ports.DISK_INTAKE);
     lift = new Solenoid(Ports.DRIVEBASE_PCM, Ports.DISK_INTAKE_LIFT);
-    banner = new DigitalInput(Ports.DISK_INTAKE_BANNER);
 
     diskMotor.setInverted(true);
 
@@ -84,7 +78,7 @@ public class DiskIntake extends Subsystem {
   public enum State {
     OFF(0, true), 
     INTAKING(Constants.kDiskIntakingOutput, false), 
-    EJECTING(Constants.kDiskIntakeStrongEjectOutput, true), 
+    EJECTING(Constants.kDiskIntakeStrongEjectOutput, false), 
     HANDOFF(Constants.kDiskIntakeWeakEjectOutput, true), 
     HOLDING(Constants.kDiskStrongHoldingOutput, true),
     DEPLOYED(0, false);
@@ -164,7 +158,7 @@ public class DiskIntake extends Subsystem {
         case INTAKING:
           if(stateChanged)
             hasDisk = false;
-          if(banner.get()) {
+          if(diskMotor.getOutputCurrent() >= 10.0 && (timestamp - stateEnteredTimestamp) >= 0.5) {
             if(Double.isInfinite(bannerSensorBeganTimestamp)) {
               bannerSensorBeganTimestamp = timestamp;
             } else {
@@ -188,15 +182,15 @@ public class DiskIntake extends Subsystem {
           }
           break;
         case HANDOFF:
-          if(banner.get()) {
+          /*if(banner.get()) {
             if (timestamp - stateEnteredTimestamp > 2.0) {
               setRampRate(Constants.kDiskIntakeRampRate);
               setRollers(Constants.kDiskIntakeWeakEjectOutput);
             }
-          }
+          }*/
           break;
         case HOLDING:
-          if(banner.get()) {
+          /*if(banner.get()) {
             if(isResucking) {
               holdRollers();
               isResucking = false;
@@ -206,7 +200,8 @@ public class DiskIntake extends Subsystem {
               setRollers(Constants.kDiskIntakingResuckingOutput);
               isResucking = true;
             }
-          }
+          }*/
+          break;
         default:
           break;
       }
@@ -305,7 +300,6 @@ public class DiskIntake extends Subsystem {
       SmartDashboard.putNumber("Disk Intake Current", diskMotor.getOutputCurrent());
       SmartDashboard.putNumber("Disk Intake Voltage", diskMotor.getMotorOutputVoltage());
       SmartDashboard.putBoolean("Disk Intake Has Cube", hasDisk);
-      SmartDashboard.putBoolean("Disk Intake Banner", banner.get());
     }
 
   }

@@ -852,10 +852,10 @@ public class Swerve extends Subsystem{
 	@Override
 	public void outputTelemetry() {
 		modules.forEach((m) -> m.outputTelemetry());
+		SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getUnboundedDegrees()});
 		if(Constants.kDebuggingOutput){
 			SmartDashboard.putNumber("Robot X", pose.getTranslation().x());
 			SmartDashboard.putNumber("Robot Y", pose.getTranslation().y());
-			SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getUnboundedDegrees()});
 			SmartDashboard.putNumber("Robot Heading", pose.getRotation().getUnboundedDegrees());
 			SmartDashboard.putString("Heading Controller", headingController.getState().toString());
 			SmartDashboard.putNumber("Target Heading", headingController.getTargetHeading());

@@ -119,7 +119,7 @@ public class Constants {
 	//Elevator Constants
 	public static final double kElevatorMaxSpeedHighGear = 541.18 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
-	public static final int kElevatorEncoderStartingPosition = 0;
+	public static final int kElevatorEncoderStartingPosition = 3541;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 1.0; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.5;
@@ -132,6 +132,8 @@ public class Constants {
 	public static final double kElevatorHighBallHeight = 60.4;
 	public static final double kElevatorMinHeight = 0.0; //inches
 	public static final double kElevatorMaxHeight = 65.0; //inches
+	public static final double kElevatorMinInitialHeight = -0.5;
+	public static final double kElevatorMaxInitialHeight = 4.5;
 	public static final double kElevatorMaxCurrent = 50.0;//amps
 	public static final int kELevatorCurrentLimit = 20;
 	public static final double kElevatorMinimumHangingHeight = 0.795 + 0.08;
@@ -163,7 +165,7 @@ public class Constants {
 	public static final double kWristMaxControlAngle = 85.0; //degrees
 	public static final double kWristMinPhysicalAngle = -40.0;
 	public static final double kWristMaxPhysicalAngle = 90.0;//95.192
-	public static final double kWristIntakingAngle = kIsUsingCompBot ? 0.0 : 0.0;
+	public static final double kWristIntakingAngle = kIsUsingCompBot ? 0.0 : 5.0;
 	public static final double kWristPrimaryStowAngle = 85.0;
 	public static final double kWristHangingAngle = -71.5;
 	public static final double kWristBallHoldingAngle = 38.0;
@@ -179,7 +181,7 @@ public class Constants {
 	public static final double kIntakeStrongHoldingOutput = 4.0/12.0;
 	public static final double kIntakingResuckingOutput = 6.0/12.0;
 	public static final double kIntakeRampRate = 0.25;
-	public static final double kIntakeClimbOutput = 6.0/12.0;
+	public static final double kIntakeClimbOutput = 4.0/12.0;
 
 	//Ball Carriage Constants
 	public static final double kBallCarriageEjectOutput = -0.5;
