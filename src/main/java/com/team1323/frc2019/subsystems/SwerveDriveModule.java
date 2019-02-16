@@ -100,8 +100,10 @@ public class SwerveDriveModule extends Subsystem{
     	rotationMotor.config_kD(1, 200.0, 10);
     	rotationMotor.config_kF(1, 1023.0/Constants.kSwerveRotation10VoltMaxSpeed, 10);
 		rotationMotor.set(ControlMode.MotionMagic, rotationMotor.getSelectedSensorPosition(0));
-		if(!isRotationSensorConnected())
+		if(!isRotationSensorConnected()){
 			DriverStation.reportError(name + "rotation encoder not detected!", false);
+			hasEmergency = true;
+		}
 
     	driveMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
     	driveMotor.setSelectedSensorPosition(0, 0, 10);
@@ -131,8 +133,10 @@ public class SwerveDriveModule extends Subsystem{
     	driveMotor.config_kI(1, 0.0, 10);
     	driveMotor.config_kD(1, 0.0, 10);
     	driveMotor.config_kF(1, 1023.0/Constants.kSwerveDriveMaxSpeed*0.9, 10);
-		if(!isDriveSensorConnected())
+		if(!isDriveSensorConnected()){
 			DriverStation.reportError(name + "drive encoder not detected!", false);
+			hasEmergency = true;
+		}
 	}
 
 	private boolean isRotationSensorConnected(){

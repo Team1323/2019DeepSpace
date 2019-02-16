@@ -9,8 +9,6 @@ package com.team1323.frc2019;
 
 import java.util.Arrays;
 
-import com.ctre.phoenix.CANifier;
-import com.ctre.phoenix.CANifier.LEDChannel;
 import com.team1323.frc2019.auto.AutoModeBase;
 import com.team1323.frc2019.auto.AutoModeExecuter;
 import com.team1323.frc2019.auto.SmartDashboardInteractions;
@@ -24,7 +22,9 @@ import com.team1323.frc2019.subsystems.BallIntake;
 import com.team1323.frc2019.subsystems.DiskIntake;
 import com.team1323.frc2019.subsystems.Elevator;
 import com.team1323.frc2019.subsystems.Jacks;
+import com.team1323.frc2019.subsystems.LEDs;
 import com.team1323.frc2019.subsystems.Probe;
+import com.team1323.frc2019.subsystems.Subsystem;
 import com.team1323.frc2019.subsystems.SubsystemManager;
 import com.team1323.frc2019.subsystems.Superstructure;
 import com.team1323.frc2019.subsystems.Swerve;
@@ -61,6 +61,7 @@ public class Robot extends TimedRobot {
 	private DiskIntake diskIntake;
 	private Probe probe;
 	private Jacks jacks;
+	private LEDs leds;
 	private Superstructure s;
 	private SubsystemManager subsystems;
 	
@@ -101,9 +102,10 @@ public class Robot extends TimedRobot {
 		diskIntake = DiskIntake.getInstance();
 		probe = Probe.getInstance();
 		jacks = Jacks.getInstance();
+		leds = LEDs.getInstance();
 		subsystems = new SubsystemManager(
 			Arrays.asList(swerve, elevator, wrist,
-				ballIntake, ballCarriage, diskIntake, probe, jacks, s));
+				ballIntake, ballCarriage, diskIntake, probe, jacks, leds, s));
 		
 		if(useSwitchController){
 			switchController = new SwitchController(2);
@@ -201,7 +203,7 @@ public class Robot extends TimedRobot {
 			enabledLooper.start();
 			teleopConfig();
 			SmartDashboard.putBoolean("Auto", false);
-
+			leds.conformToState(LEDs.State.ENABLED);
 			wrist.setHighGear(true);
 		}catch(Throwable t){
 			CrashTracker.logThrowableCrash(t);
@@ -242,6 +244,7 @@ public class Robot extends TimedRobot {
 			enabledLooper.stop();
 			subsystems.stop();
 			disabledLooper.start();
+			leds.conformToState(LEDs.State.DISABLED);
 		}catch(Throwable t){
 			CrashTracker.logThrowableCrash(t);
 			throw t;
@@ -253,6 +256,10 @@ public class Robot extends TimedRobot {
 		try{
 			allPeriodic();
 			smartDashboardInteractions.output();
+			for(Subsystem s : subsystems.getSubsystems()){
+				if(s.hasEmergency)
+					leds.conformToState(LEDs.State.EMERGENCY);
+			}
 		}catch(Throwable t){
 			CrashTracker.logThrowableCrash(t);
 			throw t;

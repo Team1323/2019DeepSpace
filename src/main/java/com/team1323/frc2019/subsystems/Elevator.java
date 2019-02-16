@@ -300,7 +300,10 @@ public class Elevator extends Subsystem {
 	
 	public boolean isSensorConnected(){
 		int pulseWidthPeriod = master.getSensorCollection().getPulseWidthRiseToRiseUs();
-		return pulseWidthPeriod != 0;
+		boolean connected = pulseWidthPeriod != 0;
+		if(!connected)
+			hasEmergency = true;
+		return connected;
 	}
 
 	public void resetToAbsolutePosition(){
@@ -313,6 +316,7 @@ public class Elevator extends Subsystem {
 		double height = encUnitsToElevatorHeight(absolutePosition);
 		if(height > Constants.kElevatorMaxInitialHeight || height < Constants.kElevatorMinInitialHeight){
 			DriverStation.reportError("Elevator height is out of bounds", false);
+			hasEmergency = true;
 		}
 		master.setSelectedSensorPosition(absolutePosition, 0, 10);
 	}

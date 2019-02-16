@@ -268,7 +268,10 @@ public class Wrist extends Subsystem{
 	
 	public boolean isSensorConnected(){
 		int pulseWidthPeriod = wrist.getSensorCollection().getPulseWidthRiseToRiseUs();
-		return pulseWidthPeriod != 0;
+		boolean connected = pulseWidthPeriod != 0;
+		if(!connected)
+			hasEmergency = true;
+		return connected;
 	}
 	
 	public void resetToAbsolutePosition(){
@@ -281,6 +284,7 @@ public class Wrist extends Subsystem{
 		double wristAngle = encUnitsToWristAngle(absolutePosition);
 		if(wristAngle > Constants.kWristMaxPhysicalAngle || wristAngle < Constants.kWristMinPhysicalAngle){
 			DriverStation.reportError("Wrist angle is out of bounds", false);
+			hasEmergency = true;
 		}
 		wrist.setSelectedSensorPosition(absolutePosition, 0, 10);
 	}

@@ -7,13 +7,19 @@
 
 package com.team1323.frc2019.subsystems;
 
+import java.sql.Time;
+
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifier.LEDChannel;
 import com.team1323.frc2019.Ports;
+import com.team1323.frc2019.loops.ILooper;
+import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.requests.Request;
 
+import edu.wpi.first.wpilibj.Timer;
+
 /**
- * Add your docs here.
+ * 
  */
 public class LEDs extends Subsystem{
     private static LEDs instance = null;
@@ -29,12 +35,14 @@ public class LEDs extends Subsystem{
         canifier = new CANifier(Ports.CANIFIER);
     }
 
-    double onTime = 1.0;
-    double offTime = 0.0;
+    boolean lit = false;
+    double lastOnTime = 0.0;
+    double lastOffTime = 0.0;
 
     public enum State{
-        OFF(0.0, 0.0, 0.0, 1.0, 0.0),
-        DISABLED(1.0, 0.2, 0.2, 1.0, 0.0),
+        OFF(0.0, 0.0, 0.0, Double.POSITIVE_INFINITY, 0.0),
+        DISABLED(1.0, 0.2, 0.2, Double.POSITIVE_INFINITY, 0.0),
+        ENABLED(0.0, 0.0, 1.0, Double.POSITIVE_INFINITY, 0.0),
         EMERGENCY(1.0, 0.0, 0.0, 0.5, 0.5);
 
         double red, green, blue, onTime, offTime;
@@ -49,8 +57,32 @@ public class LEDs extends Subsystem{
     private State currentState = State.OFF;
     public State getState(){ return currentState; }
     private void setState(State newState){
-        currentState = newState;
+        if(newState != currentState){
+            currentState = newState;
+            lastOffTime = 0.0;
+            lastOnTime = 0.0;
+            lit = false;
+        }
     }
+
+    private final Loop loop = new Loop(){
+
+        @Override
+        public void onStart(double timestamp) {
+
+        }
+
+        @Override
+        public void onLoop(double timestamp) {
+            
+        }
+
+        @Override
+        public void onStop(double timestamp) {
+
+        }
+
+    };
 
 
     public void setLEDs(double r, double g, double b){
@@ -62,14 +94,7 @@ public class LEDs extends Subsystem{
 		canifier.setLEDOutput(b, LEDChannel.LEDChannelC);
     }
 
-    public void setIntervals(double onTime, double offTime){
-        this.onTime = onTime;
-        this.offTime = offTime;
-    }
-
     public void conformToState(State state){
-        setLEDs(state.red, state.green, state.blue);
-        setIntervals(state.onTime, state.offTime);
         setState(state);
     }
     
@@ -84,8 +109,29 @@ public class LEDs extends Subsystem{
     }
 
     @Override
+    public void writePeriodicOutputs(){
+        double timestamp = Timer.getFPGATimestamp();
+        if(!lit && (timestamp - lastOffTime) >= currentState.offTime){
+            setLEDs(currentState.red, currentState.green, currentState.blue);
+            lastOnTime = timestamp;
+            lit = true;
+        }else if(lit && !Double.isInfinite(currentState.onTime)){
+            if((timestamp - lastOnTime) >= currentState.onTime){
+                setLEDs(0.0, 0.0, 0.0);
+                lastOffTime = timestamp;
+                lit = false;
+            }
+        }
+    }
+
+    @Override
     public void outputTelemetry() {
 
+    }
+
+    @Override
+    public void registerEnabledLoops(ILooper enabledLooper){
+        enabledLooper.register(loop);
     }
 
     @Override

@@ -82,10 +82,14 @@ public class Jacks extends Subsystem {
         else if(height < Constants.kJackMinControlHeight)
             height = Constants.kJackMinControlHeight;
 
-        state = ControlState.POSITION;
-        periodicIO.controlMode = ControlMode.MotionMagic;
-        periodicIO.setpoint = jackHeightToEncUnits(height);
-        targetHeight = height;
+        if(isSensorConnected()){
+            state = ControlState.POSITION;
+            periodicIO.controlMode = ControlMode.MotionMagic;
+            periodicIO.setpoint = jackHeightToEncUnits(height);
+            targetHeight = height;
+        }else{
+            DriverStation.reportError("Jack encoder not detected!", false);
+        }
     }
 
     public synchronized void lockHeight(){
@@ -152,6 +156,14 @@ public class Jacks extends Subsystem {
         return Constants.kJackStartingEncPosition + inchesToEncUnits(jackHeight);
     }
 
+    public boolean isSensorConnected(){
+		int pulseWidthPeriod = motor.getSensorCollection().getPulseWidthRiseToRiseUs();
+		boolean connected = pulseWidthPeriod != 0;
+		if(!connected)
+			hasEmergency = true;
+		return connected;
+	}
+
     public void resetToAbsolutePosition(){
 		int absolutePosition = (int) Util.boundToScope(0, 4096, motor.getSensorCollection().getPulseWidthPosition());
 		if(encUnitsToJackHeight(absolutePosition) > Constants.kJackMaxPhysicalHeight){
@@ -161,7 +173,8 @@ public class Jacks extends Subsystem {
         }
 		double jackHeight = encUnitsToJackHeight(absolutePosition);
 		if(jackHeight > Constants.kWristMaxPhysicalAngle || jackHeight < Constants.kWristMinPhysicalAngle){
-			DriverStation.reportError("Jack height is out of bounds", false);
+            DriverStation.reportError("Jack height is out of bounds", false);
+            hasEmergency = true;
 		}
 		motor.setSelectedSensorPosition(absolutePosition, 0, 10);
 	}

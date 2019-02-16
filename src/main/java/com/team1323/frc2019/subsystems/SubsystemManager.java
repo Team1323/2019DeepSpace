@@ -13,6 +13,8 @@ import com.team1323.frc2019.loops.Looper;
 public class SubsystemManager implements ILooper {
 
     private final List<Subsystem> mAllSubsystems;
+    public List<Subsystem> getSubsystems(){ return mAllSubsystems; }
+
     private List<Loop> mLoops = new ArrayList<>();
 
     public SubsystemManager(List<Subsystem> allSubsystems) {

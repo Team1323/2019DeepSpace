@@ -33,4 +33,6 @@ public abstract class Subsystem {
 
     public void registerEnabledLoops(ILooper enabledLooper) {
     }
+
+    public boolean hasEmergency = false;
 }
