@@ -35,9 +35,12 @@ public class DiskIntake extends Subsystem {
     return instance;
   }
 
-  boolean hasDisk = false;
+  private boolean hasDisk = false;
   public synchronized boolean hasDisk() {
     return hasDisk;
+  }
+  public void feignDisk(){
+    hasDisk = false;
   }
 
   private LazyTalonSRX diskMotor;
@@ -79,7 +82,7 @@ public class DiskIntake extends Subsystem {
     OFF(0, true), 
     INTAKING(Constants.kDiskIntakingOutput, false), 
     EJECTING(Constants.kDiskIntakeStrongEjectOutput, false), 
-    HANDOFF(Constants.kDiskIntakeWeakEjectOutput, true), 
+    HANDOFF_COMPLETE(0, false), 
     HOLDING(Constants.kDiskStrongHoldingOutput, true),
     DEPLOYED(0, false);
 
@@ -181,13 +184,8 @@ public class DiskIntake extends Subsystem {
             setRampRate(Constants.kDiskIntakeRampRate);
           }
           break;
-        case HANDOFF:
-          /*if(banner.get()) {
-            if (timestamp - stateEnteredTimestamp > 2.0) {
-              setRampRate(Constants.kDiskIntakeRampRate);
-              setRollers(Constants.kDiskIntakeWeakEjectOutput);
-            }
-          }*/
+        case HANDOFF_COMPLETE:
+          hasDisk = false;
           break;
         case HOLDING:
           /*if(banner.get()) {

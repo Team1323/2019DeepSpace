@@ -177,6 +177,7 @@ public class BallIntake extends Subsystem {
     public void onLoop(double timestamp) {
       switch (currentState) {
       case OFF:
+        hasBall = false;
         break;
       case INTAKING:
         if (stateChanged)
