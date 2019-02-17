@@ -41,15 +41,18 @@ public class LEDs extends Subsystem{
 
     public enum State{
         OFF(0.0, 0.0, 0.0, Double.POSITIVE_INFINITY, 0.0),
-        DISABLED(1.0, 0.2, 0.2, Double.POSITIVE_INFINITY, 0.0),
-        ENABLED(0.0, 0.0, 1.0, Double.POSITIVE_INFINITY, 0.0),
-        EMERGENCY(1.0, 0.0, 0.0, 0.5, 0.5);
+        DISABLED(255.0, 20.0, 147.0, Double.POSITIVE_INFINITY, 0.0),
+        ENABLED(0.0, 0.0, 255.0, Double.POSITIVE_INFINITY, 0.0),
+        EMERGENCY(255.0, 0.0, 0.0, 0.5, 0.5),
+        BALL(255.0, 20.0, 0.0, 0.5, 0.5),
+        DISK(255.0, 60.0, 0.0, 0.5, 0.5),
+        VISION(0.0, 255.0, 0.0, Double.POSITIVE_INFINITY, 0.0);
 
         double red, green, blue, onTime, offTime;
         private State(double r, double g, double b, double onTime, double offTime){
-            red = r;
-            green = g;
-            blue = b;
+            red = r / 255.0;
+            green = g / 255.0;
+            blue = b / 255.0;
             this.onTime = onTime;
             this.offTime = offTime;
         }

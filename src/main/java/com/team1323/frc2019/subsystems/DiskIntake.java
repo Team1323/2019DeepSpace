@@ -57,7 +57,7 @@ public class DiskIntake extends Subsystem {
     diskMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20, 10);
     diskMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20, 10);
 
-    setCurrentLimit(15);
+    setCurrentLimit(30);
   }
 
   public void setCurrentLimit(int amps) {
@@ -158,11 +158,11 @@ public class DiskIntake extends Subsystem {
         case INTAKING:
           if(stateChanged)
             hasDisk = false;
-          if(diskMotor.getOutputCurrent() >= 10.0 && (timestamp - stateEnteredTimestamp) >= 0.5) {
+          if(diskMotor.getOutputCurrent() >= 25.0 && (timestamp - stateEnteredTimestamp) >= 0.5) {
             if(Double.isInfinite(bannerSensorBeganTimestamp)) {
               bannerSensorBeganTimestamp = timestamp;
             } else {
-              if(timestamp - bannerSensorBeganTimestamp > 0.1) {
+              if(timestamp - bannerSensorBeganTimestamp > 0.375) {
                 hasDisk = true;
                 needsToNotifyDrivers = true;
               }
@@ -299,7 +299,7 @@ public class DiskIntake extends Subsystem {
     if(Constants.kDebuggingOutput) {
       SmartDashboard.putNumber("Disk Intake Current", diskMotor.getOutputCurrent());
       SmartDashboard.putNumber("Disk Intake Voltage", diskMotor.getMotorOutputVoltage());
-      SmartDashboard.putBoolean("Disk Intake Has Cube", hasDisk);
+      SmartDashboard.putBoolean("Disk Intake Has Disk", hasDisk);
     }
 
   }

@@ -96,7 +96,7 @@ public class LimelightProcessor implements Loop{
 		double nx = target.get(0).getDouble(0);
 		double ny = target.get(1).getDouble(0);
 		double vpw = 2.0 * Math.tan(Math.toRadians(27.0));
-		double vph = 2.0 * Math.tan(Math.toRadians(24.85));
+		double vph = 2.0 * Math.tan(Math.toRadians(24.85));//24.85  20.5
 		double x = vpw / 2.0 * nx;
 		double y = vph / 2.0 * ny;
 		double ax = Math.atan2(x, 1.0);

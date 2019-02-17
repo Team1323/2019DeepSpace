@@ -11,6 +11,7 @@ import com.team1323.frc2019.Ports;
 import com.team1323.frc2019.RobotState;
 import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.Loop;
+import com.team1323.frc2019.subsystems.requests.Request;
 import com.team1323.frc2019.vision.ShooterAimingParameters;
 import com.team1323.lib.math.vectors.VectorField;
 import com.team1323.lib.util.SwerveHeadingController;
@@ -78,6 +79,7 @@ public class Swerve extends Subsystem{
 	Translation2d visionTargetPosition = new Translation2d();
 	int visionUpdateCount = 0;
 	VisionCriteria visionCriteria = new VisionCriteria();
+	double initialVisionDistance = 0.0;
 
 
 	//Name says it all
@@ -449,17 +451,32 @@ public class Swerve extends Subsystem{
 			Rotation2d deltaPositionHeading = new Rotation2d(deltaPosition, true);
 			List<Pose2d> waypoints = new ArrayList<>();
 			waypoints.add(new Pose2d(pose.getTranslation(), (getState() == ControlState.VISION) ? lastTrajectoryVector.direction() : deltaPositionHeading));
-			waypoints.add(robotScoringPosition.get());
-			Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 72.0, 72.0, 48.0, 9.0, 45.0, 1);	
-			motionPlanner.reset();
-			motionPlanner.setTrajectory(new TrajectoryIterator<>(new TimedView<>(trajectory)));
-			rotationScalar = 0.25;
+			waypoints.add(robotScoringPosition.get());	
 			//QuinticPathTransmitter.getInstance().addPath(trajectory);
-			setPathHeading(robotScoringPosition.get().getRotation().getDegrees());
+			if(visionUpdateCount < 1){
+				Rotation2d closestHeading = new Rotation2d();
+				double distance = 2.0 * Math.PI;
+				for(Rotation2d r : Constants.kPossibleTargetAngles){
+					if(Math.abs(r.distance(orientedTarget.get().getRotation())) < distance){
+						closestHeading = r;
+						distance = Math.abs(r.distance(orientedTarget.get().getRotation()));
+					}
+				}
+				Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 72.0, 48.0, 48.0, 9.0, 45.0, 1);
+				motionPlanner.reset();
+				motionPlanner.setTrajectory(new TrajectoryIterator<>(new TimedView<>(trajectory)));
+				setPathHeading(closestHeading.getDegrees());
+			}else{
+				Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), lastTrajectoryVector.norm()*Constants.kSwerveMaxSpeedInchesPerSecond, 0.0, 72.0, 48.0, 48.0, 9.0, lastTrajectoryVector.norm()*Constants.kSwerveMaxSpeedInchesPerSecond, 1);
+				motionPlanner.reset();
+				motionPlanner.setTrajectory(new TrajectoryIterator<>(new TimedView<>(trajectory)));
+				setPathHeading((getState() == ControlState.VISION) ? robotScoringPosition.get().getRotation().getDegrees() : aimingParameters.get().getRobotToGoal().getDegrees());
+			}
+			rotationScalar = 0.25;
 			visionTargetHeading = robotScoringPosition.get().getRotation();
 			setState(ControlState.VISION);
 			visionUpdateCount++;
-			System.out.println("Vision trajectory updated " + visionUpdateCount + " times.");
+			System.out.println("Vision trajectory updated " + visionUpdateCount + " times. Distance: " + aimingParameters.get().getRange());
 		}else{
 			DriverStation.reportError("Vision update refused!", false);
 		}
@@ -469,11 +486,14 @@ public class Swerve extends Subsystem{
 	public synchronized void setVisionTrajectory(){
 		Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
 		if(aim.isPresent()){
-			if(aim.get().getRange() > Constants.kDefaultCurveDistance){
+			/*if(aim.get().getRange() > Constants.kDefaultCurveDistance){
 				setCurvedVisionTrajectory(Constants.kDefaultCurveDistance, aim);
-			}else{
+			}else{*/
+				if(getState() != ControlState.VISION){
+					initialVisionDistance = aim.get().getRange();
+				}
 				setCurvedVisionTrajectory(aim.get().getRange() / 2.0, aim);
-			}
+			//}
 		}
 	}
 	
@@ -702,19 +722,19 @@ public class Swerve extends Subsystem{
 				}*/
 				Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
 				if(aim.isPresent() && visionUpdatesAllowed){
-					if(aim.get().getRange() < (Constants.kVisionUpdateDistance - (Constants.kVisionDistanceStep * visionCriteria.successfulUpdates(VisionCriteria.Criterion.DISTANCE))) 
+					if(aim.get().getRange() < (initialVisionDistance - (Constants.kVisionDistanceStep * (visionCriteria.successfulUpdates(VisionCriteria.Criterion.DISTANCE) + 1))) 
 						&& visionCriteria.updateAllowed(VisionCriteria.Criterion.DISTANCE) && aim.get().getRange() >= Constants.kClosestVisionDistance){
 						setVisionTrajectory();
 						visionCriteria.addSuccessfulUpdate(VisionCriteria.Criterion.DISTANCE);
-					}else if(Math.abs(pose.getRotation().distance(visionTargetHeading)) < Math.toRadians(2.0) && visionCriteria.updateAllowed(VisionCriteria.Criterion.HEADING)){
+					}/*else if(Math.abs(pose.getRotation().distance(visionTargetHeading)) < Math.toRadians(2.0) && visionCriteria.updateAllowed(VisionCriteria.Criterion.HEADING)){
 						setVisionTrajectory();
 						visionCriteria.addSuccessfulUpdate(VisionCriteria.Criterion.HEADING);
-					}
-					/*if(aim.get().getRange() <= visionCurveDistance){
+					}*/
+					if(aim.get().getRange() >= Constants.kClosestVisionDistance && visionUpdateCount > 1){
 						Optional<Pose2d> robotScoringPosition = robotState.getRobotScoringPosition(aim);
 						setPathHeading(robotScoringPosition.get().getRotation().getDegrees());
 						visionTargetHeading = robotScoringPosition.get().getRotation();
-					}*/
+					}
 				}
 				Translation2d driveVector = motionPlanner.update(timestamp, pose);
 				if(Util.epsilonEquals(driveVector.norm(), 0.0, Constants.kEpsilon)){
@@ -779,6 +799,23 @@ public class Swerve extends Subsystem{
 		}
 		
 	};
+
+	public Request trackRequest(){
+		return new Request(){
+		
+			@Override
+			public void act() {
+				resetVisionUpdates();
+				setVisionTrajectory();
+			}
+
+			@Override
+			public boolean isFinished(){
+				return getState() == ControlState.VISION && motionPlanner.isDone();
+			}
+
+		};
+	}
 	
 	public void setNominalDriveOutput(double voltage){
 		modules.forEach((m) -> m.setNominalDriveOutput(voltage));

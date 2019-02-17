@@ -148,6 +148,10 @@ public class RobotState {
             Translation2d secondTargetPosition = reports.get(1).field_to_goal;
             Translation2d targetDelta = firstTargetPosition.inverse().translateBy(secondTargetPosition);
             Rotation2d targetOrientation = Rotation2d.fromRadians(Math.atan2(targetDelta.y(), targetDelta.x())).rotateBy(Rotation2d.fromDegrees(-90.0));
+            Rotation2d secondTargetOrientation = targetOrientation.rotateBy(Rotation2d.fromDegrees(180.0));
+            if(Math.abs(targetOrientation.distance(getLatestFieldToVehicle().getValue().getRotation())) > Math.abs(secondTargetOrientation.distance(getLatestFieldToVehicle().getValue().getRotation()))){
+                targetOrientation = secondTargetOrientation;
+            }
             Rotation2d robot_to_goal_rotation = Rotation2d
                     .fromRadians(Math.atan2(robot_to_goal.y(), robot_to_goal.x()));
             SmartDashboard.putNumber("Vision Target Angle", targetOrientation.getDegrees());

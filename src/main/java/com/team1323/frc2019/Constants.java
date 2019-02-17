@@ -38,6 +38,9 @@ public class Constants {
 	public static final Pose2d rocketPortPosition = new Pose2d(new Translation2d(229.13, 27.44 - 162.0), Rotation2d.fromDegrees(-90.0));
 
 	public static final double kHatchTargetHeight = 28.5;
+	public static final List<Rotation2d> kPossibleTargetAngles = Arrays.asList(Rotation2d.fromDegrees(0.0), Rotation2d.fromDegrees(30.0),
+		Rotation2d.fromDegrees(90.0), Rotation2d.fromDegrees(150.0), Rotation2d.fromDegrees(-150.0),
+		Rotation2d.fromDegrees(-90.0), Rotation2d.fromDegrees(-30.0));
 	
 	public static final Pose2d kRobotLeftStartingPose = new Pose2d(new Translation2d(48.0 + kRobotHalfLength, 97.0 + kRobotHalfWidth - 162.0), Rotation2d.fromDegrees(0));
 	public static final Pose2d kRobotRightStartingPose = new Pose2d(new Translation2d(48.0 + kRobotHalfLength, -(97.0 + kRobotHalfWidth - 162.0)), Rotation2d.fromDegrees(0));
@@ -55,8 +58,8 @@ public class Constants {
     public static final double kCameraYOffset = 7.75;
     public static final double kCameraXOffset = (29.5 / 2.0) - 17.4375;
     public static final double kCameraZOffset = 37.906;
-    public static final double kCameraYawAngleDegrees = 0.0;
-    public static final double kCameraPitchAngleDegrees = -15.4;
+    public static final double kCameraYawAngleDegrees = 2.0;
+    public static final double kCameraPitchAngleDegrees = -15.7;
     
     //Goal tracker constants
     public static double kMaxGoalTrackAge = 1.0;
@@ -65,9 +68,9 @@ public class Constants {
     public static double kTrackReportComparatorStablityWeight = 1.0;
 	public static double kTrackReportComparatorAgeWeight = 1.0;
 	public static final double kDefaultCurveDistance = kRobotHalfLength + 36.0;
-	public static final double kVisionUpdateDistance = kRobotHalfLength + 52.0;
+	public static final double kVisionUpdateDistance = kRobotHalfLength + 75.0;
 	public static final double kVisionDistanceStep = kVisionUpdateDistance / 6.0;
-	public static final double kClosestVisionDistance = 40.0;
+	public static final double kClosestVisionDistance = 35.0;
     
     //Path following constants
     public static final double kPathLookaheadTime = 0.25;  // seconds to look ahead along the path for steering 0.4
@@ -117,14 +120,15 @@ public class Constants {
 	public static final double kSwerveEncUnitsPerInch = kSwerveEncUnitsPerWheelRev / (Math.PI * kSwerveWheelDiameter);
 	
 	//Elevator Constants
-	public static final double kElevatorMaxSpeedHighGear = 541.18 * 4096.0 / 600.0; //encoder units per 100 ms
+	public static final double kElevatorMaxSpeedHighGear = 661.74 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
 	public static final int kElevatorEncoderStartingPosition = 3541;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 1.0; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.5;
-	public static final double kElevatorLowHatchHeight = 5.5;
-	public static final double kElevatorMidHatchHeight = 35.0;
+	public static final double kElevatorLowHatchHeight = 7.0;
+	public static final double kElevatorHumanLoaderHeight = 5.5;
+	public static final double kElevatorMidHatchHeight = 36.5;
 	public static final double kElevatorHighHatchHeight = 63.7;
 	public static final double kElevatorBallIntakeHeight = 0.1;
 	public static final double kElevatorLowBallHeight = 4.3;
@@ -135,7 +139,7 @@ public class Constants {
 	public static final double kElevatorMinInitialHeight = -0.5;
 	public static final double kElevatorMaxInitialHeight = 4.5;
 	public static final double kElevatorMaxCurrent = 50.0;//amps
-	public static final int kELevatorCurrentLimit = 20;
+	public static final int kELevatorCurrentLimit = 40;
 	public static final double kElevatorMinimumHangingHeight = 0.795 + 0.08;
 	public static final double kElevatorMaximumHangingHeight = 3.25;
 	public static final double kElevatorHangingRampHeight = 3.452;

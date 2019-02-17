@@ -134,7 +134,7 @@ public class Robot extends TimedRobot {
 		generator.generateTrajectories();		
 
 		AutoModeBase auto = new TwoCloseOneBallMode(true);
-		qTransmitter.addPaths(auto.getPaths());
+		//qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 	}
 	
@@ -144,6 +144,10 @@ public class Robot extends TimedRobot {
 		enabledLooper.outputToSmartDashboard();
 		SmartDashboard.putBoolean("Enabled", ds.isEnabled());
 		SmartDashboard.putNumber("Match time", ds.getMatchTime());
+		for(Subsystem s : subsystems.getSubsystems()){
+			if(s.hasEmergency)
+				leds.conformToState(LEDs.State.EMERGENCY);
+		}
 	}
 
 	public void autoConfig(){
@@ -164,6 +168,8 @@ public class Robot extends TimedRobot {
 		swerve.set10VoltRotationMode(false);
 		elevator.setCurrentLimit(40);
 		elevator.configForTeleopSpeed();
+		wrist.setHighGear(true);
+		wrist.setAngle(Constants.kWristBallFeedingAngle);
 	}
 	
 	@Override
@@ -204,7 +210,6 @@ public class Robot extends TimedRobot {
 			teleopConfig();
 			SmartDashboard.putBoolean("Auto", false);
 			leds.conformToState(LEDs.State.ENABLED);
-			wrist.setHighGear(true);
 		}catch(Throwable t){
 			CrashTracker.logThrowableCrash(t);
 			throw t;
@@ -228,6 +233,16 @@ public class Robot extends TimedRobot {
 			
 			if(oneControllerMode) oneControllerMode();
 			else twoControllerMode();
+
+			if(robotState.seesTarget()){
+				leds.conformToState(LEDs.State.VISION);
+			}else if(ballIntake.hasBall() || ballCarriage.hasBall()){
+				leds.conformToState(LEDs.State.BALL);
+			}else if(probe.hasDisk()){
+				leds.conformToState(LEDs.State.DISK);
+			}else{
+				leds.conformToState(LEDs.State.ENABLED);
+			}
 			
 			allPeriodic();
 		}catch(Throwable t){
@@ -256,10 +271,6 @@ public class Robot extends TimedRobot {
 		try{
 			allPeriodic();
 			smartDashboardInteractions.output();
-			for(Subsystem s : subsystems.getSubsystems()){
-				if(s.hasEmergency)
-					leds.conformToState(LEDs.State.EMERGENCY);
-			}
 		}catch(Throwable t){
 			CrashTracker.logThrowableCrash(t);
 			throw t;
@@ -278,8 +289,6 @@ public class Robot extends TimedRobot {
 
 	private void twoControllerMode(){
 		if(coDriver.backButton.isBeingPressed()){
-			//s.stopClimbing();
-			//diskIntake.conformToState(DiskIntake.State.DEPLOYED);
 			s.neutralState();
 		}
 		
@@ -374,31 +383,52 @@ public class Robot extends TimedRobot {
 				s.diskIntakingState();
 			}
 		}else if(coDriver.leftBumper.wasPressed()){
-			if(ballIntake.hasBall()){
-				ballIntake.conformToState(BallIntake.State.EJECTING);
-			}else{
-				diskIntake.conformToState(DiskIntake.State.EJECTING);
-			}
+			diskIntake.conformToState(DiskIntake.State.EJECTING);
 		}else if(coDriver.leftBumper.longPressed()){
 			diskIntake.conformToState(DiskIntake.State.OFF);
-		}else if(coDriver.rightTrigger.wasPressed()){
+		}else if(coDriver.rightTrigger.wasPressed() || driver.rightTrigger.wasPressed()){
 			if(ballCarriage.hasBall()){
 				ballCarriage.conformToState(BallCarriage.State.EJECTING);
 			}else{
 				probe.conformToState(Probe.State.SCORING);
 			}
-		}else if(coDriver.aButton.isBeingPressed()){
+		}else if(coDriver.aButton.longPressed()){
 			s.ballIntakingState();
 		}else if(coDriver.aButton.longReleased()){
-			if(ballIntake.hasBall()){
-				s.fullBallCycleState();
-			}
+			s.fullBallCycleState();
 		}else if(coDriver.xButton.wasPressed()){
-			s.diskScoringState(Constants.kElevatorMidHatchHeight);
+			//TODO implement tracking
+		}else if(coDriver.xButton.longPressed()){
+			if(ballCarriage.hasBall()){
+				s.ballScoringState(Constants.kElevatorMidBallHeight);
+			}else{
+				s.diskScoringState(Constants.kElevatorMidHatchHeight);
+			}
 		}else if(coDriver.yButton.wasPressed()){
-			s.diskScoringState(Constants.kElevatorHighHatchHeight);
+			//TODO implement tracking
+		}else if(coDriver.yButton.longPressed()){
+			if(ballCarriage.hasBall()){
+				s.ballScoringState(Constants.kElevatorHighBallHeight);
+			}else{
+				s.diskScoringState(Constants.kElevatorHighHatchHeight);
+			}
+		}else if(coDriver.bButton.wasPressed()){
+			//TODO implement tracking
+			s.diskTrackingState(Constants.kElevatorLowHatchHeight);
+		}else if(coDriver.bButton.longPressed()){
+			if(ballCarriage.hasBall()){
+				s.ballScoringState(Constants.kElevatorLowBallHeight);
+			}else{
+				s.diskScoringState(Constants.kElevatorLowHatchHeight);
+			}
 		}else if(coDriver.rightCenterClick.wasPressed()){
-			ballIntake.feignBall();
+			ballCarriage.conformToState(BallCarriage.State.RECEIVING);
+		}else if(coDriver.leftCenterClick.wasPressed()){
+			ballIntake.conformToState(BallIntake.State.EJECTING);
+		}else if(coDriver.POV0.wasPressed()){
+			s.climbingState();
+		}else if(coDriver.POV180.wasPressed()){
+			s.postClimbingState();
 		}
 
 

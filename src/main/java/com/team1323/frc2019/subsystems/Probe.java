@@ -44,7 +44,9 @@ public class Probe extends Subsystem {
     public enum State{
         SCORING(true, true, false), STOWED(false, false, true),
         HOLDING(true, true, true), RECEIVING(true, false, true),
-        STOWED_HOLDING(false, true, true);
+        STOWED_HOLDING(false, true, true),
+        GROUND_INTAKING(false, false, true),
+        NEUTRAL_EXTENDED(true, false, true);
 
         boolean extended;
         boolean scoring;
@@ -71,6 +73,7 @@ public class Probe extends Subsystem {
 
     private boolean hasDisk = false;
     public boolean hasDisk(){ return hasDisk; }
+    public void feignDisk(){ hasDisk = true; }
 
     private boolean needsToNotifyDrivers = false;
     public boolean needsToNotifyDrivers() {
@@ -132,6 +135,22 @@ public class Probe extends Subsystem {
                 case HOLDING:
                     break;
                 case RECEIVING:
+                    if (stateChanged)
+                        hasDisk = false;
+                    if (getBanner()) {
+                        if (Double.isInfinite(bannerSensorBeganTimestamp)) {
+                            bannerSensorBeganTimestamp = timestamp;
+                        } else {
+                            if (timestamp - bannerSensorBeganTimestamp >= 0.0) {
+                                hasDisk = true;
+                                needsToNotifyDrivers = true;
+                            }
+                        }
+                    } else if (!Double.isFinite(bannerSensorBeganTimestamp)) {
+                        bannerSensorBeganTimestamp = Double.POSITIVE_INFINITY;
+                    }
+                    break;
+                case GROUND_INTAKING:
                     if (stateChanged)
                         hasDisk = false;
                     if (getBanner()) {
