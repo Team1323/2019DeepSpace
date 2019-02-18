@@ -107,7 +107,8 @@ public class BallIntake extends Subsystem {
     EJECTING(Constants.kIntakeEjectOutput, Constants.kIntakeEjectOutput),
     HOLDING(Constants.kIntakingOutput, 0),
     CLIMBING(Constants.kIntakeClimbOutput, 0),
-    FEEDING(Constants.kIntakeWeakHoldingOutput, Constants.kIntakingOutput);
+    FEEDING(Constants.kIntakeWeakHoldingOutput, Constants.kIntakingOutput),
+    POST_FEEDING(0, 0);
 
     public double grabberOutput = 0;
     public double feederOutput = 0;
@@ -177,7 +178,6 @@ public class BallIntake extends Subsystem {
     public void onLoop(double timestamp) {
       switch (currentState) {
       case OFF:
-        hasBall = false;
         break;
       case INTAKING:
         if (stateChanged)
@@ -222,6 +222,10 @@ public class BallIntake extends Subsystem {
         }
         break;
       case CLIMBING:
+        break;
+      case POST_FEEDING:
+        if(stateChanged)
+          hasBall = false;
         break;
       default:
         break;

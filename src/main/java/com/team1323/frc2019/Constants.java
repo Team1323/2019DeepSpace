@@ -19,7 +19,7 @@ public class Constants {
 	public static final boolean kIsUsingCompBot = false;
 	public static final boolean kIsUsingTractionWheels = true;
 
-	public static final boolean kDebuggingOutput = true;
+	public static final boolean kDebuggingOutput = false;
 	
 	//Physical Robot Dimensions (including bumpers)
 	public static final double kRobotWidth = 29.5;
@@ -120,9 +120,9 @@ public class Constants {
 	public static final double kSwerveEncUnitsPerInch = kSwerveEncUnitsPerWheelRev / (Math.PI * kSwerveWheelDiameter);
 	
 	//Elevator Constants
-	public static final double kElevatorMaxSpeedHighGear = 661.74 * 4096.0 / 600.0; //encoder units per 100 ms
+	public static final double kElevatorMaxSpeedHighGear = 906.17 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
-	public static final int kElevatorEncoderStartingPosition = 3541;
+	public static final int kElevatorEncoderStartingPosition = 418;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 1.0; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.5;
@@ -149,7 +149,7 @@ public class Constants {
 	//Swerve Speed Constraint Treemap
 	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kSwerveSpeedTreeMap = new InterpolatingTreeMap<>();
 	static{
-		kSwerveSpeedTreeMap.put(new InterpolatingDouble(-1.0), new InterpolatingDouble(1.0));
+		kSwerveSpeedTreeMap.put(new InterpolatingDouble(-6.0), new InterpolatingDouble(1.0));
 		kSwerveSpeedTreeMap.put(new InterpolatingDouble(0.0), new InterpolatingDouble(1.0));
 		kSwerveSpeedTreeMap.put(new InterpolatingDouble(kElevatorLowHatchHeight), new InterpolatingDouble(1.0));
 		kSwerveSpeedTreeMap.put(new InterpolatingDouble(kElevatorMaxHeight), new InterpolatingDouble(0.5));
@@ -170,7 +170,7 @@ public class Constants {
 	public static final double kWristMinPhysicalAngle = -40.0;
 	public static final double kWristMaxPhysicalAngle = 90.0;//95.192
 	public static final double kWristIntakingAngle = kIsUsingCompBot ? 0.0 : 5.0;
-	public static final double kWristPrimaryStowAngle = 85.0;
+	public static final double kWristPrimaryStowAngle = 60.5;
 	public static final double kWristHangingAngle = -71.5;
 	public static final double kWristBallHoldingAngle = 38.0;
 	public static final double kWristBallFeedingAngle = 60.5;
@@ -188,8 +188,9 @@ public class Constants {
 	public static final double kIntakeClimbOutput = 4.0/12.0;
 
 	//Ball Carriage Constants
-	public static final double kBallCarriageEjectOutput = -0.5;
-	public static final double kBallCarriageReceiveOutput = -0.6;
+	public static final double kBallCarriageEjectOutput = -0.75;
+	public static final double kBallCarriageReceiveOutput = -0.55;
+	public static final double kBallCarriageSuckOutput = 0.35;
 
 	//Disk Intake Constants
 	public static final double kDiskIntakingOutput = 1.0;

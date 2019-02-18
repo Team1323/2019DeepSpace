@@ -105,19 +105,19 @@ public class Elevator extends Subsystem {
 		manualSpeed = Constants.kElevatorTeleopManualSpeed;
 
 		master.selectProfileSlot(0, 0);
-		master.config_kP(0, 0.75, 10);//1.25 going up
+		master.config_kP(0, 2.5, 10);//0.75 going up
 		master.config_kI(0, 0.0, 10);
-		master.config_kD(0, 20.0, 10);//20.0
+		master.config_kD(0, 200.0, 10);//20.0
 		master.config_kF(0, 1023.0/Constants.kElevatorMaxSpeedHighGear, 10);
 		
-		master.config_kP(1, 0.75, 10);//1.0 going down
+		master.config_kP(1, 2.5, 10);//0.75 going down
 		master.config_kI(1, 0.0, 10);
-		master.config_kD(1, 20.0, 10);//10.0
+		master.config_kD(1, 80.0, 10);//20.0
 		master.config_kF(1, 1023.0/Constants.kElevatorMaxSpeedHighGear, 10);
 
 		master.configMotionCruiseVelocity((int)(Constants.kElevatorMaxSpeedHighGear * 1.0), 10);
 		master.configMotionAcceleration((int)(Constants.kElevatorMaxSpeedHighGear * 3.0), 10);
-		master.configMotionSCurveStrength(2);
+		master.configMotionSCurveStrength(4);
 	}
 	
 	public void configForTeleopSpeed(){

@@ -59,7 +59,7 @@ public class BallCarriage extends Subsystem{
     public enum State{
         EJECTING(Constants.kBallCarriageEjectOutput), 
         RECEIVING(Constants.kBallCarriageReceiveOutput), 
-        SUCKING(0.5),
+        SUCKING(Constants.kBallCarriageSuckOutput),
         OFF(0.0);
 
         double output = 0.0;

@@ -82,7 +82,7 @@ public class DiskIntake extends Subsystem {
     OFF(0, true), 
     INTAKING(Constants.kDiskIntakingOutput, false), 
     EJECTING(Constants.kDiskIntakeStrongEjectOutput, false), 
-    HANDOFF_COMPLETE(0, false), 
+    HANDOFF_COMPLETE(0, true), 
     HOLDING(Constants.kDiskStrongHoldingOutput, true),
     DEPLOYED(0, false);
 
@@ -185,7 +185,8 @@ public class DiskIntake extends Subsystem {
           }
           break;
         case HANDOFF_COMPLETE:
-          hasDisk = false;
+          if(stateChanged)
+            hasDisk = false;
           break;
         case HOLDING:
           /*if(banner.get()) {

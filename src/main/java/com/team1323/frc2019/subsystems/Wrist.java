@@ -93,6 +93,7 @@ public class Wrist extends Subsystem{
 		wrist.config_kF(1, 1023.0/Constants.kWristMaxSpeedHighGear, 10);
 		wrist.configMotionCruiseVelocity((int)(Constants.kWristMaxSpeedHighGear*1.0), 10);
 		wrist.configMotionAcceleration((int)(Constants.kWristMaxSpeedHighGear*3.0), 10);
+		wrist.configMotionSCurveStrength(4);
 
 		highGearConfig = true;
 	}
@@ -109,6 +110,7 @@ public class Wrist extends Subsystem{
 		wrist.config_kF(3, 1023.0/Constants.kWristMaxSpeedLowGear, 10);
 		wrist.configMotionCruiseVelocity((int)(Constants.kWristMaxSpeedLowGear*1.0), 10);
 		wrist.configMotionAcceleration((int)(Constants.kWristMaxSpeedLowGear*3.0), 10);
+		wrist.configMotionSCurveStrength(4);
 
 		highGearConfig = false;
 		System.out.println("Low gear set");
@@ -128,7 +130,7 @@ public class Wrist extends Subsystem{
 	}
 	
 	public void setOpenLoop(double output){
-		periodicIO.demand = output;
+		periodicIO.demand = output * 0.5;//TODO update coefficient
 		currentState = WristControlState.OPEN_LOOP;
 	}
 	
