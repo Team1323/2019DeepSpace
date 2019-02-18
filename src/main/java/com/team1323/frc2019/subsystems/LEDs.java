@@ -8,6 +8,7 @@
 package com.team1323.frc2019.subsystems;
 
 import java.sql.Time;
+import java.util.List;
 
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifier.LEDChannel;
@@ -59,6 +60,7 @@ public class LEDs extends Subsystem{
             this.offTime = offTime;
         }
     }
+
     private State currentState = State.OFF;
     public State getState(){ return currentState; }
     private void setState(State newState){

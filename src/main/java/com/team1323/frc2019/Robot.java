@@ -235,7 +235,7 @@ public class Robot extends TimedRobot {
 			else
 				twoControllerMode();
 
-			if (robotState.seesTarget()) {
+			if (robotState.seesTarget() && (probe.hasDisk() || ballCarriage.hasBall())) {
 				leds.conformToState(LEDs.State.VISION);
 			} else if (ballIntake.hasBall()) {
 				leds.conformToState(LEDs.State.BALL_IN_INTAKE);
