@@ -19,7 +19,7 @@ public class LimelightProcessor implements Loop{
 	NetworkTableEntry pipeline;
 	NetworkTableEntry camMode;
 	public List<NetworkTableEntry> target1, target2, combinedTarget;
-	NetworkTableEntry camtran;
+	public NetworkTableEntry cornerX, cornerY;
 	
 	public static LimelightProcessor getInstance(){
 		return instance;
@@ -40,7 +40,8 @@ public class LimelightProcessor implements Loop{
 			table.getEntry("ta1"));
 		combinedTarget = Arrays.asList(table.getEntry("tx"), table.getEntry("ty"),
 			table.getEntry("ta"), table.getEntry("tv"));
-		camtran = table.getEntry("camtran");
+		cornerX = table.getEntry("tcornx");
+		cornerY = table.getEntry("tcorny");
 		setPipeline(0);
 	}
 	
@@ -48,12 +49,13 @@ public class LimelightProcessor implements Loop{
 	public void onLoop(double timestamp){
 		List<TargetInfo> targets = new ArrayList<TargetInfo>(3);
 		if(seesTarget()){
+			//List<TargetInfo> tapeStrips = getTargetInfos();
+			//targets.add(tapeStrips.get(0));
+			//targets.add(tapeStrips.get(1));
 			targets.add(getTargetInfo(target1));
 			targets.add(getTargetInfo(target2));
 			targets.add(new TargetInfo(Math.tan(Math.toRadians(combinedTarget.get(0).getDouble(0))), Math.tan(Math.toRadians(combinedTarget.get(1).getDouble(0)))));
 		}
-
-		SmartDashboard.putNumber("Limelight Pitch", camtran.getDoubleArray(new double[]{0.0,0.0,0.0,0.0,0.0,0.0})[3]);
 
 		robotState.addVisionUpdate(timestamp, targets);		
 	}
@@ -92,10 +94,69 @@ public class LimelightProcessor implements Loop{
 		return targetInSight;
 	}
 
+	public List<TargetInfo> getTargetInfos(){
+		List<Double> leftXs = new ArrayList<>();
+		for(int i=0; i<4; i++){
+			leftXs.add(cornerX.getDoubleArray(new double[8])[i]);
+		}
+		double firstAverageX = 0.0;
+		for(double x : leftXs){
+			firstAverageX += x;
+		}
+		firstAverageX /= 4.0;
+
+		List<Double> rightXs = new ArrayList<>();
+		for(int i=4; i<8; i++){
+			rightXs.add(cornerX.getDoubleArray(new double[8])[i]);
+		}
+		double secondAverageX = 0.0;
+		for(double x : rightXs){
+			secondAverageX += x;
+		}
+		secondAverageX /= 4.0;
+
+		List<Double> leftYs = new ArrayList<>();
+		for(int i=0; i<4; i++){
+			leftYs.add(cornerY.getDoubleArray(new double[8])[i]);
+		}
+		double firstAverageY = 0.0;
+		for(double y : leftYs){
+			firstAverageY += y;
+		}
+		firstAverageY /= 4.0;
+
+		List<Double> rightYs = new ArrayList<>();
+		for(int i=4; i<8; i++){
+			rightYs.add(cornerY.getDoubleArray(new double[8])[i]);
+		}
+		double secondAverageY = 0.0;
+		for(double y : rightYs){
+			secondAverageY += y;
+		}
+		secondAverageY /= 4.0;
+
+		List<TargetInfo> targets = new ArrayList<>();
+		targets.add(getTargetInfo((1.0/160.0)*(firstAverageX - 159.5), (1.0/120.0)*(119.5 - firstAverageY)));
+		targets.add(getTargetInfo((1.0/160.0)*(secondAverageX - 159.5), (1.0/120.0)*(119.5 - secondAverageY)));
+
+		return targets;
+	}
+
+	public TargetInfo getTargetInfo(double nx, double ny){
+		double vpw = 2.0 * Math.tan(Math.toRadians(29.8));// 27.0 29.8
+		double vph = 2.0 * Math.tan(Math.toRadians(24.85));//24.85  20.5
+		double x = vpw / 2.0 * nx;
+		double y = vph / 2.0 * ny;
+		double ax = Math.atan2(x, 1.0);
+		double ay = Math.atan2(y, 1.0);
+
+		return new TargetInfo(Math.tan(ax), Math.tan(ay));
+	}
+
 	public TargetInfo getTargetInfo(List<NetworkTableEntry> target){
 		double nx = target.get(0).getDouble(0);
 		double ny = target.get(1).getDouble(0);
-		double vpw = 2.0 * Math.tan(Math.toRadians(27.0));
+		double vpw = 2.0 * Math.tan(Math.toRadians(29.8));// 27.0 29.8
 		double vph = 2.0 * Math.tan(Math.toRadians(24.85));//24.85  20.5
 		double x = vpw / 2.0 * nx;
 		double y = vph / 2.0 * ny;

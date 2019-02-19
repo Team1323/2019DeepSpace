@@ -32,10 +32,7 @@ public class Elevator extends Subsystem {
 	LazyTalonSRX master, motor2;
 	List<LazyTalonSRX> motors, slaves;
 	private double targetHeight = 0.0;
-	private boolean isHighGear = true;
-	public boolean isHighGear(){
-		return isHighGear;
-	}
+	private boolean configuredForAscent = true;
 	private boolean limitsEnabled = false;
 	public boolean limitsEnabled(){
 		return limitsEnabled;
@@ -98,34 +95,41 @@ public class Elevator extends Subsystem {
 		setCurrentLimit(Constants.kELevatorCurrentLimit);
 		
 		resetToAbsolutePosition();
-		configForLifting();
+		configForAscent();
 	}
 	
-	private void configForLifting(){		
+	private void configForAscent(){		
 		manualSpeed = Constants.kElevatorTeleopManualSpeed;
 
-		master.selectProfileSlot(0, 0);
-		master.config_kP(0, 2.5, 10);//0.75 going up
+		master.config_kP(0, 0.75, 10);//0.75 going up
 		master.config_kI(0, 0.0, 10);
-		master.config_kD(0, 200.0, 10);//20.0
+		master.config_kD(0, 20.0, 10);//20.0
 		master.config_kF(0, 1023.0/Constants.kElevatorMaxSpeedHighGear, 10);
 		
-		master.config_kP(1, 2.5, 10);//0.75 going down
+		master.config_kP(1, 0.75, 10);//2.5 going down
 		master.config_kI(1, 0.0, 10);
-		master.config_kD(1, 80.0, 10);//20.0
+		master.config_kD(1, 20.0, 10);//20.0
 		master.config_kF(1, 1023.0/Constants.kElevatorMaxSpeedHighGear, 10);
 
 		master.configMotionCruiseVelocity((int)(Constants.kElevatorMaxSpeedHighGear * 1.0), 10);
 		master.configMotionAcceleration((int)(Constants.kElevatorMaxSpeedHighGear * 3.0), 10);
+		master.configMotionSCurveStrength(0);
+
+		configuredForAscent = true;
+	}
+
+	private void configforDescent(){
 		master.configMotionSCurveStrength(4);
+
+		configuredForAscent = false;
 	}
 	
 	public void configForTeleopSpeed(){
-		configForLifting();
+		configForAscent();
 	}
 	
 	public void configForAutoSpeed(){
-		configForLifting();
+		configForAscent();
 	}
 	
 	public void enableLimits(boolean enable){
@@ -157,13 +161,15 @@ public class Elevator extends Subsystem {
 			heightFeet = Constants.kElevatorMaxHeight;
 		else if(heightFeet < Constants.kElevatorMinHeight)
 			heightFeet = Constants.kElevatorMinHeight;
-		if(!isHighGear)
-			configForLifting();
 		if(isSensorConnected()){
-			if(heightFeet > getHeight())
+			if(heightFeet > getHeight()){
 				master.selectProfileSlot(0, 0);
-			else
+				configForAscent();
+			}
+			else{
 				master.selectProfileSlot(1, 0);
+				configforDescent();
+			}
 			targetHeight = heightFeet;
 			periodicIO.demand = elevatorHeightToEncUnits(heightFeet);
 			onTarget = false;

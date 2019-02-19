@@ -29,7 +29,7 @@ public class Probe extends Subsystem {
     Solenoid fingers, scorer, extender;
     DigitalInput banner;
 
-    private boolean getBanner(){
+    public boolean getBanner(){
         return banner.get();
     }
 
@@ -65,6 +65,10 @@ public class Probe extends Subsystem {
           stateChanged = true;
         currentState = newState;
         stateEnteredTimestamp = Timer.getFPGATimestamp();
+    }
+
+    public boolean isExtended(){
+        return currentState.extended;
     }
 
     private boolean stateChanged = false;

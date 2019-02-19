@@ -5,7 +5,7 @@ import java.util.List;
 
 public class VisionCriteria {
     public enum Criterion {
-        HEADING(1), DISTANCE(6);
+        HEADING(1), DISTANCE(12);
 
         int allowableUpdates;
         int successfulUpdates = 0;

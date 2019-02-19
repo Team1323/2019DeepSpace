@@ -326,6 +326,7 @@ public class Superstructure extends Subsystem {
 			ballCarriage.stateRequest(BallCarriage.State.OFF), 
 			ballIntake.stateRequest(BallIntake.State.INTAKING),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
+			probe.stateRequest(Probe.State.STOWED),
 			ballIntake.waitForBallRequest()), true);
 		/*RequestList queue = new RequestList(Arrays.asList(
 			elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
@@ -339,8 +340,9 @@ public class Superstructure extends Subsystem {
 		RequestList state = new RequestList(Arrays.asList(
 			elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
 			wrist.angleRequest(Constants.kWristBallHoldingAngle),
-			ballCarriage.stateRequest(BallCarriage.State.OFF), 
+			ballCarriage.stateRequest(BallCarriage.State.RECEIVING), 
 			ballIntake.stateRequest(BallIntake.State.HOLDING),
+			probe.stateRequest(Probe.State.STOWED),
 			diskIntake.stateRequest(DiskIntake.State.OFF)), true);
 		request(state); 
 	}
@@ -351,11 +353,12 @@ public class Superstructure extends Subsystem {
 			wrist.angleRequest(Constants.kWristBallFeedingAngle, 0.1),
 			ballCarriage.stateRequest(BallCarriage.State.RECEIVING), 
 			ballIntake.stateRequest(BallIntake.State.FEEDING),
+			probe.stateRequest(Probe.State.STOWED),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
 			ballCarriage.waitForBallRequest()), true);
 		RequestList queue = new RequestList(Arrays.asList(
 			ballIntake.stateRequest(BallIntake.State.POST_FEEDING),
-			ballCarriage.stateRequest(BallCarriage.State.SUCKING)), true);
+			ballCarriage.stateRequest(BallCarriage.State.OFF)), true);
 		request(state, queue);
 	}
 
@@ -363,20 +366,19 @@ public class Superstructure extends Subsystem {
 		RequestList state = new RequestList(Arrays.asList(
 			elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
 			wrist.angleRequest(Constants.kWristBallHoldingAngle),
-			ballCarriage.stateRequest(BallCarriage.State.OFF), 
+			ballCarriage.stateRequest(BallCarriage.State.RECEIVING),
 			ballIntake.stateRequest(BallIntake.State.HOLDING),
+			probe.stateRequest(Probe.State.STOWED),
 			diskIntake.stateRequest(DiskIntake.State.OFF)), true);
 		List<RequestList> queue = Arrays.asList(
 			new RequestList(Arrays.asList(
 				elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
-				wrist.angleRequest(Constants.kWristBallFeedingAngle, 0.1),
-				ballCarriage.stateRequest(BallCarriage.State.RECEIVING), 
+				wrist.angleRequest(Constants.kWristBallFeedingAngle, 0.1, false), 
 				ballIntake.stateRequest(BallIntake.State.FEEDING),
 				diskIntake.stateRequest(DiskIntake.State.OFF),
 				ballCarriage.waitForBallRequest()), true),
 			new RequestList(Arrays.asList(
 				ballIntake.stateRequest(BallIntake.State.POST_FEEDING),
-				ballCarriage.stateRequest(BallCarriage.State.SUCKING),
 				elevator.heightRequest(Constants.kElevatorLowBallHeight)), true)
 		);
 		request(state);
@@ -389,6 +391,7 @@ public class Superstructure extends Subsystem {
 			wrist.angleRequest(Constants.kWristBallFeedingAngle),
 			ballCarriage.stateRequest(BallCarriage.State.OFF), 
 			ballIntake.stateRequest(BallIntake.State.OFF),
+			probe.stateRequest(Probe.State.STOWED),
 			diskIntake.stateRequest(DiskIntake.State.OFF)), true);
 		request(state); 
 	}
@@ -423,10 +426,10 @@ public class Superstructure extends Subsystem {
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			ballCarriage.stateRequest(BallCarriage.State.OFF),
 			probe.waitForDiskRequest()), true);
-		RequestList queue = new RequestList(Arrays.asList(
+		/*RequestList queue = new RequestList(Arrays.asList(
 			probe.stateRequest(Probe.State.STOWED_HOLDING),
-			diskIntake.stateRequest(DiskIntake.State.HANDOFF_COMPLETE)), true);
-		request(state, queue); 
+			diskIntake.stateRequest(DiskIntake.State.HANDOFF_COMPLETE)), true);*/
+		request(state); 
 	}
 
 	public void diskScoringState(double elevatorHeight){

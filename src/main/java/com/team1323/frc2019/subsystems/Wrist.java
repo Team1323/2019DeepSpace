@@ -85,15 +85,15 @@ public class Wrist extends Subsystem{
 		wrist.selectProfileSlot(0, 0);
 		wrist.config_kP(0, 2.5, 10); // going down
 		wrist.config_kI(0, 0.0, 10);
-		wrist.config_kD(0, 40.0, 10);
+		wrist.config_kD(0, 80.0, 10);
 		wrist.config_kF(0, 1023.0/Constants.kWristMaxSpeedHighGear, 10);
 		wrist.config_kP(1, 2.0, 10);// going up
 		wrist.config_kI(1, 0.0, 10);
-		wrist.config_kD(1, 40.0, 10);
+		wrist.config_kD(1, 80.0, 10);
 		wrist.config_kF(1, 1023.0/Constants.kWristMaxSpeedHighGear, 10);
 		wrist.configMotionCruiseVelocity((int)(Constants.kWristMaxSpeedHighGear*1.0), 10);
 		wrist.configMotionAcceleration((int)(Constants.kWristMaxSpeedHighGear*3.0), 10);
-		wrist.configMotionSCurveStrength(4);
+		wrist.configMotionSCurveStrength(6);
 
 		highGearConfig = true;
 	}
@@ -195,6 +195,26 @@ public class Wrist extends Subsystem{
 			@Override
 			public boolean isFinished() {
 				return hasReachedTargetAngle();
+			}
+			
+		};
+	}
+
+	public Request angleRequest(double angle, double speedScalar, boolean wait){
+		return new Request(){
+
+			@Override
+			public void act() {
+				wrist.configMotionCruiseVelocity((int)((isHighGear ? Constants.kWristMaxSpeedHighGear : Constants.kWristMaxSpeedLowGear) * speedScalar));
+				setAngle(angle);
+			}
+
+			@Override
+			public boolean isFinished() {
+				if(wait)
+					return hasReachedTargetAngle();
+				else
+					return true;
 			}
 			
 		};

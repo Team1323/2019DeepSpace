@@ -69,7 +69,7 @@ public class Constants {
 	public static double kTrackReportComparatorAgeWeight = 1.0;
 	public static final double kDefaultCurveDistance = kRobotHalfLength + 36.0;
 	public static final double kVisionUpdateDistance = kRobotHalfLength + 75.0;
-	public static final double kVisionDistanceStep = kVisionUpdateDistance / 6.0;
+	public static final double kVisionDistanceStep = kVisionUpdateDistance / 12.0;
 	public static final double kClosestVisionDistance = 35.0;
     
     //Path following constants
@@ -120,9 +120,9 @@ public class Constants {
 	public static final double kSwerveEncUnitsPerInch = kSwerveEncUnitsPerWheelRev / (Math.PI * kSwerveWheelDiameter);
 	
 	//Elevator Constants
-	public static final double kElevatorMaxSpeedHighGear = 906.17 * 4096.0 / 600.0; //encoder units per 100 ms
+	public static final double kElevatorMaxSpeedHighGear = 641.17 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
-	public static final int kElevatorEncoderStartingPosition = 418;
+	public static final int kElevatorEncoderStartingPosition = 96;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 1.0; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.5;

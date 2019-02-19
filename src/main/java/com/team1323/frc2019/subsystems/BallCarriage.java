@@ -107,24 +107,31 @@ public class BallCarriage extends Subsystem{
         public void onLoop(double timestamp) {
             switch(currentState){
                 case EJECTING:
+                    if(stateChanged)
+                        hasBall = false;
                     if((timestamp - stateEnteredTimestamp) > 1.0){
                         conformToState(State.OFF);
                     }
                     break;
                 case RECEIVING:
-                    if (stateChanged)
+                    if (stateChanged){
                         hasBall = false;
+                        bannerSensorBeganTimestamp = Double.POSITIVE_INFINITY;
+                    }
                     if (getBanner()) {
                         if (Double.isInfinite(bannerSensorBeganTimestamp)) {
                             bannerSensorBeganTimestamp = timestamp;
                         } else {
-                            if (timestamp - bannerSensorBeganTimestamp >= 0.0) {
+                            if ((timestamp - bannerSensorBeganTimestamp) >= 0.0) {
                                 hasBall = true;
                                 needsToNotifyDrivers = true;
+                                conformToState(State.OFF);
                             }
                         }
-                    } else if (!Double.isFinite(bannerSensorBeganTimestamp)) {
-                        bannerSensorBeganTimestamp = Double.POSITIVE_INFINITY;
+                    } else {
+                        if (!Double.isFinite(bannerSensorBeganTimestamp)) {
+                            bannerSensorBeganTimestamp = Double.POSITIVE_INFINITY;
+                        }
                     }
                     break;
                 case SUCKING:
@@ -171,7 +178,7 @@ public class BallCarriage extends Subsystem{
 
             @Override
             public boolean isFinished(){
-                return hasBall();
+                return hasBall() && !stateChanged;
             }
 
         };
