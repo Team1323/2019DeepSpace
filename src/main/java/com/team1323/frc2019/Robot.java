@@ -136,6 +136,7 @@ public class Robot extends TimedRobot {
 		AutoModeBase auto = new TwoCloseOneBallMode(true);
 		// qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
+
 	}
 
 	public void allPeriodic() {
@@ -403,7 +404,7 @@ public class Robot extends TimedRobot {
 		} else if (coDriver.aButton.wasReleased()) {
 			s.fullBallCycleState();
 		} else if (coDriver.xButton.shortReleased()) {
-			// TODO implement tracking
+			s.midDiskTrackingState();
 		} else if (coDriver.xButton.longPressed()) {
 			if(probe.isExtended()){
 				s.diskScoringState(Constants.kElevatorMidHatchHeight);
@@ -420,7 +421,8 @@ public class Robot extends TimedRobot {
 			}
 		} else if (coDriver.bButton.shortReleased()) {
 			// TODO implement tracking
-			//s.diskTrackingState(Constants.kElevatorLowHatchHeight);
+			//s.ballTrackingState(Constants.kElevatorBallCargoShipHeight);
+			s.diskTrackingState(Constants.kElevatorLowHatchHeight);
 		} else if (coDriver.bButton.longPressed()) {
 			if(probe.isExtended()){
 				s.diskScoringState(Constants.kElevatorLowHatchHeight);

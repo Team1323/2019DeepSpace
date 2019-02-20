@@ -26,7 +26,7 @@ public class Constants {
 	public static final double kRobotLength = 29.5 + 2.625;
 	public static final double kRobotHalfWidth = kRobotWidth / 2.0;
 	public static final double kRobotHalfLength = kRobotLength / 2.0;
-	public static final double kRobotProbeExtrusion = 11.0;//TODO update
+	public static final double kRobotProbeExtrusion = 3.0;//TODO update
 
 	public static final double kBallRadius = 6.5;
 	
@@ -55,7 +55,7 @@ public class Constants {
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
     
     //Camera Constants
-    public static final double kCameraYOffset = 7.75;
+    public static final double kCameraYOffset = 7.75 - 0.5;
     public static final double kCameraXOffset = (29.5 / 2.0) - 17.4375;
     public static final double kCameraZOffset = 37.906;
     public static final double kCameraYawAngleDegrees = 2.0;
@@ -120,9 +120,9 @@ public class Constants {
 	public static final double kSwerveEncUnitsPerInch = kSwerveEncUnitsPerWheelRev / (Math.PI * kSwerveWheelDiameter);
 	
 	//Elevator Constants
-	public static final double kElevatorMaxSpeedHighGear = 641.17 * 4096.0 / 600.0; //encoder units per 100 ms
+	public static final double kElevatorMaxSpeedHighGear = 696.96 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
-	public static final int kElevatorEncoderStartingPosition = 96;
+	public static final int kElevatorEncoderStartingPosition = 178;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 1.0; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.5;
@@ -131,6 +131,7 @@ public class Constants {
 	public static final double kElevatorMidHatchHeight = 36.5;
 	public static final double kElevatorHighHatchHeight = 63.7;
 	public static final double kElevatorBallIntakeHeight = 0.1;
+	public static final double kElevatorBallCargoShipHeight = 17.5;
 	public static final double kElevatorLowBallHeight = 4.3;
 	public static final double kElevatorMidBallHeight = 32.0;
 	public static final double kElevatorHighBallHeight = 60.4;
@@ -140,11 +141,10 @@ public class Constants {
 	public static final double kElevatorMaxInitialHeight = 4.5;
 	public static final double kElevatorMaxCurrent = 50.0;//amps
 	public static final int kELevatorCurrentLimit = 40;
-	public static final double kElevatorMinimumHangingHeight = 0.795 + 0.08;
-	public static final double kElevatorMaximumHangingHeight = 3.25;
-	public static final double kElevatorHangingRampHeight = 3.452;
-	public static final double kElevatorTippingCubeHeight = 0.57;
 	public static final double kElevatorTeleopManualSpeed = 0.5;
+
+	public static final List<double[]> kElevatorDiskVisibleRanges = Arrays.asList(new double[]{0.0, 2.5},
+		new double[]{36.0, 40.0}, new double[]{45.0, kElevatorMaxHeight});
 	
 	//Swerve Speed Constraint Treemap
 	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kSwerveSpeedTreeMap = new InterpolatingTreeMap<>();
@@ -188,7 +188,7 @@ public class Constants {
 	public static final double kIntakeClimbOutput = 4.0/12.0;
 
 	//Ball Carriage Constants
-	public static final double kBallCarriageEjectOutput = -0.75;
+	public static final double kBallCarriageEjectOutput = -0.9;
 	public static final double kBallCarriageReceiveOutput = -0.55;
 	public static final double kBallCarriageSuckOutput = 0.35;
 
