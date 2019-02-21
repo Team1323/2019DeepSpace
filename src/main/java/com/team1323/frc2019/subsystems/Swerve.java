@@ -84,6 +84,7 @@ public class Swerve extends Subsystem{
 	VisionCriteria visionCriteria = new VisionCriteria();
 	double initialVisionDistance = 0.0;
 	ShooterAimingParameters latestAim = new ShooterAimingParameters(100.0, new Rotation2d(), 0.0, 0.0, new Rotation2d());
+	double lastVisionEndDistance = Constants.kRobotProbeExtrusion;
 
 
 	//Name says it all
@@ -446,12 +447,22 @@ public class Swerve extends Subsystem{
 		setTrajectory(trajectory, targetHeading, rotationScalar, Translation2d.identity());
 	}
 
-	private synchronized void setCurvedVisionTrajectory(double linearShiftDistance, Optional<ShooterAimingParameters> aimingParameters){
+	public synchronized void setRobotCentricTrajectory(Translation2d relativeEndPos, double targetHeading){
+		modulesReady = true;
+		Rotation2d startHeading = relativeEndPos.translateBy(pose.getTranslation().inverse()).direction();
+		List<Pose2d> waypoints = new ArrayList<>();
+		waypoints.add(new Pose2d(pose.getTranslation(), startHeading));	
+		waypoints.add(new Pose2d(pose.transformBy(Pose2d.fromTranslation(relativeEndPos)).getTranslation(), startHeading));
+		Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 96.0, 60.0, 60.0, 9.0, 45.0, 1);
+		setTrajectory(trajectory, targetHeading, 1.0);
+	}
+
+	private synchronized void setCurvedVisionTrajectory(double linearShiftDistance, Optional<ShooterAimingParameters> aimingParameters, double endDistance){
 		visionCurveDistance = linearShiftDistance;
 		System.out.println("Vision Curve Distance: " + visionCurveDistance);
 		visionTargetPosition = robotState.getCaptureTimeFieldToGoal().get(2).getTranslation();
 		Optional<Pose2d> orientedTarget = robotState.getOrientedTargetPosition(aimingParameters);
-		
+		lastVisionEndDistance = endDistance;
 		if(orientedTarget.isPresent() && robotState.seesTarget() && visionUpdatesAllowed){
 			Rotation2d closestHeading = new Rotation2d();
 			double distance = 2.0 * Math.PI;
@@ -462,13 +473,13 @@ public class Swerve extends Subsystem{
 				}
 			}
 			System.out.println("Closest target heading: " + closestHeading.getDegrees());
-			Optional<Pose2d> robotScoringPosition = robotState.getRobotScoringPosition(aimingParameters, closestHeading);
+			Optional<Pose2d> robotScoringPosition = robotState.getRobotScoringPosition(aimingParameters, closestHeading, endDistance);
 			Translation2d deltaPosition = new Pose2d(orientedTarget.get().getTranslation(), closestHeading).transformBy(Pose2d.fromTranslation(new Translation2d(-linearShiftDistance, 0.0))).getTranslation().translateBy(pose.getTranslation().inverse());
 			Rotation2d deltaPositionHeading = new Rotation2d(deltaPosition, true);
 			List<Pose2d> waypoints = new ArrayList<>();
 			waypoints.add(new Pose2d(pose.getTranslation(), (getState() == ControlState.VISION) ? lastTrajectoryVector.direction() : deltaPositionHeading));	
 			waypoints.add(new Pose2d(robotScoringPosition.get().getTranslation(), closestHeading));
-			Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 84.0, 48.0, 48.0, 9.0, (visionUpdateCount > 1) ? lastTrajectoryVector.norm()*Constants.kSwerveMaxSpeedInchesPerSecond : 45.0, 1);
+			Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 96.0, 60.0, 60.0, 9.0, (visionUpdateCount > 1) ? lastTrajectoryVector.norm()*Constants.kSwerveMaxSpeedInchesPerSecond : 45.0, 1);
 			motionPlanner.reset();
 			motionPlanner.setTrajectory(new TrajectoryIterator<>(new TimedView<>(trajectory)));
 			setPathHeading(closestHeading.getDegrees());
@@ -478,12 +489,12 @@ public class Swerve extends Subsystem{
 			visionUpdateCount++;
 			System.out.println("Vision trajectory updated " + visionUpdateCount + " times. Distance: " + aimingParameters.get().getRange());
 		}else{
-			DriverStation.reportError("Vision update refused!", false);
+			DriverStation.reportError("Vision update refused! " + orientedTarget.isPresent() + " " + robotState.seesTarget() + " " + visionUpdatesAllowed, false);
 		}
 	}
 
 	/** Creates and sets a trajectory for the robot to follow, in order to approach a target and score a game piece */
-	public synchronized void setVisionTrajectory(){
+	public synchronized void setVisionTrajectory(double visionTargetHeight, double endDistance){
 		Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
 		if(aim.isPresent()){
 			/*if(aim.get().getRange() > Constants.kDefaultCurveDistance){
@@ -493,8 +504,25 @@ public class Swerve extends Subsystem{
 					initialVisionDistance = aim.get().getRange();
 					latestAim = aim.get();
 				}
-				visionUpdatesAllowed = inRanges(elevator.getHeight(), Constants.kElevatorDiskVisibleRanges);
-				setCurvedVisionTrajectory(aim.get().getRange() * 0.5, aim);
+				robotState.setVisionTargetHeight(visionTargetHeight);
+				visionUpdatesAllowed = elevator.inDiskVisionRange();
+				setCurvedVisionTrajectory(aim.get().getRange() * 0.5, aim, endDistance);
+			//}
+		}
+	}
+
+	public synchronized void setVisionTrajectory(double endDistance){
+		Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
+		if(aim.isPresent()){
+			/*if(aim.get().getRange() > Constants.kDefaultCurveDistance){
+				setCurvedVisionTrajectory(Constants.kDefaultCurveDistance, aim);
+			}else{*/
+				if(getState() != ControlState.VISION){
+					initialVisionDistance = aim.get().getRange();
+					latestAim = aim.get();
+				}
+				visionUpdatesAllowed = elevator.inDiskVisionRange();
+				setCurvedVisionTrajectory(aim.get().getRange() * 0.5, aim, endDistance);
 			//}
 		}
 	}
@@ -719,13 +747,13 @@ public class Swerve extends Subsystem{
 			break;
 		case VISION:
 			if(!motionPlanner.isDone()){
-				visionUpdatesAllowed = inRanges(elevator.getHeight(), Constants.kElevatorDiskVisibleRanges);
+				visionUpdatesAllowed = elevator.inDiskVisionRange();
 				Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
 				if(aim.isPresent() && visionUpdatesAllowed){
 					latestAim = aim.get();
 					if(aim.get().getRange() < (initialVisionDistance - (Constants.kVisionDistanceStep * (visionCriteria.successfulUpdates(VisionCriteria.Criterion.DISTANCE) + 1))) 
 						&& visionCriteria.updateAllowed(VisionCriteria.Criterion.DISTANCE) && aim.get().getRange() >= Constants.kClosestVisionDistance){
-						setVisionTrajectory();
+						setVisionTrajectory(lastVisionEndDistance);
 						visionCriteria.addSuccessfulUpdate(VisionCriteria.Criterion.DISTANCE);
 					}/*else if(Math.abs(pose.getRotation().distance(visionTargetHeading)) < Math.toRadians(2.0) && visionCriteria.updateAllowed(VisionCriteria.Criterion.HEADING)){
 						setVisionTrajectory();
@@ -801,13 +829,13 @@ public class Swerve extends Subsystem{
 		
 	};
 
-	public Request trackRequest(){
+	public Request trackRequest(double visionTargetHeight, double endDistance){
 		return new Request(){
 		
 			@Override
 			public void act() {
 				resetVisionUpdates();
-				setVisionTrajectory();
+				setVisionTrajectory(visionTargetHeight, endDistance);
 			}
 
 			@Override
@@ -818,13 +846,13 @@ public class Swerve extends Subsystem{
 		};
 	}
 
-	public Request startTrackRequest(){
+	public Request startTrackRequest(double visionTargetHeight, double endDistance){
 		return new Request(){
 		
 			@Override
 			public void act() {
 				resetVisionUpdates();
-				setVisionTrajectory();
+				setVisionTrajectory(visionTargetHeight, endDistance);
 			}
 
 		};
@@ -846,12 +874,32 @@ public class Swerve extends Subsystem{
 		};
 	}
 
-	private boolean inRanges(double x, List<double[]> ranges){
-		boolean inRange = false;
-		for(double[] range : ranges){
-			inRange |= (x >= range[0]) && (x <= range[1]);
-		}
-		return inRange;
+	public Request trajectoryRequest(Translation2d relativeEndPos, double targetHeading){
+		return new Request(){
+		
+			@Override
+			public void act() {
+				setRobotCentricTrajectory(relativeEndPos, targetHeading);
+			}
+
+			@Override
+			public boolean isFinished(){
+				return getState() == ControlState.TRAJECTORY && motionPlanner.isDone();
+			}
+
+		};
+	}
+
+	public Request openLoopRequest(Translation2d input, double rotation){
+		return new Request(){
+		
+			@Override
+			public void act() {
+				setState(ControlState.MANUAL);
+				sendInput(input.x(), input.y(), rotation, false, false);
+			}
+
+		};
 	}
 	
 	public void setNominalDriveOutput(double voltage){

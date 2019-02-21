@@ -11,9 +11,10 @@ import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.requests.Request;
 import com.team1323.frc2019.subsystems.requests.RequestList;
 import com.team1323.lib.util.InterpolatingDouble;
-import edu.wpi.first.wpilibj.Timer;
+import com.team254.lib.geometry.Translation2d;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Superstructure extends Subsystem {
 
@@ -398,13 +399,17 @@ public class Superstructure extends Subsystem {
 
 	public void ballTrackingState(double elevatorHeight){
 		RequestList state = new RequestList(Arrays.asList(
-			swerve.trackRequest(),
-			elevator.heightRequest(Constants.kElevatorDiskIntakeHeight), 
+			elevator.heightRequest(elevator.nearestVisionHeight()),
+			waitRequest(0.5),
+			swerve.startTrackRequest(Constants.kBallTargetHeight, Constants.kRobotProbeExtrusion),
+			waitRequest(0.5),
+			elevator.heightRequest(elevator.nearestVisionHeight(elevatorHeight)), 
 			wrist.angleRequest(Constants.kWristBallFeedingAngle),
 			ballCarriage.stateRequest(BallCarriage.State.OFF), 
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			probe.stateRequest(Probe.State.STOWED),
-			diskIntake.stateRequest(DiskIntake.State.OFF)), true);
+			diskIntake.stateRequest(DiskIntake.State.OFF),
+			swerve.waitForTrackRequest()), false);
 		RequestList queue = new RequestList(Arrays.asList(
 			elevator.heightRequest(elevatorHeight),
 			ballCarriage.stateRequest(BallCarriage.State.EJECTING)), false);
@@ -441,10 +446,10 @@ public class Superstructure extends Subsystem {
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			ballCarriage.stateRequest(BallCarriage.State.OFF),
 			probe.waitForDiskRequest()), true);
-		/*RequestList queue = new RequestList(Arrays.asList(
-			probe.stateRequest(Probe.State.STOWED_HOLDING),
-			diskIntake.stateRequest(DiskIntake.State.HANDOFF_COMPLETE)), true);*/
-		request(state); 
+		RequestList queue = new RequestList(Arrays.asList(
+			probe.stateRequest(Probe.State.HOLDING),
+			diskIntake.stateRequest(DiskIntake.State.HANDOFF_COMPLETE)), true);
+		request(state, queue); 
 	}
 
 	public void diskScoringState(double elevatorHeight){
@@ -459,31 +464,45 @@ public class Superstructure extends Subsystem {
 
 	public void diskTrackingState(double elevatorHeight){
 		RequestList state = new RequestList(Arrays.asList(
-			swerve.trackRequest(),
+			elevator.heightRequest(elevator.nearestVisionHeight()),
+			waitRequest(0.5),
+			//elevator.heightRequest(elevatorHeight),
+			//waitRequest(0.5),
+			swerve.startTrackRequest(Constants.kHatchTargetHeight, Constants.kRobotProbeExtrusion),
+			waitRequest(0.5),
+			elevator.heightRequest(elevatorHeight),
 			probe.stateRequest(Probe.State.HOLDING),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			ballCarriage.stateRequest(BallCarriage.State.OFF),
-			elevator.heightRequest(Constants.kElevatorDiskIntakeHeight)), true);
-		RequestList queue = new RequestList(Arrays.asList(
-			elevator.heightRequest(elevatorHeight),
-			probe.stateRequest(Probe.State.SCORING)), false);
-		request(state, queue); 
-	}
-
-	public void midDiskTrackingState(){
-		RequestList state = new RequestList(Arrays.asList(
-			swerve.startTrackRequest(),
-			waitRequest(0.5),
-			elevator.heightRequest(Constants.kElevatorMidHatchHeight),
-			probe.stateRequest(Probe.State.HOLDING),
-			diskIntake.stateRequest(DiskIntake.State.OFF),
-			ballIntake.stateRequest(BallIntake.State.OFF),
-			ballCarriage.stateRequest(BallCarriage.State.OFF)), false);
-		RequestList queue = new RequestList(Arrays.asList(
 			swerve.waitForTrackRequest(),
 			probe.stateRequest(Probe.State.SCORING)), false);
-		request(state, queue); 
+		request(state); 
+	}
+
+	public void humanLoaderTrackingState(){
+		RequestList state = new RequestList(Arrays.asList(
+			diskIntake.stateRequest(DiskIntake.State.OFF),
+			ballIntake.stateRequest(BallIntake.State.OFF),
+			ballCarriage.stateRequest(BallCarriage.State.OFF),
+			probe.stateRequest(Probe.State.STOWED),
+			elevator.heightRequest(Constants.kElevatorDiskIntakeHeight),
+			waitRequest(0.5),
+			swerve.trackRequest(Constants.kHatchTargetHeight, 0.0)), false);
+
+		List<RequestList> queue = Arrays.asList(
+			new RequestList(Arrays.asList(
+				elevator.heightRequest(Constants.kElevatorHumanLoaderHeight),
+				probe.stateRequest(Probe.State.RECEIVING),
+				probe.waitForDiskRequest()), true),
+			new RequestList(Arrays.asList(
+				swerve.waitForTrackRequest(),
+				probe.stateRequest(Probe.State.HOLDING),
+				swerve.trajectoryRequest(new Translation2d(-84.0, 0.0), 0.0),
+				swerve.openLoopRequest(new Translation2d(), 0.0)), false)
+		);
+		request(state); 
+		replaceQueue(queue);
 	}
 
 	public void climbingState(){

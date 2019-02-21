@@ -20,6 +20,11 @@ public class LimelightProcessor implements Loop{
 	NetworkTableEntry camMode;
 	public List<NetworkTableEntry> target1, target2, combinedTarget;
 	public NetworkTableEntry cornerX, cornerY;
+
+	boolean updatesAllowed = true;
+	public void enableUpdates(boolean enable){
+		updatesAllowed = enable;
+	}
 	
 	public static LimelightProcessor getInstance(){
 		return instance;
@@ -42,13 +47,13 @@ public class LimelightProcessor implements Loop{
 			table.getEntry("ta"), table.getEntry("tv"));
 		cornerX = table.getEntry("tcornx");
 		cornerY = table.getEntry("tcorny");
-		setPipeline(1);
+		setPipeline(Pipeline.LOWEST);
 	}
 	
 	@Override 
 	public void onLoop(double timestamp){
-		List<TargetInfo> targets = new ArrayList<TargetInfo>(3);
-		if(seesTarget()){
+		List<TargetInfo> targets = new ArrayList<TargetInfo>();
+		if(seesTarget() && updatesAllowed){
 			//List<TargetInfo> tapeStrips = getTargetInfos();
 			//targets.add(tapeStrips.get(0));
 			//targets.add(tapeStrips.get(1));
@@ -94,7 +99,8 @@ public class LimelightProcessor implements Loop{
 	}
 
 	public enum Pipeline{
-		LEFTMOST(0), RIGHTMOST(1), CLOSEST(2);
+		LEFTMOST(0), RIGHTMOST(1), CLOSEST(2),
+		LOWEST(3), HIGHEST(4);
 
 		int id;
 		private Pipeline(int id){

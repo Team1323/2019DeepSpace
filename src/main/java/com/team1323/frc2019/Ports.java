@@ -41,7 +41,7 @@ public class Ports {
     public static final int PROBE_FINGERS = 2;
     
     //Digital Inputs
-    public static final int BALL_INTAKE_BANNER  = 2;
+    public static final int BALL_INTAKE_BANNER  = 3;
     public static final int DISK_INTAKE_BANNER = 1;
     public static final int BALL_CARRIAGE_BANNER = 0;
 

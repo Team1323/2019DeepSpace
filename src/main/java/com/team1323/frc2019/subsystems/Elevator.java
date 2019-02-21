@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1323.frc2019.Constants;
 import com.team1323.frc2019.Ports;
 import com.team1323.frc2019.loops.ILooper;
+import com.team1323.frc2019.loops.LimelightProcessor;
 import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.requests.Prerequisite;
 import com.team1323.frc2019.subsystems.requests.Request;
@@ -41,6 +42,8 @@ public class Elevator extends Subsystem {
 	public TalonSRX getPigeonTalon(){
 		return motor2;
 	}
+
+	private LimelightProcessor limelight;
 	
 	public enum ControlState{
 		Neutral, Position, OpenLoop, Locked
@@ -96,19 +99,21 @@ public class Elevator extends Subsystem {
 		
 		resetToAbsolutePosition();
 		configForAscent();
+
+		limelight = LimelightProcessor.getInstance();
 	}
 	
 	private void configForAscent(){		
 		manualSpeed = Constants.kElevatorTeleopManualSpeed;
 
-		master.config_kP(0, 0.75, 10);//0.75 going up
+		master.config_kP(0, 1.75, 10);//0.75 going up
 		master.config_kI(0, 0.0, 10);
-		master.config_kD(0, 20.0, 10);//20.0
+		master.config_kD(0, 40.0, 10);//20.0
 		master.config_kF(0, 1023.0/Constants.kElevatorMaxSpeedHighGear, 10);
 		
-		master.config_kP(1, 0.75, 10);//2.5 going down
+		master.config_kP(1, 1.5, 10);//2.5 going down
 		master.config_kI(1, 0.0, 10);
-		master.config_kD(1, 20.0, 10);//20.0
+		master.config_kD(1, 30.0, 10);//20.0
 		master.config_kF(1, 1023.0/Constants.kElevatorMaxSpeedHighGear, 10);
 
 		master.configMotionCruiseVelocity((int)(Constants.kElevatorMaxSpeedHighGear * 1.0), 10);
@@ -278,6 +283,36 @@ public class Elevator extends Subsystem {
 	private double encUnitsToElevatorHeight(double encUnits){
 		return encUnitsToInches(encUnits - Constants.kElevatorEncoderStartingPosition);
 	}
+
+	public boolean inDiskVisionRange(){
+		double height = getHeight();
+		boolean inRange = false;
+		for(double[] range : Constants.kElevatorDiskVisibleRanges){
+			inRange |= (height >= range[0]) && (height <= range[1]);
+		}
+		//System.out.println("Elevator in range: " + inRange + ". Height: " + height + ". Time: " + Timer.getFPGATimestamp());
+		return inRange;
+	}
+
+	public double nearestVisionHeight(){
+		return nearestVisionHeight(getHeight());
+	}
+
+	public double nearestVisionHeight(double height){
+		if(inDiskVisionRange())
+			return height;
+		double nearestHeight = 0.0;
+		double smallestDistance = Math.abs(height - nearestHeight);
+		for(double[] range : Constants.kElevatorDiskVisibleRanges){
+			for(int i=0; i<2; i++){
+				if(Math.abs(height - range[i]) < smallestDistance){
+					smallestDistance = Math.abs(height - range[i]);
+					nearestHeight = (i == 0) ? range[i] + 0.5 : range[i] - 0.5;
+				}
+			}
+		}
+		return nearestHeight;
+	}
 	
 	private boolean getMotorsWithHighCurrent(){
 		return periodicIO.current >= Constants.kElevatorMaxCurrent;
@@ -296,6 +331,8 @@ public class Elevator extends Subsystem {
 				DriverStation.reportError("Elevator current too high", false);
 				//stop();
 			}
+
+			limelight.enableUpdates(inDiskVisionRange());
 		}
 
 		@Override

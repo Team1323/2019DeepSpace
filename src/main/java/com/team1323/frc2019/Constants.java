@@ -22,8 +22,8 @@ public class Constants {
 	public static final boolean kDebuggingOutput = false;
 	
 	//Physical Robot Dimensions (including bumpers)
-	public static final double kRobotWidth = 29.5;
-	public static final double kRobotLength = 29.5 + 2.625;
+	public static final double kRobotWidth = 36.5;
+	public static final double kRobotLength = 36.5;
 	public static final double kRobotHalfWidth = kRobotWidth / 2.0;
 	public static final double kRobotHalfLength = kRobotLength / 2.0;
 	public static final double kRobotProbeExtrusion = 3.0;//TODO update
@@ -38,8 +38,9 @@ public class Constants {
 	public static final Pose2d rocketPortPosition = new Pose2d(new Translation2d(229.13, 27.44 - 162.0), Rotation2d.fromDegrees(-90.0));
 
 	public static final double kHatchTargetHeight = 28.5;
+	public static final double kBallTargetHeight = 36.75;
 	public static final List<Rotation2d> kPossibleTargetAngles = Arrays.asList(Rotation2d.fromDegrees(0.0), Rotation2d.fromDegrees(30.0),
-		Rotation2d.fromDegrees(90.0), Rotation2d.fromDegrees(150.0), Rotation2d.fromDegrees(-150.0),
+		Rotation2d.fromDegrees(90.0), Rotation2d.fromDegrees(150.0), Rotation2d.fromDegrees(180.0), Rotation2d.fromDegrees(-150.0),
 		Rotation2d.fromDegrees(-90.0), Rotation2d.fromDegrees(-30.0));
 	
 	public static final Pose2d kRobotLeftStartingPose = new Pose2d(new Translation2d(48.0 + kRobotHalfLength, 97.0 + kRobotHalfWidth - 162.0), Rotation2d.fromDegrees(0));
@@ -70,7 +71,7 @@ public class Constants {
 	public static final double kDefaultCurveDistance = kRobotHalfLength + 36.0;
 	public static final double kVisionUpdateDistance = kRobotHalfLength + 75.0;
 	public static final double kVisionDistanceStep = kVisionUpdateDistance / 12.0;
-	public static final double kClosestVisionDistance = 35.0;
+	public static final double kClosestVisionDistance = 36.0;
     
     //Path following constants
     public static final double kPathLookaheadTime = 0.25;  // seconds to look ahead along the path for steering 0.4
@@ -124,7 +125,7 @@ public class Constants {
 	/** Pulse width position of the elevator encoder when it has fully descended. */
 	public static final int kElevatorEncoderStartingPosition = 178;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
-	public static final double kElevatorHeightTolerance = 1.0; //inches
+	public static final double kElevatorHeightTolerance = 0.5; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.5;
 	public static final double kElevatorLowHatchHeight = 7.0;
 	public static final double kElevatorHumanLoaderHeight = 5.5;
@@ -188,7 +189,7 @@ public class Constants {
 	public static final double kIntakeClimbOutput = 4.0/12.0;
 
 	//Ball Carriage Constants
-	public static final double kBallCarriageEjectOutput = -0.9;
+	public static final double kBallCarriageEjectOutput = -1.0;
 	public static final double kBallCarriageReceiveOutput = -0.55;
 	public static final double kBallCarriageSuckOutput = 0.35;
 

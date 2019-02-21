@@ -80,6 +80,10 @@ public class RobotState {
     public synchronized void resetDistanceDriven() {
         distance_driven_ = 0.0;
     }
+
+    public synchronized void setVisionTargetHeight(double height){
+        differential_height_ = height - Constants.kCameraZOffset;
+    }
     
     /**
      * Returns the robot's position on the field at a certain time. Linearly interpolates between stored robot positions
@@ -166,13 +170,13 @@ public class RobotState {
         }
     }
 
-    public synchronized Optional<Pose2d> getRobotScoringPosition(Optional<ShooterAimingParameters> aimingParameters, Rotation2d orientation){
+    public synchronized Optional<Pose2d> getRobotScoringPosition(Optional<ShooterAimingParameters> aimingParameters, Rotation2d orientation, double endDistance){
         List<Pose2d> targetPositions = getCaptureTimeFieldToGoal();
 		if(targetPositions.size() >= minimumTargetQuantity && aimingParameters.isPresent()){
             Translation2d targetPosition = targetPositions.get(primaryTargetIndex).getTranslation();
             SmartDashboard.putNumberArray("Path Pose", new double[]{targetPosition.x(), targetPosition.y(), aimingParameters.get().getTargetOrientation().getDegrees(), 0.0}); 
 			Pose2d orientedTargetPosition = new Pose2d(targetPosition, orientation);
-            Pose2d robotScoringPosition = orientedTargetPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - Constants.kRobotProbeExtrusion, 0.0)));
+            Pose2d robotScoringPosition = orientedTargetPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - endDistance, 0.0)));
             
             return Optional.of(robotScoringPosition);
         }

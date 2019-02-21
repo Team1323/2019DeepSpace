@@ -17,6 +17,7 @@ import com.team1323.frc2019.loops.LimelightProcessor;
 import com.team1323.frc2019.loops.Looper;
 import com.team1323.frc2019.loops.QuinticPathTransmitter;
 import com.team1323.frc2019.loops.RobotStateEstimator;
+import com.team1323.frc2019.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2019.subsystems.BallCarriage;
 import com.team1323.frc2019.subsystems.BallIntake;
 import com.team1323.frc2019.subsystems.DiskIntake;
@@ -66,6 +67,8 @@ public class Robot extends TimedRobot {
 	private Superstructure s;
 	private SubsystemManager subsystems;
 
+	private LimelightProcessor limelight;
+
 	private InputRamp elevatorInput = new InputRamp(0.0, 0.05, 0.05);
 
 	private AutoModeExecuter autoModeExecuter = null;
@@ -107,6 +110,8 @@ public class Robot extends TimedRobot {
 		subsystems = new SubsystemManager(
 				Arrays.asList(swerve, elevator, wrist, ballIntake, ballCarriage, diskIntake, probe, jacks, leds, s));
 
+		limelight = LimelightProcessor.getInstance();
+		
 		if (useSwitchController) {
 			switchController = new SwitchController(2);
 		}
@@ -309,8 +314,7 @@ public class Robot extends TimedRobot {
 			swerveRotationInput = (flickRotation ? 0.0 : switchController.getX(Hand.kRight));
 
 			if (switchController.plusButton.wasPressed()) {
-				swerve.resetVisionUpdates();
-				swerve.setVisionTrajectory();
+
 			} else if (switchController.minusButton.wasPressed()) {
 				swerve.temporarilyDisableHeadingController();
 				swerve.zeroSensors(Constants.kRobotLeftStartingPose);
@@ -375,8 +379,7 @@ public class Robot extends TimedRobot {
 			swerve.setTrajectory(generator.getTrajectorySet().straightPath, 0.0, 1.0);*/
 			// swerve.setVelocity(new Rotation2d(), 24.0);
 		} else if (driver.startButton.shortReleased()) {
-			swerve.resetVisionUpdates();
-			swerve.setVisionTrajectory();
+
 		} /*else if (driver.leftBumper.isBeingPressed()) {
 			swerve.setVelocity(new Rotation2d(), 24.0);
 		} else if (swerve.getState() == Swerve.ControlState.VELOCITY) {
@@ -389,6 +392,8 @@ public class Robot extends TimedRobot {
 
 		if (coDriver.startButton.shortReleased()) {
 			s.diskReceivingState();
+		} else if(coDriver.startButton.longPressed()){
+			s.humanLoaderTrackingState();
 		} else if (coDriver.rightBumper.shortReleased()) {
 			s.diskIntakingState();
 		} else if (coDriver.leftBumper.shortReleased()) {
@@ -404,7 +409,13 @@ public class Robot extends TimedRobot {
 		} else if (coDriver.aButton.wasReleased()) {
 			s.fullBallCycleState();
 		} else if (coDriver.xButton.shortReleased()) {
-			s.midDiskTrackingState();
+			if(probe.isExtended()){
+				limelight.setPipeline(Pipeline.LOWEST);
+				s.diskTrackingState(Constants.kElevatorMidHatchHeight);
+			}else{
+				limelight.setPipeline(Pipeline.HIGHEST);
+				s.ballTrackingState(Constants.kElevatorMidBallHeight);
+			}
 		} else if (coDriver.xButton.longPressed()) {
 			if(probe.isExtended()){
 				s.diskScoringState(Constants.kElevatorMidHatchHeight);
@@ -412,7 +423,13 @@ public class Robot extends TimedRobot {
 				s.ballScoringState(Constants.kElevatorMidBallHeight);
 			}
 		} else if (coDriver.yButton.shortReleased()) {
-			// TODO implement tracking
+			if(probe.isExtended()){
+				limelight.setPipeline(Pipeline.LOWEST);
+				s.diskTrackingState(Constants.kElevatorHighHatchHeight);
+			}else{
+				limelight.setPipeline(Pipeline.HIGHEST);
+				s.ballTrackingState(Constants.kElevatorHighBallHeight);
+			}
 		} else if (coDriver.yButton.longPressed()) {
 			if(probe.isExtended()){
 				s.diskScoringState(Constants.kElevatorHighHatchHeight);
@@ -420,9 +437,13 @@ public class Robot extends TimedRobot {
 				s.ballScoringState(Constants.kElevatorHighBallHeight);
 			}
 		} else if (coDriver.bButton.shortReleased()) {
-			// TODO implement tracking
-			//s.ballTrackingState(Constants.kElevatorBallCargoShipHeight);
-			s.diskTrackingState(Constants.kElevatorLowHatchHeight);
+			if(probe.isExtended()){
+				limelight.setPipeline(Pipeline.LOWEST);
+				s.diskTrackingState(Constants.kElevatorLowHatchHeight);
+			}else{
+				limelight.setPipeline(Pipeline.HIGHEST);
+				s.ballTrackingState(Constants.kElevatorLowBallHeight);
+			}
 		} else if (coDriver.bButton.longPressed()) {
 			if(probe.isExtended()){
 				s.diskScoringState(Constants.kElevatorLowHatchHeight);
