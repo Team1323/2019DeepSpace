@@ -85,6 +85,8 @@ public class Swerve extends Subsystem{
 	double initialVisionDistance = 0.0;
 	ShooterAimingParameters latestAim = new ShooterAimingParameters(100.0, new Rotation2d(), 0.0, 0.0, new Rotation2d());
 	double lastVisionEndDistance = Constants.kRobotProbeExtrusion;
+	boolean visionUpdateRequested = false;
+	boolean robotHasDisk = false;
 
 
 	//Name says it all
@@ -497,33 +499,33 @@ public class Swerve extends Subsystem{
 	public synchronized void setVisionTrajectory(double visionTargetHeight, double endDistance){
 		Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
 		if(aim.isPresent()){
-			/*if(aim.get().getRange() > Constants.kDefaultCurveDistance){
-				setCurvedVisionTrajectory(Constants.kDefaultCurveDistance, aim);
-			}else{*/
-				if(getState() != ControlState.VISION){
-					initialVisionDistance = aim.get().getRange();
-					latestAim = aim.get();
-				}
-				robotState.setVisionTargetHeight(visionTargetHeight);
-				visionUpdatesAllowed = elevator.inDiskVisionRange();
+			if(getState() != ControlState.VISION){
+				initialVisionDistance = aim.get().getRange();
+				latestAim = aim.get();
+			}
+			double previousHeight = robotState.getVisionTargetHeight();
+			robotState.setVisionTargetHeight(visionTargetHeight);
+			if(!Util.epsilonEquals(previousHeight, visionTargetHeight)){
+				robotState.clearVisionTargets();
+				lastVisionEndDistance = endDistance;
+				visionUpdateRequested = true;
+				System.out.println("Vision delayed until next cycle");
+			}else{
+				visionUpdatesAllowed = elevator.inVisionRange(robotHasDisk ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges);
 				setCurvedVisionTrajectory(aim.get().getRange() * 0.5, aim, endDistance);
-			//}
+			}
 		}
 	}
 
 	public synchronized void setVisionTrajectory(double endDistance){
 		Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
 		if(aim.isPresent()){
-			/*if(aim.get().getRange() > Constants.kDefaultCurveDistance){
-				setCurvedVisionTrajectory(Constants.kDefaultCurveDistance, aim);
-			}else{*/
-				if(getState() != ControlState.VISION){
-					initialVisionDistance = aim.get().getRange();
-					latestAim = aim.get();
-				}
-				visionUpdatesAllowed = elevator.inDiskVisionRange();
-				setCurvedVisionTrajectory(aim.get().getRange() * 0.5, aim, endDistance);
-			//}
+			if(getState() != ControlState.VISION){
+				initialVisionDistance = aim.get().getRange();
+				latestAim = aim.get();
+			}
+			visionUpdatesAllowed = elevator.inVisionRange(robotHasDisk ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges);
+			setCurvedVisionTrajectory(aim.get().getRange() * 0.5, aim, endDistance);
 		}
 	}
 	
@@ -653,6 +655,11 @@ public class Swerve extends Subsystem{
 	public synchronized void updateControlCycle(double timestamp){
 		double rotationCorrection = headingController.updateRotationCorrection(pose.getRotation().getUnboundedDegrees(), timestamp);
 
+		if(visionUpdateRequested){
+			setVisionTrajectory(lastVisionEndDistance);
+			visionUpdateRequested = false;
+		}
+
 		switch(currentState){
 		case MANUAL:
 			if(evading && evadingToggled){
@@ -747,7 +754,7 @@ public class Swerve extends Subsystem{
 			break;
 		case VISION:
 			if(!motionPlanner.isDone()){
-				visionUpdatesAllowed = elevator.inDiskVisionRange();
+				visionUpdatesAllowed = elevator.inVisionRange(robotHasDisk ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges);
 				Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
 				if(aim.isPresent() && visionUpdatesAllowed){
 					latestAim = aim.get();
@@ -829,11 +836,12 @@ public class Swerve extends Subsystem{
 		
 	};
 
-	public Request trackRequest(double visionTargetHeight, double endDistance){
+	public Request trackRequest(double visionTargetHeight, double endDistance, boolean hasDisk){
 		return new Request(){
 		
 			@Override
 			public void act() {
+				robotHasDisk = hasDisk;
 				resetVisionUpdates();
 				setVisionTrajectory(visionTargetHeight, endDistance);
 			}
@@ -846,11 +854,12 @@ public class Swerve extends Subsystem{
 		};
 	}
 
-	public Request startTrackRequest(double visionTargetHeight, double endDistance){
+	public Request startTrackRequest(double visionTargetHeight, double endDistance, boolean hasDisk){
 		return new Request(){
 		
 			@Override
 			public void act() {
+				robotHasDisk = hasDisk;
 				resetVisionUpdates();
 				setVisionTrajectory(visionTargetHeight, endDistance);
 			}
@@ -868,7 +877,7 @@ public class Swerve extends Subsystem{
 
 			@Override
 			public boolean isFinished(){
-				return getState() == ControlState.VISION && motionPlanner.isDone();
+				return getState() == ControlState.VISION && /*motionPlanner.isDone()*/ (latestAim.getRange() < Constants.kClosestVisionDistance);
 			}
 
 		};

@@ -122,14 +122,14 @@ public class Robot extends TimedRobot {
 
 		Logger.clearLog();
 
-		subsystems.registerEnabledLoops(enabledLooper);
-		subsystems.registerDisabledLoops(disabledLooper);
 		enabledLooper.register(RobotStateEstimator.getInstance());
 		enabledLooper.register(QuinticPathTransmitter.getInstance());
 		enabledLooper.register(LimelightProcessor.getInstance());
 		disabledLooper.register(RobotStateEstimator.getInstance());
 		disabledLooper.register(QuinticPathTransmitter.getInstance());
 		disabledLooper.register(LimelightProcessor.getInstance());
+		subsystems.registerEnabledLoops(enabledLooper);
+		subsystems.registerDisabledLoops(disabledLooper);
 
 		swerve.zeroSensors();
 		// swerve.zeroSensors(new Pose2d());

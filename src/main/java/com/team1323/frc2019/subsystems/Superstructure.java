@@ -7,11 +7,13 @@ import java.util.List;
 
 import com.team1323.frc2019.Constants;
 import com.team1323.frc2019.loops.ILooper;
+import com.team1323.frc2019.loops.LimelightProcessor;
 import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.requests.Request;
 import com.team1323.frc2019.subsystems.requests.RequestList;
 import com.team1323.lib.util.InterpolatingDouble;
 import com.team254.lib.geometry.Translation2d;
+import com.team1323.frc2019.RobotState;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Timer;
@@ -30,6 +32,10 @@ public class Superstructure extends Subsystem {
 	
 	private Swerve swerve;
 
+	private LimelightProcessor limelight;
+
+	private RobotState robotState;
+
 	private boolean isClimbing = false;
 	public boolean isClimbing(){ return isClimbing; }
 	public void startClimbing(){ isClimbing = true; }
@@ -47,6 +53,10 @@ public class Superstructure extends Subsystem {
 		compressor = new Compressor(20);
 		
 		swerve = Swerve.getInstance();
+
+		limelight = LimelightProcessor.getInstance();
+
+		robotState = RobotState.getInstance();
 		
 		queuedRequests = new ArrayList<>(0);
 	}
@@ -151,6 +161,11 @@ public class Superstructure extends Subsystem {
 		@Override
 		public void onLoop(double timestamp) {
 			synchronized(Superstructure.this){
+
+				boolean inRange = elevator.inVisionRange(probe.hasDisk() ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges);
+				limelight.enableUpdates(inRange);
+				if(!inRange)
+					robotState.clearVisionTargets();
 			
 				double elevatorHeight = elevator.getHeight();
 				swerve.setMaxSpeed(Constants.kSwerveSpeedTreeMap.getInterpolated(new InterpolatingDouble(elevatorHeight)).value);
@@ -399,11 +414,11 @@ public class Superstructure extends Subsystem {
 
 	public void ballTrackingState(double elevatorHeight){
 		RequestList state = new RequestList(Arrays.asList(
-			elevator.heightRequest(elevator.nearestVisionHeight()),
+			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
+			//waitRequest(0.5),
+			swerve.startTrackRequest(Constants.kBallTargetHeight, Constants.kRobotProbeExtrusion, false),
 			waitRequest(0.5),
-			swerve.startTrackRequest(Constants.kBallTargetHeight, Constants.kRobotProbeExtrusion),
-			waitRequest(0.5),
-			elevator.heightRequest(elevator.nearestVisionHeight(elevatorHeight)), 
+			elevator.heightRequest(elevator.nearestVisionHeight(elevatorHeight, Constants.kElevatorBallVisibleRanges)), 
 			wrist.angleRequest(Constants.kWristBallFeedingAngle),
 			ballCarriage.stateRequest(BallCarriage.State.OFF), 
 			ballIntake.stateRequest(BallIntake.State.OFF),
@@ -464,20 +479,21 @@ public class Superstructure extends Subsystem {
 
 	public void diskTrackingState(double elevatorHeight){
 		RequestList state = new RequestList(Arrays.asList(
-			elevator.heightRequest(elevator.nearestVisionHeight()),
-			waitRequest(0.5),
-			//elevator.heightRequest(elevatorHeight),
+			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorDiskVisibleRanges)),
 			//waitRequest(0.5),
-			swerve.startTrackRequest(Constants.kHatchTargetHeight, Constants.kRobotProbeExtrusion),
+			swerve.startTrackRequest(Constants.kHatchTargetHeight, Constants.kRobotProbeExtrusion, true),
 			waitRequest(0.5),
-			elevator.heightRequest(elevatorHeight),
+			elevator.heightRequest(elevator.nearestVisionHeight(elevatorHeight, Constants.kElevatorDiskVisibleRanges)), 
+			wrist.angleRequest(Constants.kWristBallFeedingAngle),
+			ballCarriage.stateRequest(BallCarriage.State.OFF), 
+			ballIntake.stateRequest(BallIntake.State.OFF),
 			probe.stateRequest(Probe.State.HOLDING),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
-			ballIntake.stateRequest(BallIntake.State.OFF),
-			ballCarriage.stateRequest(BallCarriage.State.OFF),
-			swerve.waitForTrackRequest(),
+			swerve.waitForTrackRequest()), false);
+		RequestList queue = new RequestList(Arrays.asList(
+			elevator.heightRequest(elevatorHeight),
 			probe.stateRequest(Probe.State.SCORING)), false);
-		request(state); 
+		request(state, queue); 
 	}
 
 	public void humanLoaderTrackingState(){
@@ -486,9 +502,9 @@ public class Superstructure extends Subsystem {
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			ballCarriage.stateRequest(BallCarriage.State.OFF),
 			probe.stateRequest(Probe.State.STOWED),
-			elevator.heightRequest(Constants.kElevatorDiskIntakeHeight),
+			elevator.heightRequest(Constants.kElevatorHumanLoaderHeight),
 			waitRequest(0.5),
-			swerve.trackRequest(Constants.kHatchTargetHeight, 0.0)), false);
+			swerve.trackRequest(Constants.kHatchTargetHeight, 1.0, false)), false);
 
 		List<RequestList> queue = Arrays.asList(
 			new RequestList(Arrays.asList(

@@ -37,8 +37,8 @@ public class Constants {
 	public static final Pose2d autoBallPosition = new Pose2d(new Translation2d(48.0 - 4.0 - kBallRadius, 97.0 - (3.0*kBallRadius) - 162.0), Rotation2d.fromDegrees(-45.0));
 	public static final Pose2d rocketPortPosition = new Pose2d(new Translation2d(229.13, 27.44 - 162.0), Rotation2d.fromDegrees(-90.0));
 
-	public static final double kHatchTargetHeight = 28.5;
-	public static final double kBallTargetHeight = 36.75;
+	public static final double kHatchTargetHeight = 28.1875;
+	public static final double kBallTargetHeight = 36.9375;
 	public static final List<Rotation2d> kPossibleTargetAngles = Arrays.asList(Rotation2d.fromDegrees(0.0), Rotation2d.fromDegrees(30.0),
 		Rotation2d.fromDegrees(90.0), Rotation2d.fromDegrees(150.0), Rotation2d.fromDegrees(180.0), Rotation2d.fromDegrees(-150.0),
 		Rotation2d.fromDegrees(-90.0), Rotation2d.fromDegrees(-30.0));
@@ -56,11 +56,11 @@ public class Constants {
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
     
     //Camera Constants
-    public static final double kCameraYOffset = 7.75 - 0.5;
-    public static final double kCameraXOffset = (29.5 / 2.0) - 17.4375;
-    public static final double kCameraZOffset = 37.906;
-    public static final double kCameraYawAngleDegrees = 2.0;
-    public static final double kCameraPitchAngleDegrees = -15.7;
+    public static final double kCameraYOffset = 13.875;//7.75 - 0.5; 11.125
+    public static final double kCameraXOffset = 3.0;//(29.5 / 2.0) - 17.4375;
+    public static final double kCameraZOffset = 20.0;//37.906
+    public static final double kCameraYawAngleDegrees = -12.5;
+    public static final double kCameraPitchAngleDegrees = 17.0;//-15.7
     
     //Goal tracker constants
     public static double kMaxGoalTrackAge = 1.0;
@@ -123,7 +123,7 @@ public class Constants {
 	//Elevator Constants
 	public static final double kElevatorMaxSpeedHighGear = 696.96 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
-	public static final int kElevatorEncoderStartingPosition = 178;
+	public static final int kElevatorEncoderStartingPosition = 428;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 0.5; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.5;
@@ -144,8 +144,11 @@ public class Constants {
 	public static final int kELevatorCurrentLimit = 40;
 	public static final double kElevatorTeleopManualSpeed = 0.5;
 
-	public static final List<double[]> kElevatorDiskVisibleRanges = Arrays.asList(new double[]{0.0, 2.5},
-		new double[]{36.0, 40.0}, new double[]{45.0, kElevatorMaxHeight});
+	/*public static final List<double[]> kElevatorDiskVisibleRanges = Arrays.asList(new double[]{0.0, 2.5},
+		new double[]{36.0, 40.0}, new double[]{45.0, kElevatorMaxHeight});*/
+
+	public static final List<double[]> kElevatorDiskVisibleRanges = Arrays.asList(new double[]{18.75, kElevatorMaxHeight});
+	public static final List<double[]> kElevatorBallVisibleRanges = Arrays.asList(new double[]{0.0, kElevatorMaxHeight});
 	
 	//Swerve Speed Constraint Treemap
 	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kSwerveSpeedTreeMap = new InterpolatingTreeMap<>();

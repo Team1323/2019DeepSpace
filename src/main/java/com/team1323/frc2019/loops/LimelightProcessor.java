@@ -47,7 +47,6 @@ public class LimelightProcessor implements Loop{
 			table.getEntry("ta"), table.getEntry("tv"));
 		cornerX = table.getEntry("tcornx");
 		cornerY = table.getEntry("tcorny");
-		setPipeline(Pipeline.LOWEST);
 	}
 	
 	@Override 
@@ -96,6 +95,7 @@ public class LimelightProcessor implements Loop{
 
 	public void setPipeline(Pipeline p){
 		setPipeline(p.id);
+		System.out.println("Pipeline set to " + p.id);
 	}
 
 	public enum Pipeline{

@@ -16,6 +16,7 @@ import com.team1323.frc2019.subsystems.requests.Prerequisite;
 import com.team1323.frc2019.subsystems.requests.Request;
 import com.team1323.lib.util.Util;
 import com.team254.drivers.LazyTalonSRX;
+import com.team1323.frc2019.RobotState;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -43,7 +44,6 @@ public class Elevator extends Subsystem {
 		return motor2;
 	}
 
-	private LimelightProcessor limelight;
 	
 	public enum ControlState{
 		Neutral, Position, OpenLoop, Locked
@@ -100,7 +100,6 @@ public class Elevator extends Subsystem {
 		resetToAbsolutePosition();
 		configForAscent();
 
-		limelight = LimelightProcessor.getInstance();
 	}
 	
 	private void configForAscent(){		
@@ -284,26 +283,28 @@ public class Elevator extends Subsystem {
 		return encUnitsToInches(encUnits - Constants.kElevatorEncoderStartingPosition);
 	}
 
-	public boolean inDiskVisionRange(){
-		double height = getHeight();
+	public boolean inVisionRange(List<double[]> ranges){
+		return inVisionRange(getHeight(), ranges);
+	}
+
+	public boolean inVisionRange(double height, List<double[]> ranges){
 		boolean inRange = false;
-		for(double[] range : Constants.kElevatorDiskVisibleRanges){
+		for(double[] range : ranges){
 			inRange |= (height >= range[0]) && (height <= range[1]);
 		}
-		//System.out.println("Elevator in range: " + inRange + ". Height: " + height + ". Time: " + Timer.getFPGATimestamp());
 		return inRange;
 	}
 
-	public double nearestVisionHeight(){
-		return nearestVisionHeight(getHeight());
+	public double nearestVisionHeight(List<double[]> ranges){
+		return nearestVisionHeight(getHeight(), ranges);
 	}
 
-	public double nearestVisionHeight(double height){
-		if(inDiskVisionRange())
+	public double nearestVisionHeight(double height, List<double[]> ranges){
+		if(inVisionRange(height, ranges))
 			return height;
-		double nearestHeight = 0.0;
+		double nearestHeight = Constants.kElevatorMaxHeight;
 		double smallestDistance = Math.abs(height - nearestHeight);
-		for(double[] range : Constants.kElevatorDiskVisibleRanges){
+		for(double[] range : ranges){
 			for(int i=0; i<2; i++){
 				if(Math.abs(height - range[i]) < smallestDistance){
 					smallestDistance = Math.abs(height - range[i]);
@@ -331,8 +332,6 @@ public class Elevator extends Subsystem {
 				DriverStation.reportError("Elevator current too high", false);
 				//stop();
 			}
-
-			limelight.enableUpdates(inDiskVisionRange());
 		}
 
 		@Override

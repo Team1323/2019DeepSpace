@@ -84,6 +84,10 @@ public class RobotState {
     public synchronized void setVisionTargetHeight(double height){
         differential_height_ = height - Constants.kCameraZOffset;
     }
+
+    public double getVisionTargetHeight(){
+        return differential_height_;
+    }
     
     /**
      * Returns the robot's position on the field at a certain time. Linearly interpolates between stored robot positions
@@ -217,6 +221,10 @@ public class RobotState {
             rv.add(Pose2d.fromTranslation(report.field_to_goal));
         }
         return rv;
+    }
+
+    public synchronized void clearVisionTargets(){
+        goal_tracker_.clearTracks();
     }
     
     public synchronized void addFieldToVehicleObservation(double timestamp, Pose2d observation) {
