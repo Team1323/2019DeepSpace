@@ -36,6 +36,13 @@ public class RobotState {
     
     public final int minimumTargetQuantity = 3;
     private final int primaryTargetIndex = 2;
+    private Translation2d lastKnownTargetPosition = new Translation2d();
+    public Translation2d lastKnownTargetPosition(){ return lastKnownTargetPosition; }
+
+    public double distanceToTarget(){
+        return getLatestFieldToVehicle().getValue().getTranslation().distance(lastKnownTargetPosition);
+    }
+
     private boolean seesTarget = false;
     public boolean seesTarget(){
         return seesTarget;
@@ -150,16 +157,14 @@ public class RobotState {
         List<TrackReport> reports = goal_tracker_.getTracks();
         if (reports.size() >= minimumTargetQuantity) {
             TrackReport report = reports.get(primaryTargetIndex);
+            lastKnownTargetPosition = report.field_to_goal;
             Translation2d robot_to_goal = getLatestFieldToVehicle().getValue().getTranslation().inverse()
                     .translateBy(report.field_to_goal);
-            Translation2d firstTargetPosition = reports.get(0).field_to_goal;
-            Translation2d secondTargetPosition = reports.get(1).field_to_goal;
-            Translation2d targetDelta = firstTargetPosition.inverse().translateBy(secondTargetPosition);
-            Rotation2d targetOrientation = Rotation2d.fromRadians(Math.atan2(targetDelta.y(), targetDelta.x())).rotateBy(Rotation2d.fromDegrees(-90.0));
-            Rotation2d secondTargetOrientation = targetOrientation.rotateBy(Rotation2d.fromDegrees(180.0));
-            if(Math.abs(targetOrientation.distance(getLatestFieldToVehicle().getValue().getRotation())) > Math.abs(secondTargetOrientation.distance(getLatestFieldToVehicle().getValue().getRotation()))){
-                targetOrientation = secondTargetOrientation;
-            }
+            Rotation2d targetOrientation1 = getTargetOrientation(reports.get(0).field_to_goal, reports.get(1).field_to_goal);
+            Rotation2d targetOrientation2 = getTargetOrientation(reports.get(0).field_to_goal, reports.get(2).field_to_goal);
+            Rotation2d targetOrientation3 = getTargetOrientation(reports.get(1).field_to_goal, reports.get(2).field_to_goal);
+
+            Rotation2d targetOrientation = targetOrientation3;
             Rotation2d robot_to_goal_rotation = Rotation2d
                     .fromRadians(Math.atan2(robot_to_goal.y(), robot_to_goal.x()));
             SmartDashboard.putNumber("Vision Target Angle", targetOrientation.getDegrees());
@@ -172,6 +177,16 @@ public class RobotState {
         } else {
             return Optional.empty();
         }
+    }
+
+    private Rotation2d getTargetOrientation(Translation2d target1, Translation2d target2){
+        Translation2d targetDelta = target1.inverse().translateBy(target2);
+        Rotation2d targetOrientation = Rotation2d.fromRadians(Math.atan2(targetDelta.y(), targetDelta.x())).rotateBy(Rotation2d.fromDegrees(-90.0));
+        Rotation2d secondTargetOrientation = targetOrientation.rotateBy(Rotation2d.fromDegrees(180.0));
+        if(Math.abs(targetOrientation.distance(getLatestFieldToVehicle().getValue().getRotation())) > Math.abs(secondTargetOrientation.distance(getLatestFieldToVehicle().getValue().getRotation()))){
+            targetOrientation = secondTargetOrientation;
+        }
+        return targetOrientation;
     }
 
     public synchronized Optional<Pose2d> getRobotScoringPosition(Optional<ShooterAimingParameters> aimingParameters, Rotation2d orientation, double endDistance){

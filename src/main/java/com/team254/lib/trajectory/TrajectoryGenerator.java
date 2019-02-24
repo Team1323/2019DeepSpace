@@ -16,7 +16,7 @@ import com.team254.lib.trajectory.timing.TimingConstraint;
 import edu.wpi.first.wpilibj.Timer;
 
 public class TrajectoryGenerator {
-    private static final double kMaxVelocity = 48.0;
+    private static final double kMaxVelocity = 120.0;
     private static final double kMaxAccel = 120.0;
     private static final double kMaxDecel = 72.0;
     private static final double kMaxVoltage = 9.0;
@@ -83,10 +83,10 @@ public class TrajectoryGenerator {
     // ALL POSES DEFINED FOR THE CASE THAT ROBOT STARTS ON LEFT! (mirrored about +x axis for RIGHT)
     static final Pose2d autoStartingPose = new Pose2d(Constants.kRobotLeftStartingPose.getTranslation().translateBy(new Translation2d(/*-0.5*/0.0, 0.0)), Rotation2d.fromDegrees(0.0));
 
-    static final Pose2d closeHatchScoringPose = Constants.closeHatchPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 24.0, 0.0)));
+    static final Pose2d closeHatchScoringPose = Constants.closeHatchPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 24.0, -2.0)));
     static final Pose2d farHatchScoringPose = Constants.farHatchPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 12.0, 0.0)));
     static final Pose2d humanLoaderPose = Constants.humanLoaderPosition.transformBy(Pose2d.fromTranslation(new Translation2d(Constants.kRobotHalfLength + 12.0, 0.0)));
-    static final Pose2d ballIntakePose = new Pose2d(Constants.autoBallPosition.transformBy(Pose2d.fromTranslation(new Translation2d(Constants.kRobotHalfLength + 6.0, 0.0))).getTranslation(), Rotation2d.fromDegrees(0.0));
+    static final Pose2d ballIntakePose = new Pose2d(Constants.autoBallPosition.transformBy(Pose2d.fromTranslation(new Translation2d(Constants.kRobotHalfLength + 16.0, 0.0))).getTranslation(), Rotation2d.fromDegrees(0.0));
     static final Pose2d portScoringPose = Constants.rocketPortPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 6.0, 0.0)));
 
     public class TrajectorySet {
@@ -150,7 +150,7 @@ public class TrajectoryGenerator {
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(autoStartingPose);
             //waypoints.add(autoStartingPose.transformBy(Pose2d.fromTranslation(new Translation2d(50.0, 0.0))));
-            waypoints.add(Constants.kRobotLeftRampExitPose);
+            //waypoints.add(Constants.kRobotLeftRampExitPose);
             waypoints.add(closeHatchScoringPose);
 
             return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 36.0, 2);

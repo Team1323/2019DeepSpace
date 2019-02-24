@@ -47,6 +47,7 @@ public class LimelightProcessor implements Loop{
 			table.getEntry("ta"), table.getEntry("tv"));
 		cornerX = table.getEntry("tcornx");
 		cornerY = table.getEntry("tcorny");
+		setPipeline(Pipeline.LOWEST);
 	}
 	
 	@Override 

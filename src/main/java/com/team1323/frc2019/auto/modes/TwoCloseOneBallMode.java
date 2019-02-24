@@ -44,26 +44,26 @@ public class TwoCloseOneBallMode extends AutoModeBase {
 
         runAction(new ResetPoseAction(left));
         runAction(new SetTrajectoryAction(trajectories.startToCloseHatch.get(left), 30.0 * directionFactor, 1.0));
-        WaitToLeaveRampAction rampAction = new WaitToLeaveRampAction(2.0);
+        WaitToLeaveRampAction rampAction = new WaitToLeaveRampAction(4.0);
         runAction(rampAction);
         if(!rampAction.timedOut()){
             //Swerve.getInstance().resetPosition(left ? Constants.kRobotLeftRampExitPose : Constants.kRobotRightRampExitPose);
             System.out.println("Position reset off of ramp");
         }
         runAction(new WaitToFinishPathAction());
-        runAction(new WaitAction(0.5));
-        /*runAction(new SetTrajectoryAction(trajectories.closeHatchToHumanLoader.get(left), 180.0 * directionFactor, 1.0));
+        //runAction(new WaitAction(0.5));
+        runAction(new SetTrajectoryAction(trajectories.closeHatchToHumanLoader.get(left), 180.0 * directionFactor, 1.0));
         runAction(new WaitToFinishPathAction());
-        runAction(new WaitAction(0.5));
+        //runAction(new WaitAction(0.5));
         runAction(new SetTrajectoryAction(trajectories.humanLoaderToCloseHatch.get(left), 30.0 * directionFactor, 1.0));
         runAction(new WaitToFinishPathAction());
-        runAction(new WaitAction(0.5));
+        //runAction(new WaitAction(0.5));
         runAction(new SetTrajectoryAction(trajectories.closeHatchToBall.get(left), 45.0 * directionFactor, 1.0));
         runAction(new WaitToFinishPathAction());
         runAction(new WaitAction(0.5));
         runAction(new SetTrajectoryAction(trajectories.ballToRocketPort.get(left), 90.0 * directionFactor, 1.0));
         runAction(new WaitToFinishPathAction());
-        runAction(new WaitAction(0.5));
+        /*runAction(new WaitAction(0.5));
         runAction(new SetTrajectoryAction(trajectories.rocketPortToHumanLoader.get(left), 180.0 * directionFactor, 1.0));
         runAction(new WaitToFinishPathAction());*/
 

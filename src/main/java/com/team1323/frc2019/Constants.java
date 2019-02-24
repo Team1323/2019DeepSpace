@@ -26,7 +26,7 @@ public class Constants {
 	public static final double kRobotLength = 36.5;
 	public static final double kRobotHalfWidth = kRobotWidth / 2.0;
 	public static final double kRobotHalfLength = kRobotLength / 2.0;
-	public static final double kRobotProbeExtrusion = 3.0;//TODO update
+	public static final double kRobotProbeExtrusion = 1.0;
 
 	public static final double kBallRadius = 6.5;
 	
@@ -40,7 +40,7 @@ public class Constants {
 	public static final double kHatchTargetHeight = 28.1875;
 	public static final double kBallTargetHeight = 36.9375;
 	public static final List<Rotation2d> kPossibleTargetAngles = Arrays.asList(Rotation2d.fromDegrees(0.0), Rotation2d.fromDegrees(30.0),
-		Rotation2d.fromDegrees(90.0), Rotation2d.fromDegrees(150.0), Rotation2d.fromDegrees(180.0), Rotation2d.fromDegrees(-150.0),
+		Rotation2d.fromDegrees(90.0), Rotation2d.fromDegrees(150.0), /*Rotation2d.fromDegrees(180.0),*/ Rotation2d.fromDegrees(-150.0),
 		Rotation2d.fromDegrees(-90.0), Rotation2d.fromDegrees(-30.0));
 	
 	public static final Pose2d kRobotLeftStartingPose = new Pose2d(new Translation2d(48.0 + kRobotHalfLength, 97.0 + kRobotHalfWidth - 162.0), Rotation2d.fromDegrees(0));
@@ -56,11 +56,11 @@ public class Constants {
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
     
     //Camera Constants
-    public static final double kCameraYOffset = 13.875;//7.75 - 0.5; 11.125
-    public static final double kCameraXOffset = 3.0;//(29.5 / 2.0) - 17.4375;
-    public static final double kCameraZOffset = 20.0;//37.906
-    public static final double kCameraYawAngleDegrees = -12.5;
-    public static final double kCameraPitchAngleDegrees = 17.0;//-15.7
+    public static final double kCameraYOffset = 13.0;
+    public static final double kCameraXOffset = 3.0;
+    public static final double kCameraZOffset = 17.625;
+    public static final double kCameraYawAngleDegrees = -12.0;//-12.0
+    public static final double kCameraPitchAngleDegrees = 17.25;
     
     //Goal tracker constants
     public static double kMaxGoalTrackAge = 1.0;
@@ -148,7 +148,7 @@ public class Constants {
 		new double[]{36.0, 40.0}, new double[]{45.0, kElevatorMaxHeight});*/
 
 	public static final List<double[]> kElevatorDiskVisibleRanges = Arrays.asList(new double[]{18.75, kElevatorMaxHeight});
-	public static final List<double[]> kElevatorBallVisibleRanges = Arrays.asList(new double[]{0.0, kElevatorMaxHeight});
+	public static final List<double[]> kElevatorBallVisibleRanges = Arrays.asList(new double[]{6.25, kElevatorMaxHeight});
 	
 	//Swerve Speed Constraint Treemap
 	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kSwerveSpeedTreeMap = new InterpolatingTreeMap<>();
@@ -197,7 +197,7 @@ public class Constants {
 	public static final double kBallCarriageSuckOutput = 0.35;
 
 	//Disk Intake Constants
-	public static final double kDiskIntakingOutput = 1.0;
+	public static final double kDiskIntakingOutput = 8.0/12.0;
 	public static final double kDiskIntakeRampRate = 0.25;
 	public static final double kDiskIntakeWeakEjectOutput = -0.375;
 	public static final double kDiskIntakeStrongEjectOutput = -0.9;

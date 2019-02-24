@@ -12,12 +12,12 @@ import java.util.Arrays;
 import com.team1323.frc2019.auto.AutoModeBase;
 import com.team1323.frc2019.auto.AutoModeExecuter;
 import com.team1323.frc2019.auto.SmartDashboardInteractions;
-import com.team1323.frc2019.auto.modes.TwoCloseOneBallMode;
+import com.team1323.frc2019.auto.modes.CloseFarBallMode;
 import com.team1323.frc2019.loops.LimelightProcessor;
+import com.team1323.frc2019.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2019.loops.Looper;
 import com.team1323.frc2019.loops.QuinticPathTransmitter;
 import com.team1323.frc2019.loops.RobotStateEstimator;
-import com.team1323.frc2019.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2019.subsystems.BallCarriage;
 import com.team1323.frc2019.subsystems.BallIntake;
 import com.team1323.frc2019.subsystems.DiskIntake;
@@ -37,7 +37,6 @@ import com.team1323.lib.util.CrashTracker;
 import com.team1323.lib.util.InputRamp;
 import com.team1323.lib.util.Logger;
 import com.team1323.lib.util.Util;
-import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 
@@ -138,8 +137,8 @@ public class Robot extends TimedRobot {
 
 		generator.generateTrajectories();
 
-		AutoModeBase auto = new TwoCloseOneBallMode(true);
-		// qTransmitter.addPaths(auto.getPaths());
+		AutoModeBase auto = new CloseFarBallMode(true);
+		qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 
 	}
@@ -242,16 +241,16 @@ public class Robot extends TimedRobot {
 			else
 				twoControllerMode();
 
-			if (robotState.seesTarget() && (probe.hasDisk() || ballCarriage.hasBall())) {
-				leds.conformToState(LEDs.State.VISION);
-			} else if (ballIntake.hasBall()) {
+			if (ballIntake.hasBall()) {
 				leds.conformToState(LEDs.State.BALL_IN_INTAKE);
 			} else if (ballCarriage.hasBall()) {
 				leds.conformToState(LEDs.State.BALL_IN_CARRIAGE);
 			} else if (diskIntake.hasDisk()) {
 				leds.conformToState(LEDs.State.DISK_IN_INTAKE);
 			} else if (probe.hasDisk()) {
-				leds.conformToState(LEDs.State.DISK_IN_INTAKE);
+				leds.conformToState(LEDs.State.DISK_IN_PROBE);
+			} else if (swerve.getState() == Swerve.ControlState.VISION || robotState.seesTarget()){
+				leds.conformToState(LEDs.State.VISION);
 			} else {
 				leds.conformToState(LEDs.State.ENABLED);
 			}
@@ -379,7 +378,8 @@ public class Robot extends TimedRobot {
 			swerve.setTrajectory(generator.getTrajectorySet().straightPath, 0.0, 1.0);*/
 			// swerve.setVelocity(new Rotation2d(), 24.0);
 		} else if (driver.startButton.shortReleased()) {
-
+			limelight.setPipeline(Pipeline.HIGHEST);
+			s.humanLoaderTrackingState();
 		} /*else if (driver.leftBumper.isBeingPressed()) {
 			swerve.setVelocity(new Rotation2d(), 24.0);
 		} else if (swerve.getState() == Swerve.ControlState.VELOCITY) {
@@ -393,6 +393,7 @@ public class Robot extends TimedRobot {
 		if (coDriver.startButton.shortReleased()) {
 			s.diskReceivingState();
 		} else if(coDriver.startButton.longPressed()){
+			limelight.setPipeline(Pipeline.HIGHEST);
 			s.humanLoaderTrackingState();
 		} else if (coDriver.rightBumper.shortReleased()) {
 			s.diskIntakingState();

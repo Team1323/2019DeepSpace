@@ -84,9 +84,12 @@ public class Swerve extends Subsystem{
 	VisionCriteria visionCriteria = new VisionCriteria();
 	double initialVisionDistance = 0.0;
 	ShooterAimingParameters latestAim = new ShooterAimingParameters(100.0, new Rotation2d(), 0.0, 0.0, new Rotation2d());
+	Translation2d latestTargetPosition = new Translation2d();
 	double lastVisionEndDistance = Constants.kRobotProbeExtrusion;
 	boolean visionUpdateRequested = false;
 	boolean robotHasDisk = false;
+	boolean useFixedVisionOrientation = false;
+	Rotation2d fixedVisionOrientation = Rotation2d.fromDegrees(180.0);
 
 
 	//Name says it all
@@ -466,12 +469,14 @@ public class Swerve extends Subsystem{
 		Optional<Pose2d> orientedTarget = robotState.getOrientedTargetPosition(aimingParameters);
 		lastVisionEndDistance = endDistance;
 		if(orientedTarget.isPresent() && robotState.seesTarget() && visionUpdatesAllowed){
-			Rotation2d closestHeading = new Rotation2d();
+			Rotation2d closestHeading = fixedVisionOrientation;
 			double distance = 2.0 * Math.PI;
-			for(Rotation2d r : Constants.kPossibleTargetAngles){
-				if(Math.abs(r.distance(orientedTarget.get().getRotation())) < distance){
-					closestHeading = r;
-					distance = Math.abs(r.distance(orientedTarget.get().getRotation()));
+			if(!useFixedVisionOrientation){
+				for(Rotation2d r : Constants.kPossibleTargetAngles){
+					if(Math.abs(r.distance(orientedTarget.get().getRotation())) < distance){
+						closestHeading = r;
+						distance = Math.abs(r.distance(orientedTarget.get().getRotation()));
+					}
 				}
 			}
 			System.out.println("Closest target heading: " + closestHeading.getDegrees());
@@ -842,13 +847,34 @@ public class Swerve extends Subsystem{
 			@Override
 			public void act() {
 				robotHasDisk = hasDisk;
+				useFixedVisionOrientation = false;
 				resetVisionUpdates();
 				setVisionTrajectory(visionTargetHeight, endDistance);
 			}
 
 			@Override
 			public boolean isFinished(){
-				return getState() == ControlState.VISION && (latestAim.getRange() < Constants.kClosestVisionDistance);
+				return getState() == ControlState.VISION && (robotState.distanceToTarget() < Constants.kClosestVisionDistance);
+			}
+
+		};
+	}
+
+	public Request trackRequest(double visionTargetHeight, double endDistance, boolean hasDisk, Rotation2d fixedOrientation){
+		return new Request(){
+		
+			@Override
+			public void act() {
+				robotHasDisk = hasDisk;
+				fixedVisionOrientation = fixedOrientation;
+				useFixedVisionOrientation = true;
+				resetVisionUpdates();
+				setVisionTrajectory(visionTargetHeight, endDistance);
+			}
+
+			@Override
+			public boolean isFinished(){
+				return getState() == ControlState.VISION && (robotState.distanceToTarget() < Constants.kClosestVisionDistance);
 			}
 
 		};
@@ -860,6 +886,22 @@ public class Swerve extends Subsystem{
 			@Override
 			public void act() {
 				robotHasDisk = hasDisk;
+				useFixedVisionOrientation = false;
+				resetVisionUpdates();
+				setVisionTrajectory(visionTargetHeight, endDistance);
+			}
+
+		};
+	}
+
+	public Request startTrackRequest(double visionTargetHeight, double endDistance, boolean hasDisk, Rotation2d fixedOrientation){
+		return new Request(){
+		
+			@Override
+			public void act() {
+				robotHasDisk = hasDisk;
+				fixedVisionOrientation = fixedOrientation;
+				useFixedVisionOrientation = true;
 				resetVisionUpdates();
 				setVisionTrajectory(visionTargetHeight, endDistance);
 			}
@@ -877,7 +919,8 @@ public class Swerve extends Subsystem{
 
 			@Override
 			public boolean isFinished(){
-				return getState() == ControlState.VISION && /*motionPlanner.isDone()*/ (latestAim.getRange() < Constants.kClosestVisionDistance);
+				System.out.println("Target distance: " + latestAim.getRange());
+				return getState() == ControlState.VISION && /*motionPlanner.isDone()*/ (robotState.distanceToTarget() < Constants.kClosestVisionDistance);
 			}
 
 		};

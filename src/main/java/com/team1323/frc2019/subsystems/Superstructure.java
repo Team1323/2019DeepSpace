@@ -12,6 +12,7 @@ import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.requests.Request;
 import com.team1323.frc2019.subsystems.requests.RequestList;
 import com.team1323.lib.util.InterpolatingDouble;
+import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team1323.frc2019.RobotState;
 
@@ -415,7 +416,6 @@ public class Superstructure extends Subsystem {
 	public void ballTrackingState(double elevatorHeight){
 		RequestList state = new RequestList(Arrays.asList(
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
-			//waitRequest(0.5),
 			swerve.startTrackRequest(Constants.kBallTargetHeight, Constants.kRobotProbeExtrusion, false),
 			waitRequest(0.5),
 			elevator.heightRequest(elevator.nearestVisionHeight(elevatorHeight, Constants.kElevatorBallVisibleRanges)), 
@@ -502,9 +502,9 @@ public class Superstructure extends Subsystem {
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			ballCarriage.stateRequest(BallCarriage.State.OFF),
 			probe.stateRequest(Probe.State.STOWED),
-			elevator.heightRequest(Constants.kElevatorHumanLoaderHeight),
-			waitRequest(0.5),
-			swerve.trackRequest(Constants.kHatchTargetHeight, 1.0, false)), false);
+			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
+			//waitRequest(0.5),
+			swerve.trackRequest(Constants.kHatchTargetHeight, -7.0, false, Rotation2d.fromDegrees(180.0))), false);
 
 		List<RequestList> queue = Arrays.asList(
 			new RequestList(Arrays.asList(
