@@ -31,7 +31,7 @@ public class WaitToLeaveRampAction implements Action{
     @Override
     public boolean isFinished() {
         double rollAngle = pigeon.getRoll();
-        System.out.println("Pigeon roll: " + rollAngle);
+        //System.out.println("Pigeon roll: " + rollAngle);
         if(Math.abs(rollAngle) >= (startingRoll + kMinExitAngle) && !startedDescent)
             startedDescent = true;
         if(startedDescent && Math.abs(rollAngle - startingRoll) <= kAngleTolerance){

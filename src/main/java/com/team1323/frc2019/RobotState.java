@@ -31,6 +31,7 @@ public class RobotState {
 	private Rotation2d camera_pitch_correction_;
     private Rotation2d camera_yaw_correction_;
     private double differential_height_;
+    private double targetHeight = Constants.kHatchTargetHeight;
 	private double distance_driven_;
     private ShooterAimingParameters cached_shooter_aiming_params_ = null;
     
@@ -80,7 +81,7 @@ public class RobotState {
         goal_tracker_ = new GoalTracker();
         camera_pitch_correction_ = Rotation2d.fromDegrees(-Constants.kCameraPitchAngleDegrees);
         camera_yaw_correction_ = Rotation2d.fromDegrees(-Constants.kCameraYawAngleDegrees);
-        differential_height_ = Constants.kHatchTargetHeight - Constants.kCameraZOffset;
+        differential_height_ = targetHeight - Constants.kCameraZOffset;
         distance_driven_ = 0.0;
     }
     
@@ -89,11 +90,12 @@ public class RobotState {
     }
 
     public synchronized void setVisionTargetHeight(double height){
+        targetHeight = height;
         differential_height_ = height - Constants.kCameraZOffset;
     }
 
     public double getVisionTargetHeight(){
-        return differential_height_;
+        return targetHeight;
     }
     
     /**

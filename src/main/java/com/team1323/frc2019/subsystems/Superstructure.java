@@ -503,6 +503,28 @@ public class Superstructure extends Subsystem {
 			ballCarriage.stateRequest(BallCarriage.State.OFF),
 			probe.stateRequest(Probe.State.STOWED),
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
+			swerve.trackRequest(Constants.kHatchTargetHeight, -9.0, false, Rotation2d.fromDegrees(180.0))), false);
+
+		List<RequestList> queue = Arrays.asList(
+			new RequestList(Arrays.asList(
+				elevator.heightRequest(Constants.kElevatorHumanLoaderHeight),
+				probe.stateRequest(Probe.State.RECEIVING),
+				probe.waitForDiskRequest()), true),
+			new RequestList(Arrays.asList(
+				swerve.waitForTrackRequest(),
+				probe.stateRequest(Probe.State.HOLDING)), false)
+		);
+		request(state); 
+		replaceQueue(queue);
+	}
+
+	public void humanLoaderRetrievingState(){
+		RequestList state = new RequestList(Arrays.asList(
+			diskIntake.stateRequest(DiskIntake.State.OFF),
+			ballIntake.stateRequest(BallIntake.State.OFF),
+			ballCarriage.stateRequest(BallCarriage.State.OFF),
+			probe.stateRequest(Probe.State.STOWED),
+			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
 			//waitRequest(0.5),
 			swerve.trackRequest(Constants.kHatchTargetHeight, -7.0, false, Rotation2d.fromDegrees(180.0))), false);
 

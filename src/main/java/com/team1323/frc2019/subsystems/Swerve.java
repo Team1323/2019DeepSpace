@@ -469,6 +469,7 @@ public class Swerve extends Subsystem{
 		Optional<Pose2d> orientedTarget = robotState.getOrientedTargetPosition(aimingParameters);
 		lastVisionEndDistance = endDistance;
 		if(orientedTarget.isPresent() && robotState.seesTarget() && visionUpdatesAllowed){
+			setState(ControlState.VISION);
 			Rotation2d closestHeading = fixedVisionOrientation;
 			double distance = 2.0 * Math.PI;
 			if(!useFixedVisionOrientation){
@@ -484,7 +485,7 @@ public class Swerve extends Subsystem{
 			Translation2d deltaPosition = new Pose2d(orientedTarget.get().getTranslation(), closestHeading).transformBy(Pose2d.fromTranslation(new Translation2d(-linearShiftDistance, 0.0))).getTranslation().translateBy(pose.getTranslation().inverse());
 			Rotation2d deltaPositionHeading = new Rotation2d(deltaPosition, true);
 			List<Pose2d> waypoints = new ArrayList<>();
-			waypoints.add(new Pose2d(pose.getTranslation(), (getState() == ControlState.VISION) ? lastTrajectoryVector.direction() : deltaPositionHeading));	
+			waypoints.add(new Pose2d(pose.getTranslation(), (visionUpdateCount > 1) ? lastTrajectoryVector.direction() : deltaPositionHeading));	
 			waypoints.add(new Pose2d(robotScoringPosition.get().getTranslation(), closestHeading));
 			Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 96.0, 60.0, 60.0, 9.0, (visionUpdateCount > 1) ? lastTrajectoryVector.norm()*Constants.kSwerveMaxSpeedInchesPerSecond : 45.0, 1);
 			motionPlanner.reset();
@@ -492,7 +493,6 @@ public class Swerve extends Subsystem{
 			setPathHeading(closestHeading.getDegrees());
 			rotationScalar = 0.25;
 			visionTargetHeading = robotScoringPosition.get().getRotation();
-			setState(ControlState.VISION);
 			visionUpdateCount++;
 			System.out.println("Vision trajectory updated " + visionUpdateCount + " times. Distance: " + aimingParameters.get().getRange());
 		}else{
@@ -735,7 +735,7 @@ public class Swerve extends Subsystem{
 						rotationInput, pose, false));
 					}
 				}else if(!moduleConfigRequested){
-					set10VoltRotationMode(true);
+					//set10VoltRotationMode(true);
 					setModuleAngles(inverseKinematics.updateDriveVectors(driveVector, 
 						0.0, pose, false));
 					moduleConfigRequested = true;
