@@ -18,6 +18,8 @@ public class Ports {
     public static final int BALL_FEEDER = 9;
 
     public static final int BALL_CARRIAGE = 10;
+
+    public static final int DISK_SCORER = 14;
     
     public static final int DISK_INTAKE = 5;
     
@@ -36,7 +38,7 @@ public class Ports {
 
     public static final int DISK_INTAKE_LIFT = 1;
 
-    public static final int PROBE_EXTENDER = 1;
+    public static final int PROBE_EXTENDER = 2;
     public static final int PROBE_SCORER = 3;
     public static final int PROBE_FINGERS = 2;
     

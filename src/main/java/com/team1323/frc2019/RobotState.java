@@ -166,7 +166,7 @@ public class RobotState {
             Rotation2d targetOrientation2 = getTargetOrientation(reports.get(0).field_to_goal, reports.get(2).field_to_goal);
             Rotation2d targetOrientation3 = getTargetOrientation(reports.get(1).field_to_goal, reports.get(2).field_to_goal);
 
-            Rotation2d targetOrientation = targetOrientation3;
+            Rotation2d targetOrientation = targetOrientation1;
             Rotation2d robot_to_goal_rotation = Rotation2d
                     .fromRadians(Math.atan2(robot_to_goal.y(), robot_to_goal.x()));
             SmartDashboard.putNumber("Vision Target Angle", targetOrientation.getDegrees());

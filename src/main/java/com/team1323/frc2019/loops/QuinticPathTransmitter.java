@@ -78,13 +78,13 @@ public class QuinticPathTransmitter implements Loop{
 			minAccel = state.acceleration();
 
 		if(state.acceleration() < 0.0 && !defaultCookReported){
-			System.out.println("Optimal default cook: " + state.velocity());
+			//System.out.println("Optimal default cook: " + state.velocity());
 			defaultCookReported = true;
 		}
 
 	    if(t >= currentTrajectory.trajectory().getLastState().t()){
-			System.out.println("Path should take " + currentTrajectory.trajectory().getLastState().t() + " seconds");
-			System.out.println("Min accel: " + minAccel);
+			//System.out.println("Path should take " + currentTrajectory.trajectory().getLastState().t() + " seconds");
+			//System.out.println("Min accel: " + minAccel);
 	    	currentTrajectory = null;
 	    }
 	}

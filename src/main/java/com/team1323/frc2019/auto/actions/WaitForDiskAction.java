@@ -7,26 +7,41 @@
 
 package com.team1323.frc2019.auto.actions;
 
-import com.team1323.frc2019.subsystems.Probe;
+import com.team1323.frc2019.subsystems.DiskScorer;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * 
  */
 public class WaitForDiskAction implements Action{
-    Probe probe;
+    DiskScorer diskScorer;
+    double timeout = 15.0;
+    double startTime = 0.0;
 
     public WaitForDiskAction(){
-        probe = Probe.getInstance();
+        diskScorer = DiskScorer.getInstance();
+    }
+
+    public WaitForDiskAction(double timeout){
+        diskScorer = DiskScorer.getInstance();
+        this.timeout = timeout;
     }
 
     @Override
     public boolean isFinished() {
-        return probe.hasDisk();
+        if(diskScorer.hasDisk()){
+            System.out.println("Disk detected");
+            return true;
+        }else if((Timer.getFPGATimestamp() - startTime) > timeout){
+            System.out.println("Disk waiting action timed out");
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void start() {
-
+        startTime = Timer.getFPGATimestamp();
     }
 
     @Override

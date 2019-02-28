@@ -12,7 +12,7 @@ import java.util.Arrays;
 import com.team1323.frc2019.auto.AutoModeBase;
 import com.team1323.frc2019.auto.AutoModeExecuter;
 import com.team1323.frc2019.auto.SmartDashboardInteractions;
-import com.team1323.frc2019.auto.modes.TwoCloseOneBallMode;
+import com.team1323.frc2019.auto.modes.CloseFarBallMode;
 import com.team1323.frc2019.loops.LimelightProcessor;
 import com.team1323.frc2019.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2019.loops.Looper;
@@ -21,6 +21,7 @@ import com.team1323.frc2019.loops.RobotStateEstimator;
 import com.team1323.frc2019.subsystems.BallCarriage;
 import com.team1323.frc2019.subsystems.BallIntake;
 import com.team1323.frc2019.subsystems.DiskIntake;
+import com.team1323.frc2019.subsystems.DiskScorer;
 import com.team1323.frc2019.subsystems.Elevator;
 import com.team1323.frc2019.subsystems.Jacks;
 import com.team1323.frc2019.subsystems.LEDs;
@@ -60,8 +61,8 @@ public class Robot extends TimedRobot {
 	private BallIntake ballIntake;
 	private BallCarriage ballCarriage;
 	private DiskIntake diskIntake;
-	private Probe probe;
-	private Jacks jacks;
+	private DiskScorer diskScorer;
+	//private Jacks jacks;
 	private LEDs leds;
 	private Superstructure s;
 	private SubsystemManager subsystems;
@@ -103,11 +104,11 @@ public class Robot extends TimedRobot {
 		ballIntake = BallIntake.getInstance();
 		ballCarriage = BallCarriage.getInstance();
 		diskIntake = DiskIntake.getInstance();
-		probe = Probe.getInstance();
-		jacks = Jacks.getInstance();
+		diskScorer = DiskScorer.getInstance();
+		//jacks = Jacks.getInstance();
 		leds = LEDs.getInstance();
 		subsystems = new SubsystemManager(
-				Arrays.asList(swerve, elevator, wrist, ballIntake, ballCarriage, diskIntake, probe, jacks, leds, s));
+				Arrays.asList(swerve, elevator, wrist, ballIntake, ballCarriage, diskIntake, diskScorer, /*jacks,*/ leds, s));
 
 		limelight = LimelightProcessor.getInstance();
 		
@@ -137,7 +138,7 @@ public class Robot extends TimedRobot {
 
 		generator.generateTrajectories();
 
-		AutoModeBase auto = new TwoCloseOneBallMode(true);
+		AutoModeBase auto = new CloseFarBallMode(true);
 		qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 
@@ -204,6 +205,11 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		if(swerve.getState() == Swerve.ControlState.VISION){
+			leds.conformToState(LEDs.State.VISION);
+		}else{
+			leds.conformToState(LEDs.State.ENABLED);
+		}
 		allPeriodic();
 	}
 
@@ -247,7 +253,7 @@ public class Robot extends TimedRobot {
 				leds.conformToState(LEDs.State.BALL_IN_CARRIAGE);
 			} else if (diskIntake.hasDisk()) {
 				leds.conformToState(LEDs.State.DISK_IN_INTAKE);
-			} else if (probe.hasDisk()) {
+			} else if (diskScorer.hasDisk()) {
 				leds.conformToState(LEDs.State.DISK_IN_PROBE);
 			} else if (swerve.getState() == Swerve.ControlState.VISION || robotState.seesTarget()){
 				leds.conformToState(LEDs.State.VISION);
@@ -378,7 +384,7 @@ public class Robot extends TimedRobot {
 			swerve.setTrajectory(generator.getTrajectorySet().straightPath, 0.0, 1.0);*/
 			// swerve.setVelocity(new Rotation2d(), 24.0);
 		} else if (driver.startButton.shortReleased()) {
-			limelight.setPipeline(Pipeline.HIGHEST);
+			limelight.setPipeline(Pipeline.CLOSEST);
 			s.humanLoaderRetrievingState();
 		} /*else if (driver.leftBumper.isBeingPressed()) {
 			swerve.setVelocity(new Rotation2d(), 24.0);
@@ -386,14 +392,14 @@ public class Robot extends TimedRobot {
 			swerve.setState(Swerve.ControlState.MANUAL);
 		}*/
 
-		s.sendManualInput(-coDriver.getY(Hand.kRight), -coDriver.getY(Hand.kLeft), /*-coDriver.getY(Hand.kLeft)*/0.0);
+		s.sendManualInput(-coDriver.getY(Hand.kLeft), -coDriver.getY(Hand.kRight), /*-coDriver.getY(Hand.kLeft)*/0.0);
 
 		////// Official Controls //////
 
 		if (coDriver.startButton.shortReleased()) {
 			s.diskReceivingState();
 		} else if(coDriver.startButton.longPressed()){
-			limelight.setPipeline(Pipeline.HIGHEST);
+			limelight.setPipeline(Pipeline.CLOSEST);
 			s.humanLoaderRetrievingState();
 		} else if (coDriver.rightBumper.shortReleased()) {
 			s.diskIntakingState();
@@ -404,13 +410,13 @@ public class Robot extends TimedRobot {
 		} else if (coDriver.rightTrigger.shortReleased() || driver.rightTrigger.shortReleased()) {
 			ballCarriage.conformToState(BallCarriage.State.EJECTING);
 		} else if(coDriver.leftTrigger.shortReleased() || driver.yButton.shortReleased()){
-			probe.conformToState(Probe.State.SCORING);
+			diskScorer.conformToState(DiskScorer.State.SCORING);
 		} else if (coDriver.aButton.wasActivated()) {
 			s.ballIntakingState();
 		} else if (coDriver.aButton.wasReleased()) {
 			s.fullBallCycleState();
 		} else if (coDriver.xButton.shortReleased()) {
-			if(probe.isExtended()){
+			if(diskScorer.isExtended()){
 				limelight.setPipeline(Pipeline.LOWEST);
 				s.diskTrackingState(Constants.kElevatorMidHatchHeight);
 			}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
@@ -418,13 +424,13 @@ public class Robot extends TimedRobot {
 				s.ballTrackingState(Constants.kElevatorMidBallHeight);
 			}
 		} else if (coDriver.xButton.longPressed()) {
-			if(probe.isExtended()){
+			if(diskScorer.isExtended()){
 				s.diskScoringState(Constants.kElevatorMidHatchHeight);
-			}else{
+			}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
 				s.ballScoringState(Constants.kElevatorMidBallHeight);
 			}
 		} else if (coDriver.yButton.shortReleased()) {
-			if(probe.isExtended()){
+			if(diskScorer.isExtended()){
 				limelight.setPipeline(Pipeline.LOWEST);
 				s.diskTrackingState(Constants.kElevatorHighHatchHeight);
 			}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
@@ -432,13 +438,13 @@ public class Robot extends TimedRobot {
 				s.ballTrackingState(Constants.kElevatorHighBallHeight);
 			}
 		} else if (coDriver.yButton.longPressed()) {
-			if(probe.isExtended()){
+			if(diskScorer.isExtended()){
 				s.diskScoringState(Constants.kElevatorHighHatchHeight);
-			}else{
+			}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
 				s.ballScoringState(Constants.kElevatorHighBallHeight);
 			}
 		} else if (coDriver.bButton.shortReleased()) {
-			if(probe.isExtended()){
+			if(diskScorer.isExtended()){
 				limelight.setPipeline(Pipeline.LOWEST);
 				s.diskTrackingState(Constants.kElevatorLowHatchHeight);
 			}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
@@ -446,9 +452,9 @@ public class Robot extends TimedRobot {
 				s.ballTrackingState(Constants.kElevatorLowBallHeight);
 			}
 		} else if (coDriver.bButton.longPressed()) {
-			if(probe.isExtended()){
+			if(diskScorer.isExtended()){
 				s.diskScoringState(Constants.kElevatorLowHatchHeight);
-			}else{
+			}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
 				s.ballScoringState(Constants.kElevatorLowBallHeight);
 			}
 		} else if (coDriver.rightCenterClick.shortReleased()) {
@@ -464,7 +470,7 @@ public class Robot extends TimedRobot {
 			s.postClimbingState();
 		}
 
-		if (probe.needsToNotifyDrivers()) {
+		if (diskScorer.needsToNotifyDrivers()) {
 			driver.rumble(1.0, 1.0);
 		}
 

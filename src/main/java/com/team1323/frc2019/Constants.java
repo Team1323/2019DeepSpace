@@ -63,14 +63,14 @@ public class Constants {
     public static final double kCameraPitchAngleDegrees = 17.25;
     
     //Goal tracker constants
-    public static double kMaxGoalTrackAge = 1.0;
+    public static double kMaxGoalTrackAge = 0.5;
     public static double kMaxTrackerDistance = 3.0;//18.0
     public static double kCameraFrameRate = 90.0;
     public static double kTrackReportComparatorStablityWeight = 1.0;
 	public static double kTrackReportComparatorAgeWeight = 1.0;
 	public static final double kDefaultCurveDistance = kRobotHalfLength + 36.0;
 	public static final double kVisionUpdateDistance = kRobotHalfLength + 75.0;
-	public static final double kVisionDistanceStep = kVisionUpdateDistance / 12.0;
+	public static final double kVisionDistanceStep = kVisionUpdateDistance / 24.0;
 	public static final double kClosestVisionDistance = 36.0;
     
     //Path following constants
@@ -127,11 +127,11 @@ public class Constants {
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 0.5; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.5;
-	public static final double kElevatorLowHatchHeight = 7.0;
-	public static final double kElevatorHumanLoaderHeight = 5.5;
-	public static final double kElevatorMidHatchHeight = 36.5;
-	public static final double kElevatorHighHatchHeight = 63.7;
-	public static final double kElevatorBallIntakeHeight = 0.1;
+	public static final double kElevatorLowHatchHeight = 10.3;//7.0
+	public static final double kElevatorHumanLoaderHeight = 8.8;//5.5
+	public static final double kElevatorMidHatchHeight = 39.8;//36.5
+	public static final double kElevatorHighHatchHeight = 63.7;//63.7
+	public static final double kElevatorBallIntakeHeight = 0.25;
 	public static final double kElevatorBallCargoShipHeight = 17.5;
 	public static final double kElevatorLowBallHeight = 4.3;
 	public static final double kElevatorMidBallHeight = 32.0;
@@ -147,7 +147,7 @@ public class Constants {
 	/*public static final List<double[]> kElevatorDiskVisibleRanges = Arrays.asList(new double[]{0.0, 2.5},
 		new double[]{36.0, 40.0}, new double[]{45.0, kElevatorMaxHeight});*/
 
-	public static final List<double[]> kElevatorDiskVisibleRanges = Arrays.asList(new double[]{18.75, kElevatorMaxHeight});
+	public static final List<double[]> kElevatorDiskVisibleRanges = Arrays.asList(new double[]{/*26.5*/14.0, kElevatorMaxHeight});
 	public static final List<double[]> kElevatorBallVisibleRanges = Arrays.asList(new double[]{6.25, kElevatorMaxHeight});
 	
 	//Swerve Speed Constraint Treemap
@@ -203,6 +203,11 @@ public class Constants {
 	public static final double kDiskIntakeStrongEjectOutput = -0.9;
 	public static final double kDiskStrongHoldingOutput = 3.0;
 	public static final double kDiskIntakingResuckingOutput = 6.0/12.0;
+
+	//Disk Scorer Constants
+	public static final double kDiskScorerIntakingOutput = 1.0;
+	public static final double kDiskScorerHoldingOutput = 1.0/12.0;
+	public static final double kDiskScorerEjectOutput = -1.0;
 
 	//Jack Constants
 	public static final double kJackMaxSpeed = 5000.0;

@@ -83,11 +83,11 @@ public class Wrist extends Subsystem{
 
 	private void configForHighGear(){
 		wrist.selectProfileSlot(0, 0);
-		wrist.config_kP(0, 1.75, 10); // going down 2.5
+		wrist.config_kP(0, 1.25, 10); // going down 2.5
 		wrist.config_kI(0, 0.0, 10);
 		wrist.config_kD(0, 60.0, 10);//80.0
 		wrist.config_kF(0, 1023.0/Constants.kWristMaxSpeedHighGear, 10);
-		wrist.config_kP(1, 1.75, 10);// going up 2.0
+		wrist.config_kP(1, 1.25, 10);// going up 2.0
 		wrist.config_kI(1, 0.0, 10);
 		wrist.config_kD(1, 60.0, 10);//80.0
 		wrist.config_kF(1, 1023.0/Constants.kWristMaxSpeedHighGear, 10);

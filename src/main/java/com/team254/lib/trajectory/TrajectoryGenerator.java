@@ -81,12 +81,12 @@ public class TrajectoryGenerator {
     // +x is towards the center of the field.
     // +y is to the right.
     // ALL POSES DEFINED FOR THE CASE THAT ROBOT STARTS ON LEFT! (mirrored about +x axis for RIGHT)
-    static final Pose2d autoStartingPose = new Pose2d(Constants.kRobotLeftStartingPose.getTranslation().translateBy(new Translation2d(/*-0.5*/0.0, 0.0)), Rotation2d.fromDegrees(0.0));
+    static final Pose2d autoStartingPose = new Pose2d(Constants.kRobotLeftStartingPose.getTranslation().translateBy(new Translation2d(/*-0.5*/0.0, 0.0)), Rotation2d.fromDegrees(-90.0));
 
     static final Pose2d closeHatchScoringPose = Constants.closeHatchPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 3.5, 0.0)));
-    static final Pose2d farHatchScoringPose = Constants.farHatchPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 12.0, 0.0)));
+    static final Pose2d farHatchScoringPose = Constants.farHatchPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 5.0, 0.0)));
     static final Pose2d humanLoaderPose = Constants.humanLoaderPosition.transformBy(Pose2d.fromTranslation(new Translation2d(Constants.kRobotHalfLength - 4.0, 2.0)));
-    static final Pose2d ballIntakePose = new Pose2d(Constants.autoBallPosition.transformBy(Pose2d.fromTranslation(new Translation2d(Constants.kRobotHalfLength + 12.0, 0.0))).getTranslation(), Rotation2d.fromDegrees(0.0));
+    static final Pose2d ballIntakePose = new Pose2d(Constants.autoBallPosition.transformBy(Pose2d.fromTranslation(new Translation2d(Constants.kRobotHalfLength + 9.0, 0.0))).getTranslation(), Rotation2d.fromDegrees(0.0));
     static final Pose2d portScoringPose = Constants.rocketPortPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 6.0, 0.0)));
 
     public class TrajectorySet {
@@ -149,11 +149,14 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getStartToCloseHatch(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(autoStartingPose);
+            waypoints.add(autoStartingPose.transformBy(Pose2d.fromTranslation(new Translation2d(18.0, 0.0))));
             //waypoints.add(autoStartingPose.transformBy(Pose2d.fromTranslation(new Translation2d(50.0, 0.0))));
             //waypoints.add(Constants.kRobotLeftRampExitPose);
-            waypoints.add(closeHatchScoringPose);
+            //waypoints.add(closeHatchScoringPose.transformBy(Pose2d.fromTranslation(new Translation2d(-24.0, 0.0))));
+            //waypoints.add(closeHatchScoringPose);
+            waypoints.add(new Pose2d(closeHatchScoringPose.getTranslation(), Rotation2d.fromDegrees(-30.0)));
 
-            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 36.0, 2);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 72.0, kMaxAccel, 12.0, kMaxVoltage, 54.0, 6);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getCloseHatchToHumanLoader(){
@@ -161,7 +164,7 @@ public class TrajectoryGenerator {
             waypoints.add(closeHatchScoringPose);
             waypoints.add(humanLoaderPose);
 
-            return generateTrajectory(true, waypoints, Arrays.asList(), 72.0, kMaxAccel, 24.0, kMaxVoltage, /*72.0*/60.0, 2);
+            return generateTrajectory(true, waypoints, Arrays.asList(), 78.0, kMaxAccel, 24.0, kMaxVoltage, /*72.0*/60.0, 2);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getHumanLoaderToCloseHatch(){
@@ -169,7 +172,7 @@ public class TrajectoryGenerator {
             waypoints.add(humanLoaderPose);
             waypoints.add(closeHatchScoringPose);
 
-            return generateTrajectory(false, waypoints, Arrays.asList(), 96.0, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 84.0, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getCloseHatchToBall(){
@@ -220,14 +223,15 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(new Translation2d(210.0, -82.0), Rotation2d.fromDegrees(0.0)));
             waypoints.add(farHatchScoringPose);
 
-            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
+            return generateTrajectory(false, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 20);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getFarHatchToBall(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(farHatchScoringPose);
-            waypoints.add(ballIntakePose.transformBy(Pose2d.fromTranslation(new Translation2d(96.0, 0.0))));
-            waypoints.add(ballIntakePose);
+            waypoints.add(farHatchScoringPose.transformBy(Pose2d.fromTranslation(new Translation2d(-36.0, 0.0))));
+            //waypoints.add(ballIntakePose.transformBy(Pose2d.fromTranslation(new Translation2d(96.0, 0.0))));
+            //waypoints.add(ballIntakePose);
 
             return generateTrajectory(true, waypoints, Arrays.asList(), kMaxVelocity, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
         }
