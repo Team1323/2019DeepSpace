@@ -61,6 +61,11 @@ public class GoalTrack {
         }
     }
 
+    public void forceUpdate(double timestamp, Translation2d new_observation){
+        mObservedPositions.put(timestamp, new_observation);
+        pruneByTime();
+    }
+
     public boolean isAlive() {
         return mObservedPositions.size() > 0;
     }

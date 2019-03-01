@@ -111,6 +111,7 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory startToCloseHatch;
         public final MirroredTrajectory closeHatchToHumanLoader;
         public final MirroredTrajectory humanLoaderToCloseHatch;
+        public final MirroredTrajectory shortCloseHatchToHumanLoader;
         public final MirroredTrajectory closeHatchToBall;
         public final MirroredTrajectory ballToRocketPort;
         public final MirroredTrajectory rocketPortToHumanLoader;
@@ -128,6 +129,7 @@ public class TrajectoryGenerator {
             startToCloseHatch = new MirroredTrajectory(getStartToCloseHatch());
             closeHatchToHumanLoader = new MirroredTrajectory(getCloseHatchToHumanLoader());
             humanLoaderToCloseHatch = new MirroredTrajectory(getHumanLoaderToCloseHatch());
+            shortCloseHatchToHumanLoader = new MirroredTrajectory(getShortCloseHatchToHumanLoader());
             closeHatchToBall = new MirroredTrajectory(getCloseHatchToBall());
             ballToRocketPort = new MirroredTrajectory(getBallToRocketPort());
             rocketPortToHumanLoader = new MirroredTrajectory(getRocketPortToHumanLoader());
@@ -173,6 +175,14 @@ public class TrajectoryGenerator {
             waypoints.add(closeHatchScoringPose);
 
             return generateTrajectory(false, waypoints, Arrays.asList(), 84.0, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getShortCloseHatchToHumanLoader(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(closeHatchScoringPose);
+            waypoints.add(humanLoaderPose.transformBy(Pose2d.fromTranslation(new Translation2d(24.0, 0.0))));
+
+            return generateTrajectory(true, waypoints, Arrays.asList(), 78.0, kMaxAccel, 24.0, kMaxVoltage, /*72.0*/60.0, 2);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getCloseHatchToBall(){

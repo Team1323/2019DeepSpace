@@ -59,10 +59,11 @@ public class DiskScorer extends Subsystem {
 
     public enum State{
         SCORING(true, Constants.kDiskScorerEjectOutput), STOWED(false, 0.0),
-        HOLDING(true, Constants.kDiskScorerIntakingOutput), RECEIVING(true, Constants.kDiskScorerIntakingOutput),
+        HOLDING(true, Constants.kDiskScorerHoldingOutput), RECEIVING(true, Constants.kDiskScorerIntakingOutput),
         STOWED_HOLDING(false, Constants.kDiskScorerHoldingOutput),
         GROUND_INTAKING(false, Constants.kDiskScorerIntakingOutput),
-        NEUTRAL_EXTENDED(true, 0.0), AUTO_RECEIVING(true, Constants.kDiskScorerIntakingOutput);
+        NEUTRAL_EXTENDED(true, 0.0), AUTO_RECEIVING(true, Constants.kDiskScorerIntakingOutput),
+        DETECTED(true, Constants.kDiskScorerIntakingOutput);
 
         boolean extended;
         double output;
@@ -107,7 +108,7 @@ public class DiskScorer extends Subsystem {
     }
 
     public void conformToState(State newState){
-        extender.set(!newState.extended);
+        extender.set(newState.extended);
         setOpenLoop(newState.output);
         setState(newState);
     }
@@ -156,10 +157,13 @@ public class DiskScorer extends Subsystem {
                     break;
                 case STOWED:
                     break;
-                case HOLDING:
+                case DETECTED:
                     if((timestamp - stateEnteredTimestamp) >= 0.5){
-                        conformToState(State.NEUTRAL_EXTENDED);
+                        conformToState(State.HOLDING);
                     }
+                    break;
+                case HOLDING:
+                    
                     break;
                 case RECEIVING:
                     if (stateChanged)
@@ -218,7 +222,7 @@ public class DiskScorer extends Subsystem {
 
         @Override
         public void onStop(double timestamp) {
-            conformToState(State.NEUTRAL_EXTENDED);
+            conformToState(State.STOWED);
         }
 
     };

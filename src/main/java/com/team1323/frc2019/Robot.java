@@ -12,7 +12,7 @@ import java.util.Arrays;
 import com.team1323.frc2019.auto.AutoModeBase;
 import com.team1323.frc2019.auto.AutoModeExecuter;
 import com.team1323.frc2019.auto.SmartDashboardInteractions;
-import com.team1323.frc2019.auto.modes.CloseFarBallMode;
+import com.team1323.frc2019.auto.modes.TwoCloseOneBallMode;
 import com.team1323.frc2019.loops.LimelightProcessor;
 import com.team1323.frc2019.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2019.loops.Looper;
@@ -23,9 +23,7 @@ import com.team1323.frc2019.subsystems.BallIntake;
 import com.team1323.frc2019.subsystems.DiskIntake;
 import com.team1323.frc2019.subsystems.DiskScorer;
 import com.team1323.frc2019.subsystems.Elevator;
-import com.team1323.frc2019.subsystems.Jacks;
 import com.team1323.frc2019.subsystems.LEDs;
-import com.team1323.frc2019.subsystems.Probe;
 import com.team1323.frc2019.subsystems.Subsystem;
 import com.team1323.frc2019.subsystems.SubsystemManager;
 import com.team1323.frc2019.subsystems.Superstructure;
@@ -138,7 +136,7 @@ public class Robot extends TimedRobot {
 
 		generator.generateTrajectories();
 
-		AutoModeBase auto = new CloseFarBallMode(true);
+		AutoModeBase auto = new TwoCloseOneBallMode(true);
 		qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 

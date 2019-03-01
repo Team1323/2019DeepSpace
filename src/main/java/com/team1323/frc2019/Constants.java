@@ -123,14 +123,14 @@ public class Constants {
 	//Elevator Constants
 	public static final double kElevatorMaxSpeedHighGear = 696.96 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
-	public static final int kElevatorEncoderStartingPosition = 428;
+	public static final int kElevatorEncoderStartingPosition = 309;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 0.5; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.5;
-	public static final double kElevatorLowHatchHeight = 10.3;//7.0
-	public static final double kElevatorHumanLoaderHeight = 8.8;//5.5
-	public static final double kElevatorMidHatchHeight = 39.8;//36.5
-	public static final double kElevatorHighHatchHeight = 63.7;//63.7
+	public static final double kElevatorLowHatchHeight = 9.425;//7.0
+	public static final double kElevatorHumanLoaderHeight = 7.925;//5.5
+	public static final double kElevatorMidHatchHeight = 38.925;//36.5
+	public static final double kElevatorHighHatchHeight = 64.9;//63.7
 	public static final double kElevatorBallIntakeHeight = 0.25;
 	public static final double kElevatorBallCargoShipHeight = 17.5;
 	public static final double kElevatorLowBallHeight = 4.3;
@@ -144,10 +144,7 @@ public class Constants {
 	public static final int kELevatorCurrentLimit = 40;
 	public static final double kElevatorTeleopManualSpeed = 0.5;
 
-	/*public static final List<double[]> kElevatorDiskVisibleRanges = Arrays.asList(new double[]{0.0, 2.5},
-		new double[]{36.0, 40.0}, new double[]{45.0, kElevatorMaxHeight});*/
-
-	public static final List<double[]> kElevatorDiskVisibleRanges = Arrays.asList(new double[]{/*26.5*/14.0, kElevatorMaxHeight});
+	public static final List<double[]> kElevatorDiskVisibleRanges = Arrays.asList(new double[]{/*26.5*/8.0, kElevatorMaxHeight});
 	public static final List<double[]> kElevatorBallVisibleRanges = Arrays.asList(new double[]{6.25, kElevatorMaxHeight});
 	
 	//Swerve Speed Constraint Treemap
@@ -206,7 +203,7 @@ public class Constants {
 
 	//Disk Scorer Constants
 	public static final double kDiskScorerIntakingOutput = 1.0;
-	public static final double kDiskScorerHoldingOutput = 1.0/12.0;
+	public static final double kDiskScorerHoldingOutput = 2.0/12.0;
 	public static final double kDiskScorerEjectOutput = -1.0;
 
 	//Jack Constants

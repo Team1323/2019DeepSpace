@@ -34,8 +34,7 @@ public class TwoCloseOneBallMode extends AutoModeBase {
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
         return Arrays.asList(trajectories.startToCloseHatch.get(left), trajectories.closeHatchToHumanLoader.get(left),
-                trajectories.humanLoaderToCloseHatch.get(left), trajectories.closeHatchToBall.get(left),
-                trajectories.ballToRocketPort.get(left));
+                trajectories.humanLoaderToCloseHatch.get(left), trajectories.shortCloseHatchToHumanLoader.get(left));
     }
 
 	public TwoCloseOneBallMode(boolean left) {
@@ -52,19 +51,6 @@ public class TwoCloseOneBallMode extends AutoModeBase {
         runAction(new SetTrajectoryAction(trajectories.startToCloseHatch.get(left), 30.0 * directionFactor, 1.0));
         runAction(new WaitToPassYCoordinateAction(-46.25 - Constants.kRobotWidth));
         s.diskScoringState(Constants.kElevatorMidHatchHeight);
-        /*WaitToLeaveRampAction rampAction = new WaitToLeaveRampAction(1.5);
-        runAction(rampAction);
-        if(!rampAction.timedOut()){
-            //Swerve.getInstance().resetPosition(left ? Constants.kRobotLeftRampExitPose : Constants.kRobotRightRampExitPose);
-            System.out.println("Position reset off of ramp");
-        }*/
-        //runAction(new RemainingProgressAction(2.0));
-        /*s.diskScoringState(Constants.kElevatorMidHatchHeight);
-        runAction(new RemainingProgressAction(0.5));
-        runAction(new WaitForElevatorAction());
-        s.probe.conformToState(Probe.State.SCORING);
-        runAction(new WaitToFinishPathAction());*/
-        //runAction(new WaitForHeadingAction(-40.0, -25.0));
         runAction(new WaitForDistanceAction(Constants.closeHatchPosition.getTranslation(), 102.0));
         s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(30.0 * directionFactor));
         runAction(new WaitForElevatorAction());
@@ -90,15 +76,18 @@ public class TwoCloseOneBallMode extends AutoModeBase {
         runAction(new WaitAction(0.25));
 
 
-        runAction(new SetTrajectoryAction(trajectories.closeHatchToBall.get(left), 45.0 * directionFactor, 1.0));
+        runAction(new SetTrajectoryAction(trajectories.shortCloseHatchToHumanLoader.get(left), 180.0 * directionFactor, 0.75));
+        runAction(new WaitAction(0.5));
+        s.diskScoringState(Constants.kElevatorLowHatchHeight);
+
+
+        /*runAction(new SetTrajectoryAction(trajectories.closeHatchToBall.get(left), 45.0 * directionFactor, 1.0));
         runAction(new WaitAction(0.5));
         s.ballScoringState(Constants.kElevatorLowBallHeight);
         runAction(new RemainingProgressAction(1.5));
         s.ballIntakingState();
         runAction(new WaitToFinishPathAction());
-        s.fullBallCycleState();
-        /*runAction(new SetTrajectoryAction(trajectories.ballToRocketPort.get(left), 90.0 * directionFactor, 1.0));
-        runAction(new WaitToFinishPathAction());*/
+        s.fullBallCycleState();*/
 
         System.out.println("Auto mode finished in " + currentTime() + " seconds");
 	}

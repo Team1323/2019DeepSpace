@@ -115,7 +115,8 @@ public class GoalTracker {
         }*/
         if(field_to_goals.size() >= 3 && mCurrentTracks.size() >= 3){
             for(int i=0; i<3; i++){
-                mCurrentTracks.get(i).tryUpdate(timestamp, field_to_goals.get(i));
+                //mCurrentTracks.get(i).tryUpdate(timestamp, field_to_goals.get(i));
+                mCurrentTracks.get(i).forceUpdate(timestamp, field_to_goals.get(i));
             }
         }else{
             for(GoalTrack track : mCurrentTracks){
