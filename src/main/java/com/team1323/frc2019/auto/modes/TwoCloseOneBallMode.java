@@ -14,9 +14,10 @@ import com.team1323.frc2019.auto.actions.WaitForDiskAction;
 import com.team1323.frc2019.auto.actions.WaitForDistanceAction;
 import com.team1323.frc2019.auto.actions.WaitForElevatorAction;
 import com.team1323.frc2019.auto.actions.WaitForHeadingAction;
-import com.team1323.frc2019.auto.actions.WaitToFinishPathAction;
 import com.team1323.frc2019.auto.actions.WaitToPassXCoordinateAction;
 import com.team1323.frc2019.auto.actions.WaitToPassYCoordinateAction;
+import com.team1323.frc2019.loops.LimelightProcessor;
+import com.team1323.frc2019.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2019.subsystems.Superstructure;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
@@ -49,6 +50,7 @@ public class TwoCloseOneBallMode extends AutoModeBase {
 
         runAction(new ResetPoseAction(left));
         runAction(new SetTrajectoryAction(trajectories.startToCloseHatch.get(left), 30.0 * directionFactor, 1.0));
+        LimelightProcessor.getInstance().setPipeline(Pipeline.LEFTMOST);
         runAction(new WaitToPassYCoordinateAction(-46.25 - Constants.kRobotWidth));
         s.diskScoringState(Constants.kElevatorMidHatchHeight);
         runAction(new WaitForDistanceAction(Constants.closeHatchPosition.getTranslation(), 102.0));
@@ -60,13 +62,15 @@ public class TwoCloseOneBallMode extends AutoModeBase {
         runAction(new SetTrajectoryAction(trajectories.closeHatchToHumanLoader.get(left), 180.0 * directionFactor, 0.75));
         runAction(new WaitAction(0.5));
         s.diskReceivingState();
+        LimelightProcessor.getInstance().setPipeline(Pipeline.RIGHTMOST);
         runAction(new WaitToPassXCoordinateAction(96.0));
         runAction(new WaitForHeadingAction(-190.0, -160.0));
         s.humanLoaderTrackingState();
         runAction(new WaitForDiskAction(3.0));
 
 
-        runAction(new SetTrajectoryAction(trajectories.humanLoaderToCloseHatch.get(left), 30.0 * directionFactor, 1.0));
+        runAction(new SetTrajectoryAction(trajectories.humanLoaderToCloseHatch.get(left), 30.0 * directionFactor, 0.75));
+        LimelightProcessor.getInstance().setPipeline(Pipeline.LEFTMOST);
         runAction(new RemainingProgressAction(2.5));
         s.diskScoringState(Constants.kElevatorHighHatchHeight);
         runAction(new WaitForHeadingAction(-40.0, -25.0));

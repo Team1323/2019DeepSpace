@@ -56,15 +56,15 @@ public class Constants {
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
     
     //Camera Constants
-    public static final double kCameraYOffset = 13.0;
+    public static final double kCameraYOffset = 14.5;
     public static final double kCameraXOffset = 3.0;
     public static final double kCameraZOffset = 17.625;
-    public static final double kCameraYawAngleDegrees = -12.0;//-12.0
+    public static final double kCameraYawAngleDegrees = -12.7;
     public static final double kCameraPitchAngleDegrees = 17.25;
     
     //Goal tracker constants
-    public static double kMaxGoalTrackAge = 0.5;
-    public static double kMaxTrackerDistance = 3.0;//18.0
+    public static double kMaxGoalTrackAge = 0.5;//0.5
+    public static double kMaxTrackerDistance = 60.0;//18.0
     public static double kCameraFrameRate = 90.0;
     public static double kTrackReportComparatorStablityWeight = 1.0;
 	public static double kTrackReportComparatorAgeWeight = 1.0;
@@ -127,9 +127,9 @@ public class Constants {
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 0.5; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.5;
-	public static final double kElevatorLowHatchHeight = 9.425;//7.0
-	public static final double kElevatorHumanLoaderHeight = 7.925;//5.5
-	public static final double kElevatorMidHatchHeight = 38.925;//36.5
+	public static final double kElevatorLowHatchHeight = 8.925;//7.0
+	public static final double kElevatorHumanLoaderHeight = 7.425;//5.5
+	public static final double kElevatorMidHatchHeight = 38.425;//36.5
 	public static final double kElevatorHighHatchHeight = 64.9;//63.7
 	public static final double kElevatorBallIntakeHeight = 0.25;
 	public static final double kElevatorBallCargoShipHeight = 17.5;

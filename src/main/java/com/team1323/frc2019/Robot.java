@@ -137,7 +137,7 @@ public class Robot extends TimedRobot {
 		generator.generateTrajectories();
 
 		AutoModeBase auto = new TwoCloseOneBallMode(true);
-		qTransmitter.addPaths(auto.getPaths());
+		//qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 
 	}
@@ -204,7 +204,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void autonomousPeriodic() {
 		if(swerve.getState() == Swerve.ControlState.VISION){
-			leds.conformToState(LEDs.State.VISION);
+			leds.conformToState(LEDs.State.TARGET_VISIBLE);
 		}else{
 			leds.conformToState(LEDs.State.ENABLED);
 		}
@@ -245,7 +245,10 @@ public class Robot extends TimedRobot {
 			else
 				twoControllerMode();
 
-			if (ballIntake.hasBall()) {
+
+			if(s.isClimbing()) {
+				leds.conformToState(LEDs.State.CLIMBING);
+			} else if (ballIntake.hasBall()) {
 				leds.conformToState(LEDs.State.BALL_IN_INTAKE);
 			} else if (ballCarriage.hasBall()) {
 				leds.conformToState(LEDs.State.BALL_IN_CARRIAGE);
@@ -253,8 +256,10 @@ public class Robot extends TimedRobot {
 				leds.conformToState(LEDs.State.DISK_IN_INTAKE);
 			} else if (diskScorer.hasDisk()) {
 				leds.conformToState(LEDs.State.DISK_IN_PROBE);
-			} else if (swerve.getState() == Swerve.ControlState.VISION || robotState.seesTarget()){
-				leds.conformToState(LEDs.State.VISION);
+			} else if (swerve.getState() == Swerve.ControlState.VISION){
+				leds.conformToState(LEDs.State.TARGET_TRACKING);
+			} else if(robotState.seesTarget()) {
+				leds.conformToState(LEDs.State.TARGET_VISIBLE);
 			} else {
 				leds.conformToState(LEDs.State.ENABLED);
 			}
@@ -362,11 +367,11 @@ public class Robot extends TimedRobot {
 		else if (driver.xButton.isBeingPressed())
 			swerve.rotate(270);
 		else if (driver.leftBumper.shortReleased())
-			swerve.rotate(-30);
+			swerve.rotate(-25);
 		else if(driver.leftBumper.longPressed())
 			swerve.rotate(-150.0);
 		else if (driver.rightBumper.shortReleased())
-			swerve.rotate(30);
+			swerve.rotate(25);
 		else if(driver.rightBumper.longPressed())
 			swerve.rotate(150.0);
 		if (driver.backButton.shortReleased() || driver.backButton.longPressed()) {
@@ -409,17 +414,21 @@ public class Robot extends TimedRobot {
 			ballCarriage.conformToState(BallCarriage.State.EJECTING);
 		} else if(coDriver.leftTrigger.shortReleased() || driver.yButton.shortReleased()){
 			diskScorer.conformToState(DiskScorer.State.SCORING);
+		} else if (coDriver.leftTrigger.longPressed()) {
+			diskScorer.conformToState(DiskScorer.State.RECEIVING);
 		} else if (coDriver.aButton.wasActivated()) {
 			s.ballIntakingState();
 		} else if (coDriver.aButton.wasReleased()) {
 			s.fullBallCycleState();
 		} else if (coDriver.xButton.shortReleased()) {
 			if(diskScorer.isExtended()){
-				limelight.setPipeline(Pipeline.LOWEST);
-				s.diskTrackingState(Constants.kElevatorMidHatchHeight);
+				//limelight.setPipeline(Pipeline.LOWEST);
+				//s.diskTrackingState(Constants.kElevatorMidHatchHeight);
+				elevator.setTargetHeight(Constants.kElevatorMidHatchHeight);
 			}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
-				limelight.setPipeline(Pipeline.HIGHEST);
-				s.ballTrackingState(Constants.kElevatorMidBallHeight);
+				//limelight.setPipeline(Pipeline.HIGHEST);
+				//s.ballTrackingState(Constants.kElevatorMidBallHeight);
+				elevator.setTargetHeight(Constants.kElevatorMidBallHeight);
 			}
 		} else if (coDriver.xButton.longPressed()) {
 			if(diskScorer.isExtended()){
@@ -429,11 +438,13 @@ public class Robot extends TimedRobot {
 			}
 		} else if (coDriver.yButton.shortReleased()) {
 			if(diskScorer.isExtended()){
-				limelight.setPipeline(Pipeline.LOWEST);
-				s.diskTrackingState(Constants.kElevatorHighHatchHeight);
+				//limelight.setPipeline(Pipeline.LOWEST);
+				//s.diskTrackingState(Constants.kElevatorHighHatchHeight);
+				elevator.setTargetHeight(Constants.kElevatorHighHatchHeight);
 			}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
-				limelight.setPipeline(Pipeline.HIGHEST);
-				s.ballTrackingState(Constants.kElevatorHighBallHeight);
+				//limelight.setPipeline(Pipeline.HIGHEST);
+				//s.ballTrackingState(Constants.kElevatorHighBallHeight);
+				elevator.setTargetHeight(Constants.kElevatorHighBallHeight);
 			}
 		} else if (coDriver.yButton.longPressed()) {
 			if(diskScorer.isExtended()){

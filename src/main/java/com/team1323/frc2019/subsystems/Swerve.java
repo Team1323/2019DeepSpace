@@ -116,6 +116,10 @@ public class Swerve extends Subsystem{
 	public void alwaysConfigureModules(){
 		alwaysConfigureModules = true;
 	}
+	boolean startingLeft = true;
+	public void setStartingSide(boolean left){
+		startingLeft = left;
+	}
 
 	//Trajectory variables
 	DriveMotionPlanner motionPlanner;
@@ -727,7 +731,7 @@ public class Swerve extends Subsystem{
 				if(modulesReady){
 					if(!hasStartedFollowing){
 						if(moduleConfigRequested){
-							zeroSensors(Constants.kRobotLeftStartingPose);
+							zeroSensors(startingLeft ? Constants.kRobotLeftStartingPose : Constants.kRobotRightStartingPose);
 							System.out.println("Position reset for auto");
 						}
 						hasStartedFollowing = true;

@@ -255,11 +255,11 @@ public class RobotState {
     public void outputToSmartDashboard(){
         SmartDashboard.putBoolean("Sees Target", seesTarget);
 
-        /*List<Pose2d> targets = getCaptureTimeFieldToGoal();
+        List<Pose2d> targets = getCaptureTimeFieldToGoal();
         if(targets.size() >= minimumTargetQuantity){
             Translation2d targetPosition = targets.get(primaryTargetIndex).getTranslation();
             SmartDashboard.putNumberArray("Path Pose", new double[]{targetPosition.x(), targetPosition.y(), 0.0, 0.0}); 
-        }*/
+        }
 
         if(Constants.kDebuggingOutput){
             List<Pose2d> poses = getCaptureTimeFieldToGoal();

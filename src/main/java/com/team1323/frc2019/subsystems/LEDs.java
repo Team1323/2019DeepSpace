@@ -42,14 +42,16 @@ public class LEDs extends Subsystem{
 
     public enum State{
         OFF(0.0, 0.0, 0.0, Double.POSITIVE_INFINITY, 0.0),
-        DISABLED(255.0, 20.0, 147.0, Double.POSITIVE_INFINITY, 0.0),
+        DISABLED(255.0, 20.0, 30.0, Double.POSITIVE_INFINITY, 0.0),
         ENABLED(0.0, 0.0, 255.0, Double.POSITIVE_INFINITY, 0.0),
         EMERGENCY(255.0, 0.0, 0.0, 0.5, 0.5),
         BALL_IN_INTAKE(255.0, 20.0, 0.0, 0.5, 0.5),
         BALL_IN_CARRIAGE(255.0, 20.0, 0.0, Double.POSITIVE_INFINITY, 0.0),
         DISK_IN_INTAKE(255.0, 60.0, 0.0, 0.5, 0.5),
         DISK_IN_PROBE(255.0, 60.0, 0.0, Double.POSITIVE_INFINITY, 0.0),
-        VISION(0.0, 255.0, 0.0, Double.POSITIVE_INFINITY, 0.0);
+        TARGET_VISIBLE(0.0, 255.0, 0.0, Double.POSITIVE_INFINITY, 0.0),
+        TARGET_TRACKING(0.0, 255.0, 0.0, 0.5, 0.5),
+        CLIMBING(255.0, 0.0, 255.0, Double.POSITIVE_INFINITY, 0.0);
 
         double red, green, blue, onTime, offTime;
         private State(double r, double g, double b, double onTime, double offTime){
