@@ -44,13 +44,14 @@ public class DiskIntake extends Subsystem {
   }
 
   private LazyTalonSRX diskMotor;
-  private Solenoid lift;
+  private Solenoid lift, PTOShifter;
 
   private DiskIntake() {
     diskMotor = new LazyTalonSRX(Ports.DISK_INTAKE);
     lift = new Solenoid(Ports.DRIVEBASE_PCM, Ports.DISK_INTAKE_LIFT);
+    //PTOShifter = new Solenoid(Ports.PTO_SHIFTER);
 
-    diskMotor.setInverted(true);
+    diskMotor.setInverted(false);
 
     diskMotor.setNeutralMode(NeutralMode.Brake);
 
@@ -84,7 +85,8 @@ public class DiskIntake extends Subsystem {
     EJECTING(Constants.kDiskIntakeStrongEjectOutput, false), 
     HANDOFF_COMPLETE(0, true), 
     HOLDING(Constants.kDiskStrongHoldingOutput, true),
-    DEPLOYED(0, false);
+    DEPLOYED(0, false),
+    DELIVERING(4.0/12.0, true);
 
     public double diskIntakeOutput = 0;
     public boolean lifted = false;
@@ -141,6 +143,10 @@ public class DiskIntake extends Subsystem {
     setRollers(holdingOutput);
   }
 
+  private void shiftPower(boolean shiftToJacks){
+
+  }
+
   private final Loop loop = new Loop() {
 
     @Override
@@ -161,7 +167,7 @@ public class DiskIntake extends Subsystem {
         case INTAKING:
           if(stateChanged)
             hasDisk = false;
-          if(diskMotor.getOutputCurrent() >= 25.0 && (timestamp - stateEnteredTimestamp) >= 0.5) {
+          if(diskMotor.getOutputCurrent() >= 10.0 && (timestamp - stateEnteredTimestamp) >= 0.5) {
             if(Double.isInfinite(bannerSensorBeganTimestamp)) {
               bannerSensorBeganTimestamp = timestamp;
             } else {

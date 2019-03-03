@@ -13,7 +13,7 @@ import com.team1323.frc2019.auto.actions.SetTrajectoryAction;
 import com.team1323.frc2019.auto.actions.WaitAction;
 import com.team1323.frc2019.auto.actions.WaitForDiskAction;
 import com.team1323.frc2019.auto.actions.WaitForDistanceAction;
-import com.team1323.frc2019.auto.actions.WaitForElevatorAction;
+import com.team1323.frc2019.auto.actions.WaitForSuperstructureAction;
 import com.team1323.frc2019.auto.actions.WaitForHeadingAction;
 import com.team1323.frc2019.auto.actions.WaitToFinishPathAction;
 import com.team1323.frc2019.auto.actions.WaitToPassXCoordinateAction;
@@ -58,7 +58,7 @@ public class CloseFarBallMode extends AutoModeBase {
         s.diskScoringState(Constants.kElevatorMidHatchHeight);
         runAction(new WaitForDistanceAction(Constants.closeHatchPosition.getTranslation(), 102.0));
         s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(30.0 * directionFactor));
-        runAction(new WaitForElevatorAction());
+        runAction(new WaitForSuperstructureAction());
         runAction(new WaitAction(0.25));
 
 
@@ -78,7 +78,7 @@ public class CloseFarBallMode extends AutoModeBase {
         s.diskScoringState(Constants.kElevatorMidHatchHeight);
         runAction(new RemainingProgressAction(1.25));
         s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(150.0 * directionFactor));
-        runAction(new WaitForElevatorAction());
+        runAction(new WaitForSuperstructureAction());
         //runAction(new WaitAction(0.25));
 
 

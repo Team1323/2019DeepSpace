@@ -26,7 +26,7 @@ public class Constants {
 	public static final double kRobotLength = 36.5;
 	public static final double kRobotHalfWidth = kRobotWidth / 2.0;
 	public static final double kRobotHalfLength = kRobotLength / 2.0;
-	public static final double kRobotProbeExtrusion = 1.0;
+	public static final double kRobotProbeExtrusion = 3.0;
 
 	public static final double kBallRadius = 6.5;
 	
@@ -56,11 +56,11 @@ public class Constants {
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
     
     //Camera Constants
-    public static final double kCameraYOffset = 14.5;
-    public static final double kCameraXOffset = 3.0;
-    public static final double kCameraZOffset = 17.625;
-    public static final double kCameraYawAngleDegrees = -12.7;
-    public static final double kCameraPitchAngleDegrees = 17.25;
+    public static final double kCameraYOffset = 2.0;//14.5
+    public static final double kCameraXOffset = kRobotHalfLength - 15.1874;//3.0
+    public static final double kCameraZOffset = 17.8419;//17.625
+    public static final double kCameraYawAngleDegrees = 0.0;//-12.7
+    public static final double kCameraPitchAngleDegrees = 13.05;//17.25
     
     //Goal tracker constants
     public static double kMaxGoalTrackAge = 0.5;//0.5
@@ -126,7 +126,7 @@ public class Constants {
 	public static final int kElevatorEncoderStartingPosition = 309;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 0.5; //inches
-	public static final double kElevatorDiskIntakeHeight = 2.5;
+	public static final double kElevatorDiskIntakeHeight = 2.6;
 	public static final double kElevatorLowHatchHeight = 8.925;//7.0
 	public static final double kElevatorHumanLoaderHeight = 7.425;//5.5
 	public static final double kElevatorMidHatchHeight = 38.425;//36.5
@@ -144,8 +144,8 @@ public class Constants {
 	public static final int kELevatorCurrentLimit = 40;
 	public static final double kElevatorTeleopManualSpeed = 0.5;
 
-	public static final List<double[]> kElevatorDiskVisibleRanges = Arrays.asList(new double[]{/*26.5*/8.0, kElevatorMaxHeight});
-	public static final List<double[]> kElevatorBallVisibleRanges = Arrays.asList(new double[]{6.25, kElevatorMaxHeight});
+	public static final List<double[]> kElevatorDiskVisibleRanges = Arrays.asList(new double[]{19.6, kElevatorMaxHeight});
+	public static final List<double[]> kElevatorBallVisibleRanges = Arrays.asList(new double[]{11.9, kElevatorMaxHeight});
 	
 	//Swerve Speed Constraint Treemap
 	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kSwerveSpeedTreeMap = new InterpolatingTreeMap<>();

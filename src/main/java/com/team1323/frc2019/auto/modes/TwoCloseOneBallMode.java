@@ -10,10 +10,11 @@ import com.team1323.frc2019.auto.actions.RemainingProgressAction;
 import com.team1323.frc2019.auto.actions.ResetPoseAction;
 import com.team1323.frc2019.auto.actions.SetTrajectoryAction;
 import com.team1323.frc2019.auto.actions.WaitAction;
-import com.team1323.frc2019.auto.actions.WaitForDiskAction;
 import com.team1323.frc2019.auto.actions.WaitForDistanceAction;
 import com.team1323.frc2019.auto.actions.WaitForElevatorAction;
 import com.team1323.frc2019.auto.actions.WaitForHeadingAction;
+import com.team1323.frc2019.auto.actions.WaitForSuperstructureAction;
+import com.team1323.frc2019.auto.actions.WaitForVisionAction;
 import com.team1323.frc2019.auto.actions.WaitToPassXCoordinateAction;
 import com.team1323.frc2019.auto.actions.WaitToPassYCoordinateAction;
 import com.team1323.frc2019.loops.LimelightProcessor;
@@ -54,19 +55,21 @@ public class TwoCloseOneBallMode extends AutoModeBase {
         runAction(new WaitToPassYCoordinateAction(-46.25 - Constants.kRobotWidth));
         s.diskScoringState(Constants.kElevatorMidHatchHeight);
         runAction(new WaitForDistanceAction(Constants.closeHatchPosition.getTranslation(), 102.0));
+        runAction(new WaitForElevatorAction(19.6, true));
         s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(30.0 * directionFactor));
-        runAction(new WaitForElevatorAction());
+        runAction(new WaitForSuperstructureAction());
         runAction(new WaitAction(0.25));
 
 
         runAction(new SetTrajectoryAction(trajectories.closeHatchToHumanLoader.get(left), 180.0 * directionFactor, 0.75));
         runAction(new WaitAction(0.5));
-        s.diskReceivingState();
+        s.diskScoringState(12.4);
         LimelightProcessor.getInstance().setPipeline(Pipeline.RIGHTMOST);
         runAction(new WaitToPassXCoordinateAction(96.0));
         runAction(new WaitForHeadingAction(-190.0, -160.0));
+        runAction(new WaitForVisionAction(3.0));
         s.humanLoaderTrackingState();
-        runAction(new WaitForDiskAction(3.0));
+        runAction(new WaitForSuperstructureAction());
 
 
         runAction(new SetTrajectoryAction(trajectories.humanLoaderToCloseHatch.get(left), 30.0 * directionFactor, 0.75));
@@ -75,8 +78,9 @@ public class TwoCloseOneBallMode extends AutoModeBase {
         s.diskScoringState(Constants.kElevatorHighHatchHeight);
         runAction(new WaitForHeadingAction(-40.0, -25.0));
         runAction(new WaitForDistanceAction(Constants.closeHatchPosition.getTranslation(), 96.0));
+        runAction(new WaitForElevatorAction(19.6, true));
         s.diskTrackingState(Constants.kElevatorHighHatchHeight, Rotation2d.fromDegrees(30.0 * directionFactor));
-        runAction(new WaitForElevatorAction());
+        runAction(new WaitForSuperstructureAction());
         runAction(new WaitAction(0.25));
 
 

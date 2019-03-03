@@ -465,7 +465,8 @@ public class Swerve extends Subsystem{
 		waypoints.add(new Pose2d(pose.getTranslation(), startHeading));	
 		waypoints.add(new Pose2d(pose.transformBy(Pose2d.fromTranslation(relativeEndPos)).getTranslation(), startHeading));
 		Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 96.0, 60.0, 60.0, 9.0, 45.0, 1);
-		setTrajectory(trajectory, targetHeading, 1.0);
+		double heading = Util.placeInAppropriate0To360Scope(pose.getRotation().getUnboundedDegrees(), targetHeading);
+		setTrajectory(trajectory, heading, 1.0);
 	}
 
 	private synchronized void setCurvedVisionTrajectory(double linearShiftDistance, Optional<ShooterAimingParameters> aimingParameters, double endDistance){
@@ -490,6 +491,10 @@ public class Swerve extends Subsystem{
 			Optional<Pose2d> robotScoringPosition = robotState.getRobotScoringPosition(aimingParameters, closestHeading, endDistance);
 			Translation2d deltaPosition = new Pose2d(orientedTarget.get().getTranslation(), closestHeading).transformBy(Pose2d.fromTranslation(new Translation2d(-linearShiftDistance, 0.0))).getTranslation().translateBy(pose.getTranslation().inverse());
 			Rotation2d deltaPositionHeading = new Rotation2d(deltaPosition, true);
+			Rotation2d oppositeHeading = deltaPositionHeading.rotateBy(Rotation2d.fromDegrees(180.0));
+			if(Math.abs(closestHeading.distance(oppositeHeading)) < Math.abs(closestHeading.distance(deltaPositionHeading))){
+				deltaPositionHeading = oppositeHeading;
+			}
 			List<Pose2d> waypoints = new ArrayList<>();
 			waypoints.add(new Pose2d(pose.getTranslation(), (getState() == ControlState.VISION || getState() == ControlState.TRAJECTORY) ? lastTrajectoryVector.direction() : deltaPositionHeading));	
 			waypoints.add(new Pose2d(robotScoringPosition.get().getTranslation(), closestHeading));
@@ -525,6 +530,7 @@ public class Swerve extends Subsystem{
 				visionUpdatesAllowed = elevator.inVisionRange(robotHasDisk ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges);
 				setCurvedVisionTrajectory(aim.get().getRange() * 0.5, aim, endDistance);
 			}
+			System.out.println("Vision attempted");
 		}else{
 			visionUpdateRequested = true;
 			System.out.println("Vision delayed until next cycle");
@@ -1048,6 +1054,7 @@ public class Swerve extends Subsystem{
 	public void outputTelemetry() {
 		modules.forEach((m) -> m.outputTelemetry());
 		SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getUnboundedDegrees()});
+		SmartDashboard.putString("Swerve State", currentState.toString());
 		if(Constants.kDebuggingOutput){
 			SmartDashboard.putNumber("Robot X", pose.getTranslation().x());
 			SmartDashboard.putNumber("Robot Y", pose.getTranslation().y());

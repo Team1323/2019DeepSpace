@@ -63,7 +63,8 @@ public class DiskScorer extends Subsystem {
         STOWED_HOLDING(false, Constants.kDiskScorerHoldingOutput),
         GROUND_INTAKING(false, Constants.kDiskScorerIntakingOutput),
         NEUTRAL_EXTENDED(true, 0.0), AUTO_RECEIVING(true, Constants.kDiskScorerIntakingOutput),
-        DETECTED(true, Constants.kDiskScorerIntakingOutput);
+        DETECTED(true, Constants.kDiskScorerIntakingOutput),
+        GROUND_DETECTED(false, Constants.kDiskScorerIntakingOutput);
 
         boolean extended;
         double output;
@@ -151,6 +152,8 @@ public class DiskScorer extends Subsystem {
         public void onLoop(double timestamp) {
             switch(currentState){
                 case SCORING:
+                    if(stateChanged)
+                        hasDisk = false;
                     if((timestamp - stateEnteredTimestamp) >= 1.0){
                         conformToState(State.NEUTRAL_EXTENDED);
                     }
@@ -160,6 +163,11 @@ public class DiskScorer extends Subsystem {
                 case DETECTED:
                     if((timestamp - stateEnteredTimestamp) >= 0.5){
                         conformToState(State.HOLDING);
+                    }
+                    break;
+                case GROUND_DETECTED:
+                    if((timestamp - stateEnteredTimestamp) >= 0.5){
+                        setOpenLoop(Constants.kDiskScorerHoldingOutput);
                     }
                     break;
                 case HOLDING:
@@ -204,7 +212,7 @@ public class DiskScorer extends Subsystem {
                         if (Double.isInfinite(bannerSensorBeganTimestamp)) {
                             bannerSensorBeganTimestamp = timestamp;
                         } else {
-                            if (timestamp - bannerSensorBeganTimestamp >= 0.0) {
+                            if (timestamp - bannerSensorBeganTimestamp >= 0.1) {
                                 hasDisk = true;
                                 needsToNotifyDrivers = true;
                             }

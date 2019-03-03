@@ -36,6 +36,8 @@ public class Ports {
     //Solenoids
     public static final int WRIST_SHIFTER = 0;
 
+    public static final int PTO_SHIFTER = 3;
+
     public static final int DISK_INTAKE_LIFT = 1;
 
     public static final int PROBE_EXTENDER = 2;

@@ -6,31 +6,30 @@
 /*----------------------------------------------------------------------------*/
 
 package com.team1323.frc2019.auto.actions;
-
-import com.team1323.frc2019.subsystems.Elevator;
+import com.team1323.frc2019.RobotState;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
- * 
+ * Add your docs here.
  */
-public class WaitForElevatorAction implements Action{
-    Elevator elevator;
-    double targetHeight;
-    boolean above;
+public class WaitForVisionAction implements Action {
+    RobotState robotState;
+    double timeout;
+    double startTime = 0;
 
-    public WaitForElevatorAction(double height, boolean above){
-        elevator = Elevator.getInstance();
-        targetHeight = height;
-        this.above = above;
+    public WaitForVisionAction(double timeout){
+        robotState = RobotState.getInstance();
+        this.timeout = timeout;
     }
 
     @Override
     public boolean isFinished() {
-        return above ? (elevator.getHeight() > targetHeight) : (elevator.getHeight() < targetHeight);
+        return robotState.seesTarget() || (Timer.getFPGATimestamp() - startTime) > timeout;
     }
 
     @Override
     public void start() {
-
+        startTime = Timer.getFPGATimestamp();
     }
 
     @Override
@@ -42,5 +41,4 @@ public class WaitForElevatorAction implements Action{
     public void done() {
 
     }
-
 }
