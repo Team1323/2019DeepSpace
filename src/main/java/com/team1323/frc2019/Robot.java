@@ -248,18 +248,18 @@ public class Robot extends TimedRobot {
 
 			if(s.isClimbing()) {
 				leds.conformToState(LEDs.State.CLIMBING);
+			} else if (swerve.getState() == Swerve.ControlState.VISION){
+				leds.conformToState(LEDs.State.TARGET_TRACKING);
+			} else if(robotState.seesTarget()) {
+				leds.conformToState(LEDs.State.TARGET_VISIBLE);
+			} else if (diskScorer.hasDisk()) {
+				leds.conformToState(LEDs.State.DISK_IN_PROBE);
 			} else if (ballIntake.hasBall()) {
 				leds.conformToState(LEDs.State.BALL_IN_INTAKE);
 			} else if (ballCarriage.hasBall()) {
 				leds.conformToState(LEDs.State.BALL_IN_CARRIAGE);
 			} else if (diskIntake.hasDisk()) {
 				leds.conformToState(LEDs.State.DISK_IN_INTAKE);
-			} else if (diskScorer.hasDisk()) {
-				leds.conformToState(LEDs.State.DISK_IN_PROBE);
-			} else if (swerve.getState() == Swerve.ControlState.VISION){
-				leds.conformToState(LEDs.State.TARGET_TRACKING);
-			} else if(robotState.seesTarget()) {
-				leds.conformToState(LEDs.State.TARGET_VISIBLE);
 			} else {
 				leds.conformToState(LEDs.State.ENABLED);
 			}
