@@ -107,6 +107,7 @@ public class BallIntake extends Subsystem {
     EJECTING(Constants.kIntakeEjectOutput, Constants.kIntakeEjectOutput),
     HOLDING(Constants.kIntakingOutput, 0.75),
     CLIMBING(Constants.kIntakeClimbOutput, 0),
+    PULLING(Constants.kIntakePullOutput, 0),
     FEEDING(Constants.kIntakeWeakHoldingOutput, 0.75),
     POST_FEEDING(0, 0);
 

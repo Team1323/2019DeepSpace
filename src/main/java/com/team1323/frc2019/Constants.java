@@ -89,7 +89,7 @@ public class Constants {
     //Swerve Module Wheel Offsets (Rotation encoder values when the wheels are facing 0 degrees)
 	public static final int kFrontRightEncoderStartingPos = kIsUsingCompBot ? -3799 : 249 - 1024;
 	public static final int kFrontLeftEncoderStartingPos = kIsUsingCompBot ? -198 : -2895 - 1024;
-	public static final int kRearLeftEncoderStartingPos = kIsUsingCompBot ? -2825 : 636 - 1024;
+	public static final int kRearLeftEncoderStartingPos = kIsUsingCompBot ? -2825 : -2639 - 1024;
 	public static final int kRearRightEncoderStartingPos = kIsUsingCompBot ? -2013 : -1739 - 1024;
 	
 	//Swerve Module Positions (relative to the center of the drive base)
@@ -188,7 +188,8 @@ public class Constants {
 	public static final double kIntakeStrongHoldingOutput = 4.0/12.0;
 	public static final double kIntakingResuckingOutput = 6.0/12.0;
 	public static final double kIntakeRampRate = 0.25;
-	public static final double kIntakeClimbOutput = 8.0/12.0;
+	public static final double kIntakeClimbOutput = 4.0/12.0;
+	public static final double kIntakePullOutput = 8.0/12.0;
 
 	//Ball Carriage Constants
 	public static final double kBallCarriageEjectOutput = -1.0;
@@ -226,6 +227,14 @@ public class Constants {
 		kJackHeightTreeMap.put(new InterpolatingDouble(60.0), new InterpolatingDouble(kJackMaxControlHeight));
 		kJackHeightTreeMap.put(new InterpolatingDouble(kWristHangingAngle), new InterpolatingDouble(kJackMinControlHeight));
 		kJackHeightTreeMap.put(new InterpolatingDouble(kWristMinControlAngle - 10.0), new InterpolatingDouble(kJackMinControlHeight));
+	}
+
+	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kWristAngleTreemap = new InterpolatingTreeMap<>();
+	static{
+		kWristAngleTreemap.put(new InterpolatingDouble(kJackMaxControlHeight + 1.0), new InterpolatingDouble(36.0));
+		kWristAngleTreemap.put(new InterpolatingDouble(kJackMaxControlHeight), new InterpolatingDouble(36.0));
+		kWristAngleTreemap.put(new InterpolatingDouble(kJackMinControlHeight), new InterpolatingDouble(kWristHangingAngle));
+		kWristAngleTreemap.put(new InterpolatingDouble(kJackMinControlHeight - 2.0), new InterpolatingDouble(kWristHangingAngle));
 	}
 
 }

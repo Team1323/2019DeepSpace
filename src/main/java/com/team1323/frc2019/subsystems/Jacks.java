@@ -113,6 +113,7 @@ public class Jacks extends Subsystem {
                 periodicIO.controlMode = ControlMode.MotionMagic;
                 periodicIO.setpoint = jackHeightToEncUnits(height);
                 targetHeight = height;
+                System.out.println("Jack height set to: " + height);
             }else{
                 DriverStation.reportError("Jack encoder not detected!", false);
                 setOpenLoop(0.0);
