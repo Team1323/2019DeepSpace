@@ -31,7 +31,7 @@ public class RobotState {
 	private Rotation2d camera_pitch_correction_;
     private Rotation2d camera_yaw_correction_;
     private double differential_height_;
-    private double targetHeight = Constants.kHatchTargetHeight;
+    private double targetHeight = Constants.kDiskTargetHeight;
 	private double distance_driven_;
     private ShooterAimingParameters cached_shooter_aiming_params_ = null;
     

@@ -26,7 +26,7 @@ public class Constants {
 	public static final double kRobotLength = 36.5;
 	public static final double kRobotHalfWidth = kRobotWidth / 2.0;
 	public static final double kRobotHalfLength = kRobotLength / 2.0;
-	public static final double kRobotProbeExtrusion = 3.0;
+	public static final double kRobotProbeExtrusion = 5.0;
 
 	public static final double kBallRadius = 6.5;
 	
@@ -37,11 +37,13 @@ public class Constants {
 	public static final Pose2d autoBallPosition = new Pose2d(new Translation2d(48.0 - 4.0 - kBallRadius, 97.0 - (3.0*kBallRadius) - 162.0), Rotation2d.fromDegrees(-45.0));
 	public static final Pose2d rocketPortPosition = new Pose2d(new Translation2d(229.13, 27.44 - 162.0), Rotation2d.fromDegrees(-90.0));
 
-	public static final double kHatchTargetHeight = 28.1875;
+	public static final double kDiskTargetHeight = 28.1875;
 	public static final double kBallTargetHeight = 36.9375;
-	public static final List<Rotation2d> kPossibleTargetAngles = Arrays.asList(Rotation2d.fromDegrees(0.0), Rotation2d.fromDegrees(30.0),
-		Rotation2d.fromDegrees(90.0), Rotation2d.fromDegrees(150.0), /*Rotation2d.fromDegrees(180.0),*/ Rotation2d.fromDegrees(-150.0),
-		Rotation2d.fromDegrees(-90.0), Rotation2d.fromDegrees(-30.0));
+	public static final List<Rotation2d> kPossibleDiskTargetAngles = Arrays.asList(/*Rotation2d.fromDegrees(0.0),*/ Rotation2d.fromDegrees(30.0),
+		Rotation2d.fromDegrees(150.0), /*Rotation2d.fromDegrees(180.0),*/ Rotation2d.fromDegrees(-150.0),
+		Rotation2d.fromDegrees(-30.0));
+	public static final List<Rotation2d> kPossibleBallTargetAngles = Arrays.asList(Rotation2d.fromDegrees(90.0),
+		Rotation2d.fromDegrees(-90.0));
 	
 	public static final Pose2d kRobotLeftStartingPose = new Pose2d(new Translation2d(48.0 + kRobotHalfLength, 97.0 + kRobotHalfWidth - 162.0), Rotation2d.fromDegrees(0));
 	public static final Pose2d kRobotRightStartingPose = new Pose2d(new Translation2d(48.0 + kRobotHalfLength, -(97.0 + kRobotHalfWidth - 162.0)), Rotation2d.fromDegrees(0));
@@ -56,11 +58,11 @@ public class Constants {
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
     
     //Camera Constants
-    public static final double kCameraYOffset = 2.0;//14.5
-    public static final double kCameraXOffset = kRobotHalfLength - 15.1874;//3.0
-    public static final double kCameraZOffset = 17.8419;//17.625
+    public static final double kCameraYOffset = 0.5;//14.5
+    public static final double kCameraXOffset = kRobotHalfLength - 15.0;//3.0
+    public static final double kCameraZOffset = 16.45;//17.625
     public static final double kCameraYawAngleDegrees = 0.0;//-12.7
-    public static final double kCameraPitchAngleDegrees = 13.05;//17.25
+    public static final double kCameraPitchAngleDegrees = 14.45;//17.25
     
     //Goal tracker constants
     public static double kMaxGoalTrackAge = 0.5;//0.5
@@ -70,7 +72,7 @@ public class Constants {
 	public static double kTrackReportComparatorAgeWeight = 1.0;
 	public static final double kDefaultCurveDistance = kRobotHalfLength + 36.0;
 	public static final double kVisionUpdateDistance = kRobotHalfLength + 75.0;
-	public static final double kVisionDistanceStep = kVisionUpdateDistance / 24.0;
+	public static final double kVisionDistanceStep = kVisionUpdateDistance / 12.0;
 	public static final double kClosestVisionDistance = 36.0;
     
     //Path following constants
@@ -158,8 +160,8 @@ public class Constants {
 	}
 	
 	//Wrist Constants
-	public static final double kWristMaxSpeedHighGear = 600.0; //encoder units per 100 ms
-	public static final double kWristMaxSpeedLowGear = 200.0;
+	public static final double kWristMaxSpeedHighGear = 98.7 * 4096.0 / 600.0;//600.0; //encoder units per 100 ms
+	public static final double kWristMaxSpeedLowGear = 31.32 * 4096.0 / 600.0;//200.0;
 	public static final double kWristStartingAngle = 0.0;
 	/** Pulse width position of the wrist encoder when the wrist is upright (at 90 degrees, parallel to the elevator). */
 	public static final int kWristStartingEncoderPosition = kIsUsingCompBot ? 3249 : 2520;
@@ -186,7 +188,7 @@ public class Constants {
 	public static final double kIntakeStrongHoldingOutput = 4.0/12.0;
 	public static final double kIntakingResuckingOutput = 6.0/12.0;
 	public static final double kIntakeRampRate = 0.25;
-	public static final double kIntakeClimbOutput = 4.0/12.0;
+	public static final double kIntakeClimbOutput = 8.0/12.0;
 
 	//Ball Carriage Constants
 	public static final double kBallCarriageEjectOutput = -1.0;
@@ -207,22 +209,22 @@ public class Constants {
 	public static final double kDiskScorerEjectOutput = -1.0;
 
 	//Jack Constants
-	public static final double kJackMaxSpeed = 5000.0;
-	public static final double kJackTicksPerInch = 24.9629356 * 4096.0 / 30.4444882;//1.219 inches before wrap
+	public static final double kJackMaxSpeed = 344.1749 * 4096.0 / 600.0;//2675.0;
+	public static final double kJackTicksPerInch = 13.3733539 * 4096.0 / 30.4444882;//1.219 inches before wrap
 	public static final double kJackHeightTolerance = 1.0; //inches
-	public static final int kJackStartingEncPosition = 3555;//2804;
+	public static final int kJackStartingEncPosition = 2472;
 	public static final double kJackStartingHeight = 0.0;
 	public static final double kJackMaxPhysicalHeight = 0.2;
 	public static final double kJackMinPhysicalHeight = -1.0;
 	public static final double kJackMaxControlHeight = 0.0;
-	public static final double kJackMinControlHeight = -24.5; //-31.0
+	public static final double kJackMinControlHeight = -21.0; //-24.5
 
 	//Jack Height Treemap
 	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kJackHeightTreeMap = new InterpolatingTreeMap<>();
 	static{
 		kJackHeightTreeMap.put(new InterpolatingDouble(90.0), new InterpolatingDouble(kJackMaxControlHeight));
 		kJackHeightTreeMap.put(new InterpolatingDouble(60.0), new InterpolatingDouble(kJackMaxControlHeight));
-		kJackHeightTreeMap.put(new InterpolatingDouble(kWristMinControlAngle), new InterpolatingDouble(kJackMinControlHeight));
+		kJackHeightTreeMap.put(new InterpolatingDouble(kWristHangingAngle), new InterpolatingDouble(kJackMinControlHeight));
 		kJackHeightTreeMap.put(new InterpolatingDouble(kWristMinControlAngle - 10.0), new InterpolatingDouble(kJackMinControlHeight));
 	}
 

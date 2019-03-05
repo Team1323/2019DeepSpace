@@ -8,6 +8,7 @@
 package com.team1323.frc2019.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.team1323.frc2019.Ports;
 import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.Loop;
@@ -36,6 +37,10 @@ public class DiskScorer extends Subsystem {
     LazyTalonSRX motor;
     DigitalInput banner;
 
+    LazyTalonSRX getTalon(){
+        return motor;
+    }
+
     public boolean getBanner(){
         return banner.get();
     }
@@ -46,6 +51,8 @@ public class DiskScorer extends Subsystem {
 
         motor.setInverted(true);
         setCurrentLimit(20);
+
+        motor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
         banner = new DigitalInput(Ports.DISK_INTAKE_BANNER);
     }
@@ -238,6 +245,18 @@ public class DiskScorer extends Subsystem {
     @Override
 	public void registerEnabledLoops(ILooper enabledLooper) {
 		enabledLooper.register(loop);
+    }
+    
+    public void setSensorPosition(int position){
+        motor.setSelectedSensorPosition(position);
+    }
+
+    public boolean isSensorConnected(){
+		int pulseWidthPeriod = motor.getSensorCollection().getPulseWidthRiseToRiseUs();
+		boolean connected = pulseWidthPeriod != 0;
+		if(!connected)
+			hasEmergency = true;
+		return connected;
 	}
 
     @Override
@@ -246,6 +265,7 @@ public class DiskScorer extends Subsystem {
             SmartDashboard.putBoolean("Disk Scorer Has Disk", hasDisk());
             SmartDashboard.putBoolean("Disk Scorer Banner", getBanner());
             SmartDashboard.putNumber("Disk Scorer Current", motor.getOutputCurrent());
+            SmartDashboard.putNumber("Disk Scorer Pulse Width", motor.getSensorCollection().getPulseWidthPosition());
         }
     }
 

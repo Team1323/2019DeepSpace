@@ -20,6 +20,7 @@ import com.team254.drivers.LazyTalonSRX;
 import com.team1323.frc2019.Constants;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -44,12 +45,15 @@ public class DiskIntake extends Subsystem {
   }
 
   private LazyTalonSRX diskMotor;
-  private Solenoid lift, PTOShifter;
+  public LazyTalonSRX getTalon(){
+    return diskMotor;
+  }
+
+  private Solenoid lift;
 
   private DiskIntake() {
     diskMotor = new LazyTalonSRX(Ports.DISK_INTAKE);
     lift = new Solenoid(Ports.DRIVEBASE_PCM, Ports.DISK_INTAKE_LIFT);
-    //PTOShifter = new Solenoid(Ports.PTO_SHIFTER);
 
     diskMotor.setInverted(false);
 
@@ -57,9 +61,11 @@ public class DiskIntake extends Subsystem {
 
     diskMotor.configVoltageCompSaturation(12.0, 10);
     diskMotor.enableVoltageCompensation(true);
+  }
 
-    diskMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20, 10);
-    diskMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20, 10);
+  private void configureTalon(){
+    diskMotor.configForwardSoftLimitEnable(false);
+    diskMotor.configReverseSoftLimitEnable(false);
 
     setCurrentLimit(30);
   }
@@ -86,7 +92,8 @@ public class DiskIntake extends Subsystem {
     HANDOFF_COMPLETE(0, true), 
     HOLDING(Constants.kDiskStrongHoldingOutput, true),
     DEPLOYED(0, false),
-    DELIVERING(4.0/12.0, true);
+    DELIVERING(4.0/12.0, true),
+    DISABLED(0.0, true);
 
     public double diskIntakeOutput = 0;
     public boolean lifted = false;
@@ -143,8 +150,12 @@ public class DiskIntake extends Subsystem {
     setRollers(holdingOutput);
   }
 
-  private void shiftPower(boolean shiftToJacks){
-
+  boolean hasPower = true;
+  public void shiftPower(boolean shiftToJacks){
+    hasPower = !shiftToJacks;
+    conformToState(shiftToJacks ? State.DISABLED : State.OFF);
+    if(!shiftToJacks)
+      configureTalon();
   }
 
   private final Loop loop = new Loop() {
@@ -232,15 +243,17 @@ public class DiskIntake extends Subsystem {
   }
 
   public void conformToState(State desiredState) {
-    setState(desiredState);
-    setRollers(desiredState.diskIntakeOutput);
-    fireLift(desiredState.lifted);
+    conformToState(desiredState, desiredState.diskIntakeOutput);
   }
 
   public void conformToState(State desiredState, double outputOverride) {
-    setState(desiredState);
-    setRollers(outputOverride);
-    fireLift(desiredState.lifted);
+    if(hasPower || (!hasPower && desiredState == State.DISABLED)){
+      setState(desiredState);
+      setRollers(outputOverride);
+      fireLift(desiredState.lifted);
+    }else{
+      DriverStation.reportError("Disk intake state change not allowed", false);
+    }
   }
 
   public Request stateRequest(State desiredState) {
@@ -276,6 +289,7 @@ public class DiskIntake extends Subsystem {
       public void act() {
         conformToState(State.EJECTING, output);
       }
+
     };
   }
 

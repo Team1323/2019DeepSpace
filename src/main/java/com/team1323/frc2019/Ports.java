@@ -24,8 +24,6 @@ public class Ports {
     public static final int DISK_INTAKE = 5;
     
     public static final int WRIST = 1;
-
-    public static final int JACKS = 14;
     
     public static final int PIGEON_TALON = 6;
     

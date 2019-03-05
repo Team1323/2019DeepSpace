@@ -23,6 +23,7 @@ import com.team1323.frc2019.subsystems.BallIntake;
 import com.team1323.frc2019.subsystems.DiskIntake;
 import com.team1323.frc2019.subsystems.DiskScorer;
 import com.team1323.frc2019.subsystems.Elevator;
+import com.team1323.frc2019.subsystems.Jacks;
 import com.team1323.frc2019.subsystems.LEDs;
 import com.team1323.frc2019.subsystems.Subsystem;
 import com.team1323.frc2019.subsystems.SubsystemManager;
@@ -60,7 +61,7 @@ public class Robot extends TimedRobot {
 	private BallCarriage ballCarriage;
 	private DiskIntake diskIntake;
 	private DiskScorer diskScorer;
-	//private Jacks jacks;
+	private Jacks jacks;
 	private LEDs leds;
 	private Superstructure s;
 	private SubsystemManager subsystems;
@@ -103,10 +104,10 @@ public class Robot extends TimedRobot {
 		ballCarriage = BallCarriage.getInstance();
 		diskIntake = DiskIntake.getInstance();
 		diskScorer = DiskScorer.getInstance();
-		//jacks = Jacks.getInstance();
+		jacks = Jacks.getInstance();
 		leds = LEDs.getInstance();
 		subsystems = new SubsystemManager(
-				Arrays.asList(swerve, elevator, wrist, ballIntake, ballCarriage, diskIntake, diskScorer, /*jacks,*/ leds, s));
+				Arrays.asList(swerve, elevator, wrist, ballIntake, ballCarriage, diskIntake, diskScorer, jacks, leds, s));
 
 		limelight = LimelightProcessor.getInstance();
 		
@@ -399,84 +400,90 @@ public class Robot extends TimedRobot {
 
 		////// Official Controls //////
 
-		if (coDriver.startButton.shortReleased()) {
-			s.diskReceivingState();
-		} else if(coDriver.startButton.longPressed()){
-			limelight.setPipeline(Pipeline.CLOSEST);
-			s.humanLoaderRetrievingState();
-		} else if (coDriver.rightBumper.shortReleased()) {
-			s.diskIntakingState();
-		} else if (coDriver.leftBumper.shortReleased()) {
-			diskIntake.conformToState(DiskIntake.State.EJECTING);
-		} else if (coDriver.leftBumper.longPressed()) {
-			diskIntake.conformToState(DiskIntake.State.OFF);
-		} else if (coDriver.rightTrigger.shortReleased() || driver.rightTrigger.shortReleased()) {
-			ballCarriage.conformToState(BallCarriage.State.EJECTING);
-		} else if(coDriver.leftTrigger.shortReleased() || driver.yButton.shortReleased()){
-			diskScorer.conformToState(DiskScorer.State.SCORING);
-		} else if (coDriver.leftTrigger.longPressed()) {
-			diskScorer.conformToState(DiskScorer.State.RECEIVING);
-		} else if (coDriver.aButton.wasActivated()) {
-			s.ballIntakingState();
-		} else if (coDriver.aButton.wasReleased()) {
-			s.fullBallCycleState();
-		} else if (coDriver.xButton.shortReleased()) {
-			if(diskScorer.isExtended()){
-				//limelight.setPipeline(Pipeline.LOWEST);
-				//s.diskTrackingState(Constants.kElevatorMidHatchHeight);
-				elevator.setTargetHeight(Constants.kElevatorMidHatchHeight);
-			}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
-				//limelight.setPipeline(Pipeline.HIGHEST);
-				//s.ballTrackingState(Constants.kElevatorMidBallHeight);
-				elevator.setTargetHeight(Constants.kElevatorMidBallHeight);
+		if(!s.isClimbing()){
+			if (coDriver.startButton.shortReleased()) {
+				s.diskReceivingState();
+			} else if(coDriver.startButton.longPressed()){
+				limelight.setPipeline(Pipeline.CLOSEST);
+				s.humanLoaderRetrievingState();
+			} else if (coDriver.rightBumper.shortReleased()) {
+				s.diskIntakingState();
+			} else if (coDriver.leftBumper.shortReleased()) {
+				diskIntake.conformToState(DiskIntake.State.EJECTING);
+			} else if (coDriver.leftBumper.longPressed()) {
+				diskIntake.conformToState(DiskIntake.State.OFF);
+			} else if (coDriver.rightTrigger.shortReleased() || driver.rightTrigger.shortReleased()) {
+				ballCarriage.conformToState(BallCarriage.State.EJECTING);
+			} else if(coDriver.leftTrigger.shortReleased() || driver.yButton.shortReleased()){
+				diskScorer.conformToState(DiskScorer.State.SCORING);
+			} else if (coDriver.leftTrigger.longPressed()) {
+				diskScorer.conformToState(DiskScorer.State.RECEIVING);
+			} else if (coDriver.aButton.wasActivated()) {
+				s.ballIntakingState();
+			} else if (coDriver.aButton.wasReleased()) {
+				s.fullBallCycleState();
+			} else if (coDriver.xButton.shortReleased()) {
+				if(diskScorer.isExtended()){
+					limelight.setPipeline(Pipeline.LOWEST);
+					s.diskTrackingState(Constants.kElevatorMidHatchHeight);
+					//elevator.setTargetHeight(Constants.kElevatorMidHatchHeight);
+				}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
+					limelight.setPipeline(Pipeline.HIGHEST);
+					s.ballTrackingState(Constants.kElevatorMidBallHeight);
+					//elevator.setTargetHeight(Constants.kElevatorMidBallHeight);
+				}
+			} else if (coDriver.xButton.longPressed()) {
+				if(diskScorer.isExtended()){
+					s.diskScoringState(Constants.kElevatorMidHatchHeight);
+				}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
+					s.ballScoringState(Constants.kElevatorMidBallHeight);
+				}
+			} else if (coDriver.yButton.shortReleased()) {
+				if(diskScorer.isExtended()){
+					limelight.setPipeline(Pipeline.LOWEST);
+					s.diskTrackingState(Constants.kElevatorHighHatchHeight);
+					//elevator.setTargetHeight(Constants.kElevatorHighHatchHeight);
+				}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
+					limelight.setPipeline(Pipeline.HIGHEST);
+					s.ballTrackingState(Constants.kElevatorHighBallHeight);
+					//elevator.setTargetHeight(Constants.kElevatorHighBallHeight);
+				}
+			} else if (coDriver.yButton.longPressed()) {
+				if(diskScorer.isExtended()){
+					s.diskScoringState(Constants.kElevatorHighHatchHeight);
+				}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
+					s.ballScoringState(Constants.kElevatorHighBallHeight);
+				}
+			} else if (coDriver.bButton.shortReleased()) {
+				if(diskScorer.isExtended()){
+					limelight.setPipeline(Pipeline.LOWEST);
+					s.diskTrackingState(Constants.kElevatorLowHatchHeight);
+				}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
+					limelight.setPipeline(Pipeline.HIGHEST);
+					s.ballTrackingState(Constants.kElevatorLowBallHeight);
+				}
+			} else if (coDriver.bButton.longPressed()) {
+				if(diskScorer.isExtended()){
+					s.diskScoringState(Constants.kElevatorLowHatchHeight);
+				}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
+					s.ballScoringState(Constants.kElevatorLowBallHeight);
+				}
+			} else if (coDriver.rightCenterClick.shortReleased()) {
+				s.request(new RequestList(Arrays.asList(
+					ballCarriage.stateRequest(BallCarriage.State.RECEIVING),
+					ballCarriage.waitForBallRequest(),
+					ballCarriage.stateRequest(BallCarriage.State.SUCKING)), false));
+			} else if (coDriver.leftCenterClick.shortReleased()) {
+				ballIntake.conformToState(BallIntake.State.EJECTING);
 			}
-		} else if (coDriver.xButton.longPressed()) {
-			if(diskScorer.isExtended()){
-				s.diskScoringState(Constants.kElevatorMidHatchHeight);
-			}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
-				s.ballScoringState(Constants.kElevatorMidBallHeight);
+		}else{
+			if (coDriver.POV180.shortReleased()) {
+				s.postClimbingState();
 			}
-		} else if (coDriver.yButton.shortReleased()) {
-			if(diskScorer.isExtended()){
-				//limelight.setPipeline(Pipeline.LOWEST);
-				//s.diskTrackingState(Constants.kElevatorHighHatchHeight);
-				elevator.setTargetHeight(Constants.kElevatorHighHatchHeight);
-			}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
-				//limelight.setPipeline(Pipeline.HIGHEST);
-				//s.ballTrackingState(Constants.kElevatorHighBallHeight);
-				elevator.setTargetHeight(Constants.kElevatorHighBallHeight);
-			}
-		} else if (coDriver.yButton.longPressed()) {
-			if(diskScorer.isExtended()){
-				s.diskScoringState(Constants.kElevatorHighHatchHeight);
-			}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
-				s.ballScoringState(Constants.kElevatorHighBallHeight);
-			}
-		} else if (coDriver.bButton.shortReleased()) {
-			if(diskScorer.isExtended()){
-				limelight.setPipeline(Pipeline.LOWEST);
-				s.diskTrackingState(Constants.kElevatorLowHatchHeight);
-			}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
-				limelight.setPipeline(Pipeline.HIGHEST);
-				s.ballTrackingState(Constants.kElevatorLowBallHeight);
-			}
-		} else if (coDriver.bButton.longPressed()) {
-			if(diskScorer.isExtended()){
-				s.diskScoringState(Constants.kElevatorLowHatchHeight);
-			}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
-				s.ballScoringState(Constants.kElevatorLowBallHeight);
-			}
-		} else if (coDriver.rightCenterClick.shortReleased()) {
-			s.request(new RequestList(Arrays.asList(
-				ballCarriage.stateRequest(BallCarriage.State.RECEIVING),
-				ballCarriage.waitForBallRequest(),
-				ballCarriage.stateRequest(BallCarriage.State.SUCKING)), false));
-		} else if (coDriver.leftCenterClick.shortReleased()) {
-			ballIntake.conformToState(BallIntake.State.EJECTING);
-		} else if (coDriver.POV0.shortReleased()) {
+		}
+
+		if (coDriver.POV0.shortReleased()) {
 			s.climbingState();
-		} else if (coDriver.POV180.shortReleased()) {
-			s.postClimbingState();
 		}
 
 		if (diskScorer.needsToNotifyDrivers()) {

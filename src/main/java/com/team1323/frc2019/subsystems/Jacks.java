@@ -9,6 +9,7 @@ package com.team1323.frc2019.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.team1323.frc2019.Constants;
 import com.team1323.frc2019.Ports;
 import com.team1323.frc2019.subsystems.requests.Request;
@@ -16,6 +17,7 @@ import com.team254.drivers.LazyTalonSRX;
 import com.team1323.lib.util.Util;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Jacks extends Subsystem {
@@ -27,24 +29,33 @@ public class Jacks extends Subsystem {
     }
 
     LazyTalonSRX motor;
-    public LazyTalonSRX getPigeonTalon(){
-        return motor;
-    }
+
+    Solenoid PTOShifter;
+
+    DiskIntake diskIntake;
 
     PeriodicIO periodicIO = new PeriodicIO();
 
     double targetHeight = 0.0;
 
     public Jacks(){
-        motor = new LazyTalonSRX(Ports.JACKS);
-        motor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+        diskIntake = DiskIntake.getInstance();
+
+        motor = diskIntake.getTalon();
         motor.setInverted(false);
-        motor.setSensorPhase(false);
+
+        motor.configRemoteFeedbackFilter(Ports.DISK_SCORER, RemoteSensorSource.TalonSRX_SelectedSensor, 0);
+        motor.configRemoteFeedbackFilter(Ports.DISK_SCORER, RemoteSensorSource.Off, 1);
+        motor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
+
         resetToAbsolutePosition();
 
-        motor.configVoltageCompSaturation(12.0);
-        motor.enableVoltageCompensation(true);
+        PTOShifter = new Solenoid(Ports.DRIVEBASE_PCM, Ports.PTO_SHIFTER);
 
+        shiftPower(false);
+    }
+
+    private void configureTalon(){
         motor.config_kP(0, 0.5);
         motor.config_kI(0, 0.0);
         motor.config_kD(0, 5.0);
@@ -57,6 +68,11 @@ public class Jacks extends Subsystem {
         motor.configForwardSoftLimitEnable(true);
         motor.configReverseSoftLimitEnable(true);
 
+        motor.configContinuousCurrentLimit(40);
+        motor.configPeakCurrentLimit(40);
+        motor.configPeakCurrentDuration(10);
+        motor.enableCurrentLimit(true);
+
         setOpenLoop(0.0);
     }
 
@@ -65,6 +81,15 @@ public class Jacks extends Subsystem {
     }
     ControlState state = ControlState.OPEN_LOOP;
     public ControlState getState(){ return state; }
+
+    boolean hasPower = false;
+    public void shiftPower(boolean shiftToJacks){
+        hasPower = shiftToJacks;
+        diskIntake.shiftPower(shiftToJacks);
+        PTOShifter.set(shiftToJacks);
+        if(shiftToJacks)
+            configureTalon();
+    }
 
     public boolean isOpenLoop(){
         return state == ControlState.OPEN_LOOP;
@@ -77,18 +102,23 @@ public class Jacks extends Subsystem {
     }
 
     public synchronized void setHeight(double height){
-        if(height > Constants.kJackMaxControlHeight)
-            height = Constants.kJackMaxControlHeight;
-        else if(height < Constants.kJackMinControlHeight)
-            height = Constants.kJackMinControlHeight;
+        if(hasPower){
+            if(height > Constants.kJackMaxControlHeight)
+                height = Constants.kJackMaxControlHeight;
+            else if(height < Constants.kJackMinControlHeight)
+                height = Constants.kJackMinControlHeight;
 
-        if(isSensorConnected()){
-            state = ControlState.POSITION;
-            periodicIO.controlMode = ControlMode.MotionMagic;
-            periodicIO.setpoint = jackHeightToEncUnits(height);
-            targetHeight = height;
+            if(isSensorConnected()){
+                state = ControlState.POSITION;
+                periodicIO.controlMode = ControlMode.MotionMagic;
+                periodicIO.setpoint = jackHeightToEncUnits(height);
+                targetHeight = height;
+            }else{
+                DriverStation.reportError("Jack encoder not detected!", false);
+                setOpenLoop(0.0);
+            }
         }else{
-            DriverStation.reportError("Jack encoder not detected!", false);
+            DriverStation.reportError("Illegal jack height request", false);
         }
     }
 
@@ -132,6 +162,17 @@ public class Jacks extends Subsystem {
         };
     }
 
+    public Request shiftPowerRequest(boolean shiftToJacks){
+        return new Request(){
+        
+          @Override
+          public void act() {
+            shiftPower(shiftToJacks);
+          }
+    
+        };
+      }
+
     public double getHeight(){
         return encUnitsToJackHeight(periodicIO.position);
     }
@@ -157,26 +198,23 @@ public class Jacks extends Subsystem {
     }
 
     public boolean isSensorConnected(){
-		int pulseWidthPeriod = motor.getSensorCollection().getPulseWidthRiseToRiseUs();
-		boolean connected = pulseWidthPeriod != 0;
-		if(!connected)
-			hasEmergency = true;
-		return connected;
+		return DiskScorer.getInstance().isSensorConnected();
 	}
 
     public void resetToAbsolutePosition(){
-		int absolutePosition = (int) Util.boundToScope(0, 4096, motor.getSensorCollection().getPulseWidthPosition());
+        int absolutePosition = (int) Util.boundToScope(0, 4096, DiskScorer.getInstance().getTalon().getSensorCollection().getPulseWidthPosition());
+        System.out.println("Pulse width position: " + DiskScorer.getInstance().getTalon().getSensorCollection().getPulseWidthPosition());
 		if(encUnitsToJackHeight(absolutePosition) > Constants.kJackMaxPhysicalHeight){
 			absolutePosition -= 4096;
 		}else if(encUnitsToJackHeight(absolutePosition) < Constants.kJackMinPhysicalHeight){
             absolutePosition += 4096;
         }
 		double jackHeight = encUnitsToJackHeight(absolutePosition);
-		if(jackHeight > Constants.kWristMaxPhysicalAngle || jackHeight < Constants.kWristMinPhysicalAngle){
+		if(jackHeight > Constants.kJackMaxPhysicalHeight || jackHeight < Constants.kJackMinPhysicalHeight){
             DriverStation.reportError("Jack height is out of bounds", false);
             hasEmergency = true;
 		}
-		motor.setSelectedSensorPosition(absolutePosition, 0, 10);
+		DiskScorer.getInstance().setSensorPosition(absolutePosition);
 	}
     
     @Override
@@ -191,12 +229,15 @@ public class Jacks extends Subsystem {
 
     @Override
     public void writePeriodicOutputs() {
-        motor.set(periodicIO.controlMode, periodicIO.setpoint);
+        if(hasPower){
+            motor.set(periodicIO.controlMode, periodicIO.setpoint);
+        }
     }
 
     @Override
     public void outputTelemetry() {
         SmartDashboard.putNumber("Jack Height", getHeight());
+        SmartDashboard.putBoolean("Jacks Have Power", hasPower);
         if(Constants.kDebuggingOutput){
             SmartDashboard.putNumber("Jack Velocity", periodicIO.velocity);
             SmartDashboard.putNumber("Jack Voltage", periodicIO.voltage);
@@ -209,7 +250,7 @@ public class Jacks extends Subsystem {
 
     @Override
     public void stop() {
-        setOpenLoop(0.0);
+        //shiftPower(false);
     }
 
     public static class PeriodicIO{
