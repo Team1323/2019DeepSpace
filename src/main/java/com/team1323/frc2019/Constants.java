@@ -26,7 +26,7 @@ public class Constants {
 	public static final double kRobotLength = 36.5;
 	public static final double kRobotHalfWidth = kRobotWidth / 2.0;
 	public static final double kRobotHalfLength = kRobotLength / 2.0;
-	public static final double kRobotProbeExtrusion = 5.0;
+	public static final double kRobotProbeExtrusion = 7.0;
 
 	public static final double kBallRadius = 6.5;
 	
@@ -74,6 +74,7 @@ public class Constants {
 	public static final double kVisionUpdateDistance = kRobotHalfLength + 75.0;
 	public static final double kVisionDistanceStep = kVisionUpdateDistance / 12.0;
 	public static final double kClosestVisionDistance = 36.0;
+	public static final double kDefaultVisionTrackingSpeed = 54.0;
     
     //Path following constants
     public static final double kPathLookaheadTime = 0.25;  // seconds to look ahead along the path for steering 0.4
@@ -125,7 +126,7 @@ public class Constants {
 	//Elevator Constants
 	public static final double kElevatorMaxSpeedHighGear = 696.96 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
-	public static final int kElevatorEncoderStartingPosition = 309;
+	public static final int kElevatorEncoderStartingPosition = 333;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 0.5; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.6;
@@ -134,7 +135,7 @@ public class Constants {
 	public static final double kElevatorMidHatchHeight = 38.425;//36.5
 	public static final double kElevatorHighHatchHeight = 64.9;//63.7
 	public static final double kElevatorBallIntakeHeight = 0.25;
-	public static final double kElevatorBallCargoShipHeight = 17.5;
+	public static final double kElevatorBallCargoShipHeight = 15.0;
 	public static final double kElevatorLowBallHeight = 4.3;
 	public static final double kElevatorMidBallHeight = 32.0;
 	public static final double kElevatorHighBallHeight = 60.4;
@@ -147,7 +148,7 @@ public class Constants {
 	public static final double kElevatorTeleopManualSpeed = 0.5;
 
 	public static final List<double[]> kElevatorDiskVisibleRanges = Arrays.asList(new double[]{19.6, kElevatorMaxHeight});
-	public static final List<double[]> kElevatorBallVisibleRanges = Arrays.asList(new double[]{11.9, kElevatorMaxHeight});
+	public static final List<double[]> kElevatorBallVisibleRanges = Arrays.asList(/*new double[]{-0.25, 0.1},*/ new double[]{11.9, kElevatorMaxHeight});
 	
 	//Swerve Speed Constraint Treemap
 	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kSwerveSpeedTreeMap = new InterpolatingTreeMap<>();
@@ -174,13 +175,13 @@ public class Constants {
 	public static final double kWristMaxPhysicalAngle = 90.0;//95.192
 	public static final double kWristIntakingAngle = kIsUsingCompBot ? 0.0 : 5.0;
 	public static final double kWristPrimaryStowAngle = 60.5;
-	public static final double kWristHangingAngle = -71.5;
+	public static final double kWristHangingAngle = -68.5;//-71.5
 	public static final double kWristBallHoldingAngle = 38.0;
 	public static final double kWristBallFeedingAngle = 60.5;
 	public static final double kWristMaxCurrent = 40.0;//amps
 	
 	//Ball Intake Constants
-	public static final double kIntakeWeakEjectOutput = -0.4;
+	public static final double kIntakeWeakEjectOutput = -0.75;
 	public static final double kIntakeEjectOutput = kIsUsingCompBot ? -0.6 : -0.9;
 	public static final double kIntakeStrongEjectOutput = -1.0;
 	public static final double kIntakingOutput = 1.0;
@@ -189,10 +190,11 @@ public class Constants {
 	public static final double kIntakingResuckingOutput = 6.0/12.0;
 	public static final double kIntakeRampRate = 0.25;
 	public static final double kIntakeClimbOutput = 4.0/12.0;
-	public static final double kIntakePullOutput = 8.0/12.0;
+	public static final double kIntakePullOutput = 12.0/12.0;
 
 	//Ball Carriage Constants
 	public static final double kBallCarriageEjectOutput = -1.0;
+	public static final double kBallCarriageWeakEjectOutput = -0.5;
 	public static final double kBallCarriageReceiveOutput = -0.55;
 	public static final double kBallCarriageSuckOutput = 0.35;
 
@@ -219,6 +221,7 @@ public class Constants {
 	public static final double kJackMinPhysicalHeight = -1.0;
 	public static final double kJackMaxControlHeight = 0.0;
 	public static final double kJackMinControlHeight = -21.0; //-24.5
+	public static final int kJackCurrentLimit = 60;
 
 	//Jack Height Treemap
 	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kJackHeightTreeMap = new InterpolatingTreeMap<>();

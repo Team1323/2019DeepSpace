@@ -37,6 +37,7 @@ import com.team1323.lib.util.CrashTracker;
 import com.team1323.lib.util.InputRamp;
 import com.team1323.lib.util.Logger;
 import com.team1323.lib.util.Util;
+import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 
@@ -132,6 +133,10 @@ public class Robot extends TimedRobot {
 
 		swerve.zeroSensors();
 		// swerve.zeroSensors(new Pose2d());
+
+		robotState.feignVisionTargets();
+		swerve.startTracking(Constants.kDiskTargetHeight, 6.0, true, new Rotation2d());
+		swerve.stop();
 
 		smartDashboardInteractions.initWithDefaults();
 
@@ -410,6 +415,8 @@ public class Robot extends TimedRobot {
 				}else{
 					s.diskReceivingState();
 				}
+			} else if(coDriver.rightTrigger.shortReleased()){
+				s.ballScoringState(Constants.kElevatorBallCargoShipHeight);
 			} else if (coDriver.rightBumper.shortReleased()) {
 				s.diskIntakingState();
 			} else if (coDriver.leftBumper.shortReleased()) {
@@ -418,13 +425,15 @@ public class Robot extends TimedRobot {
 				diskIntake.conformToState(DiskIntake.State.OFF);
 			} else if (driver.rightTrigger.shortReleased()) {
 				ballCarriage.conformToState(BallCarriage.State.EJECTING);
+			} else if(driver.rightTrigger.longPressed()){
+				ballCarriage.conformToState(BallCarriage.State.EJECTING, Constants.kBallCarriageWeakEjectOutput);
 			} else if(driver.yButton.shortReleased()){
 				diskScorer.conformToState(DiskScorer.State.SCORING);
 			} else if (coDriver.aButton.wasActivated()) {
 				s.ballIntakingState();
 			} else if (coDriver.aButton.wasReleased()) {
 				s.fullBallCycleState();
-			} else if (coDriver.xButton.shortReleased()) {
+			} else if (coDriver.xButton.wasActivated()) {
 				if(coDriver.leftTrigger.isBeingPressed()){
 					if(!swerve.isTracking()){
 						if(diskScorer.isExtended()){
@@ -442,7 +451,7 @@ public class Robot extends TimedRobot {
 						s.ballScoringState(Constants.kElevatorMidBallHeight);
 					}
 				}
-			} else if (coDriver.yButton.shortReleased()) {
+			} else if (coDriver.yButton.wasActivated()) {
 				if(coDriver.leftTrigger.isBeingPressed()){
 					if(!swerve.isTracking()){
 						if(diskScorer.isExtended()){
@@ -478,6 +487,8 @@ public class Robot extends TimedRobot {
 						s.ballScoringState(Constants.kElevatorLowBallHeight);
 					}
 				}
+			} else if (coDriver.bButton.longPressed()) {
+				s.diskScoringState(12.5);
 			} else if (coDriver.rightCenterClick.shortReleased()) {
 				s.request(new RequestList(Arrays.asList(
 					ballCarriage.stateRequest(BallCarriage.State.RECEIVING),

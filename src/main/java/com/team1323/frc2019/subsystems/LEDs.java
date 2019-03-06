@@ -50,7 +50,7 @@ public class LEDs extends Subsystem{
         DISK_IN_INTAKE(255.0, 60.0, 0.0, 0.5, 0.5),
         DISK_IN_PROBE(255.0, 60.0, 0.0, Double.POSITIVE_INFINITY, 0.0),
         TARGET_VISIBLE(0.0, 255.0, 0.0, Double.POSITIVE_INFINITY, 0.0),
-        TARGET_TRACKING(0.0, 255.0, 0.0, 0.5, 0.5),
+        TARGET_TRACKING(0.0, 255.0, 0.0, 0.125, 0.125),
         CLIMBING(255.0, 0.0, 255.0, Double.POSITIVE_INFINITY, 0.0);
 
         double red, green, blue, onTime, offTime;

@@ -1,6 +1,7 @@
 package com.team1323.frc2019;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,6 +16,7 @@ import com.team1323.lib.util.InterpolatingTreeMap;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Timer;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -242,6 +244,15 @@ public class RobotState {
 
     public synchronized void clearVisionTargets(){
         goal_tracker_.clearTracks();
+    }
+
+    public synchronized void feignVisionTargets(){
+        List<Translation2d> fakeTargets = Arrays.asList(
+            new Translation2d(100.0, 50.0),
+            new Translation2d(100.0, 58.0),
+            new Translation2d(100.0, 54.0)
+        );
+        goal_tracker_.update(Timer.getFPGATimestamp(), fakeTargets);
     }
     
     public synchronized void addFieldToVehicleObservation(double timestamp, Pose2d observation) {

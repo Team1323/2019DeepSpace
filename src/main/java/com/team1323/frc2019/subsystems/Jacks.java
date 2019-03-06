@@ -68,8 +68,8 @@ public class Jacks extends Subsystem {
         motor.configForwardSoftLimitEnable(true);
         motor.configReverseSoftLimitEnable(true);
 
-        motor.configContinuousCurrentLimit(40);
-        motor.configPeakCurrentLimit(40);
+        motor.configContinuousCurrentLimit(Constants.kJackCurrentLimit);
+        motor.configPeakCurrentLimit(Constants.kJackCurrentLimit);
         motor.configPeakCurrentDuration(10);
         motor.enableCurrentLimit(true);
 

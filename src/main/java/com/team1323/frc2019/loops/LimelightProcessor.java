@@ -18,6 +18,7 @@ public class LimelightProcessor implements Loop{
 	NetworkTableEntry ledMode;
 	NetworkTableEntry pipeline;
 	NetworkTableEntry camMode;
+	NetworkTableEntry stream;
 	public List<NetworkTableEntry> target1, target2, combinedTarget;
 	public NetworkTableEntry cornerX, cornerY;
 
@@ -39,6 +40,8 @@ public class LimelightProcessor implements Loop{
 		ledMode = table.getEntry("ledMode");
 		pipeline = table.getEntry("pipeline");
 		camMode = table.getEntry("camMode");
+		stream = table.getEntry("stream");
+		setStreamMode(2);
 		target1 = Arrays.asList(table.getEntry("tx0"), table.getEntry("ty0"),
 			table.getEntry("ta0"));
 		target2 = Arrays.asList(table.getEntry("tx1"), table.getEntry("ty1"),
@@ -57,6 +60,7 @@ public class LimelightProcessor implements Loop{
 			//List<TargetInfo> tapeStrips = getTargetInfos();
 			//targets.add(tapeStrips.get(0));
 			//targets.add(tapeStrips.get(1));
+
 			targets.add(getTargetInfo(target1));
 			targets.add(getTargetInfo(target2));
 			targets.add(new TargetInfo(Math.tan(Math.toRadians(combinedTarget.get(0).getDouble(0))), Math.tan(Math.toRadians(combinedTarget.get(1).getDouble(0)))));
@@ -88,6 +92,10 @@ public class LimelightProcessor implements Loop{
 	
 	public void setVisionMode(){
 		camMode.setNumber(0);
+	}
+
+	public void setStreamMode(int id){
+		stream.setNumber(id);
 	}
 	
 	public void setPipeline(int id){

@@ -67,7 +67,7 @@ public class DiskIntake extends Subsystem {
     diskMotor.configForwardSoftLimitEnable(false);
     diskMotor.configReverseSoftLimitEnable(false);
 
-    setCurrentLimit(30);
+    setCurrentLimit(Constants.kJackCurrentLimit);
   }
 
   public void setCurrentLimit(int amps) {

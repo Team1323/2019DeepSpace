@@ -157,6 +157,11 @@ public class BallCarriage extends Subsystem{
         setState(newState);
     }
 
+    public void conformToState(State newState, double outputOverride){
+        setOpenLoop(outputOverride);
+        setState(newState);
+    }
+
     public Request stateRequest(State newState){
         return new Request(){
         
