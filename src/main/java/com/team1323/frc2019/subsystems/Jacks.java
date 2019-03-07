@@ -44,9 +44,13 @@ public class Jacks extends Subsystem {
         motor = diskIntake.getTalon();
         motor.setInverted(false);
 
-        motor.configRemoteFeedbackFilter(Ports.DISK_SCORER, RemoteSensorSource.TalonSRX_SelectedSensor, 0);
-        motor.configRemoteFeedbackFilter(Ports.DISK_SCORER, RemoteSensorSource.Off, 1);
-        motor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
+        if(!Constants.kIsUsingCompBot){
+            motor.configRemoteFeedbackFilter(Ports.DISK_SCORER, RemoteSensorSource.TalonSRX_SelectedSensor, 0);
+            motor.configRemoteFeedbackFilter(Ports.DISK_SCORER, RemoteSensorSource.Off, 1);
+            motor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
+        }else{
+            motor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+        }
 
         resetToAbsolutePosition();
 
@@ -203,19 +207,35 @@ public class Jacks extends Subsystem {
 	}
 
     public void resetToAbsolutePosition(){
-        int absolutePosition = (int) Util.boundToScope(0, 4096, DiskScorer.getInstance().getTalon().getSensorCollection().getPulseWidthPosition());
-        System.out.println("Pulse width position: " + DiskScorer.getInstance().getTalon().getSensorCollection().getPulseWidthPosition());
-		if(encUnitsToJackHeight(absolutePosition) > Constants.kJackMaxPhysicalHeight){
-			absolutePosition -= 4096;
-		}else if(encUnitsToJackHeight(absolutePosition) < Constants.kJackMinPhysicalHeight){
-            absolutePosition += 4096;
+        if(!Constants.kIsUsingCompBot){
+            int absolutePosition = (int) Util.boundToScope(0, 4096, DiskScorer.getInstance().getTalon().getSensorCollection().getPulseWidthPosition());
+            System.out.println("Pulse width position: " + DiskScorer.getInstance().getTalon().getSensorCollection().getPulseWidthPosition());
+            if(encUnitsToJackHeight(absolutePosition) > Constants.kJackMaxPhysicalHeight){
+                absolutePosition -= 4096;
+            }else if(encUnitsToJackHeight(absolutePosition) < Constants.kJackMinPhysicalHeight){
+                absolutePosition += 4096;
+            }
+            double jackHeight = encUnitsToJackHeight(absolutePosition);
+            if(jackHeight > Constants.kJackMaxPhysicalHeight || jackHeight < Constants.kJackMinPhysicalHeight){
+                DriverStation.reportError("Jack height is out of bounds", false);
+                hasEmergency = true;
+            }
+            DiskScorer.getInstance().setSensorPosition(absolutePosition);
+        }else{
+            int absolutePosition = (int) Util.boundToScope(0, 4096, motor.getSensorCollection().getPulseWidthPosition());
+            System.out.println("Pulse width position: " + motor.getSensorCollection().getPulseWidthPosition());
+            if(encUnitsToJackHeight(absolutePosition) > Constants.kJackMaxPhysicalHeight){
+                absolutePosition -= 4096;
+            }else if(encUnitsToJackHeight(absolutePosition) < Constants.kJackMinPhysicalHeight){
+                absolutePosition += 4096;
+            }
+            double jackHeight = encUnitsToJackHeight(absolutePosition);
+            if(jackHeight > Constants.kJackMaxPhysicalHeight || jackHeight < Constants.kJackMinPhysicalHeight){
+                DriverStation.reportError("Jack height is out of bounds", false);
+                hasEmergency = true;
+            }
+            motor.setSelectedSensorPosition(absolutePosition);
         }
-		double jackHeight = encUnitsToJackHeight(absolutePosition);
-		if(jackHeight > Constants.kJackMaxPhysicalHeight || jackHeight < Constants.kJackMinPhysicalHeight){
-            DriverStation.reportError("Jack height is out of bounds", false);
-            hasEmergency = true;
-		}
-		DiskScorer.getInstance().setSensorPosition(absolutePosition);
 	}
     
     @Override

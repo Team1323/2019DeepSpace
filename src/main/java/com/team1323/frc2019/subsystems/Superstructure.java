@@ -338,6 +338,16 @@ public class Superstructure extends Subsystem {
 		};
 	}
 
+	public Request interpolatorRequest(boolean on){
+		return new Request(){
+		
+			@Override
+			public void act() {
+				isClimbing = on;
+			}
+		};
+	}
+
 	/////States/////
 
 	public void disabledState(){
@@ -490,10 +500,10 @@ public class Superstructure extends Subsystem {
 		request(state, queue); 
 	}
 
-	public void diskScoringState(double elevatorHeight){
+	public void diskScoringState(double elevatorHeight, boolean resuck){
 		RequestList state = new RequestList(Arrays.asList(
 			elevator.heightRequest(elevatorHeight),
-			diskScorer.stateRequest(DiskScorer.State.HOLDING),
+			diskScorer.stateRequest(resuck ? DiskScorer.State.DETECTED : DiskScorer.State.HOLDING),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			ballCarriage.stateRequest(BallCarriage.State.OFF)), true);
@@ -515,6 +525,7 @@ public class Superstructure extends Subsystem {
 			swerve.waitForTrackRequest()), false);
 		RequestList queue = new RequestList(Arrays.asList(
 			elevator.heightRequest(elevatorHeight),
+			swerve.strictWaitForTrackRequest(),
 			diskScorer.stateRequest(DiskScorer.State.SCORING)/*,
 			swerve.trajectoryRequest(new Translation2d(-24.0, 0.0), swerve.getPose().getRotation().getUnboundedDegrees())*/), false);
 		request(state, queue); 
@@ -571,7 +582,7 @@ public class Superstructure extends Subsystem {
 			diskScorer.stateRequest(DiskScorer.State.NEUTRAL_EXTENDED),
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
 			waitForVisionRequest(),
-			swerve.trackRequest(Constants.kDiskTargetHeight, -4.0, false, Rotation2d.fromDegrees(180.0), 52.0, 60.0)), false);
+			swerve.trackRequest(Constants.kDiskTargetHeight, -4.0, false, Rotation2d.fromDegrees(180.0), 54.0, 60.0)), false);
 
 		List<RequestList> queue = Arrays.asList(
 			new RequestList(Arrays.asList(
@@ -579,12 +590,33 @@ public class Superstructure extends Subsystem {
 				diskScorer.stateRequest(DiskScorer.State.RECEIVING),
 				diskScorer.waitForDiskRequest()), true),
 			new RequestList(Arrays.asList(
-				swerve.waitForTrackRequest(),
+				//swerve.waitForTrackRequest(),
 				diskScorer.stateRequest(DiskScorer.State.DETECTED),
 				/*swerve.trajectoryRequest(new Translation2d(-84.0, -36.0), -30.0),*/
 				swerve.openLoopRequest(new Translation2d(), 0.0)), false)
 		);
 		request(state); 
+		replaceQueue(queue);
+	}
+
+	public void shortClimbingState(){
+		RequestList state = new RequestList(Arrays.asList(
+			wrist.angleRequest(Constants.kWristShortPlatformAngle)), true);
+		List<RequestList> queue = Arrays.asList(
+			new RequestList(Arrays.asList(
+				wrist.gearShiftRequest(false),
+				jacks.shiftPowerRequest(true),
+				elevator.heightRequest(Constants.kElevatorLowBallHeight),
+				diskScorer.stateRequest(DiskScorer.State.STOWED),
+				ballIntake.stateRequest(BallIntake.State.CLIMBING),
+				ballCarriage.stateRequest(BallCarriage.State.OFF),
+				jacks.heightRequest(Constants.kJackShortClimbHeight),
+				wrist.angleRequest(Constants.kWristShortHangingAngle)), true),
+			new RequestList(Arrays.asList(
+				ballIntake.stateRequest(BallIntake.State.PULLING),
+				swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 72.0)), true)
+		);
+		request(state);
 		replaceQueue(queue);
 	}
 

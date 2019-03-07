@@ -32,6 +32,7 @@ public class Constants {
 	
 	//Field Landmarks
 	public static final Pose2d closeHatchPosition = new Pose2d(new Translation2d(48.0 + 166.57, 27.44 - 10.0 - 162.0), Rotation2d.fromDegrees(-30.0));
+	public static final Pose2d rightCloseHatchPosition = new Pose2d(new Translation2d(closeHatchPosition.getTranslation().x(), -closeHatchPosition.getTranslation().y()), Rotation2d.fromDegrees(30.0));
 	public static final Pose2d farHatchPosition = new Pose2d(new Translation2d(229.13 + 14.71, 27.44 - 10.0 - 162.0), Rotation2d.fromDegrees(-150.0));
 	public static final Pose2d humanLoaderPosition = new Pose2d(new Translation2d(0.0, 25.72 - 162.0), Rotation2d.fromDegrees(0.0));
 	public static final Pose2d autoBallPosition = new Pose2d(new Translation2d(48.0 - 4.0 - kBallRadius, 97.0 - (3.0*kBallRadius) - 162.0), Rotation2d.fromDegrees(-45.0));
@@ -58,7 +59,7 @@ public class Constants {
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
     
     //Camera Constants
-    public static final double kCameraYOffset = 0.5;//14.5
+    public static final double kCameraYOffset = 0.75;//14.5
     public static final double kCameraXOffset = kRobotHalfLength - 15.0;//3.0
     public static final double kCameraZOffset = 16.45;//17.625
     public static final double kCameraYawAngleDegrees = 0.0;//-12.7
@@ -88,10 +89,10 @@ public class Constants {
     public static final double kSwerveRotationSpeedScalar = ((1.0 / 0.125) - 1.0) / kSwerveMaxSpeedInchesPerSecond;
     
     //Swerve Module Wheel Offsets (Rotation encoder values when the wheels are facing 0 degrees)
-	public static final int kFrontRightEncoderStartingPos = kIsUsingCompBot ? -3799 : 249 - 1024;
-	public static final int kFrontLeftEncoderStartingPos = kIsUsingCompBot ? -198 : -2895 - 1024;
-	public static final int kRearLeftEncoderStartingPos = kIsUsingCompBot ? -2825 : -2639 - 1024;
-	public static final int kRearRightEncoderStartingPos = kIsUsingCompBot ? -2013 : -1739 - 1024;
+	public static final int kFrontRightEncoderStartingPos = kIsUsingCompBot ? -4623 - 1024 : 249 - 1024;
+	public static final int kFrontLeftEncoderStartingPos = kIsUsingCompBot ? -1986 - 1024 : -2895 - 1024;
+	public static final int kRearLeftEncoderStartingPos = kIsUsingCompBot ? -349 - 1024 : -2639 - 1024;
+	public static final int kRearRightEncoderStartingPos = kIsUsingCompBot ? 2684 - 1024 : -1739 - 1024;
 	
 	//Swerve Module Positions (relative to the center of the drive base)
 	public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength/2, kWheelbaseWidth/2);
@@ -173,8 +174,10 @@ public class Constants {
 	public static final double kWristMaxControlAngle = 85.0; //degrees
 	public static final double kWristMinPhysicalAngle = -40.0;
 	public static final double kWristMaxPhysicalAngle = 90.0;//95.192
-	public static final double kWristIntakingAngle = kIsUsingCompBot ? 0.0 : 5.0;
+	public static final double kWristIntakingAngle = kIsUsingCompBot ? 5.0 : 5.0;
 	public static final double kWristPrimaryStowAngle = 60.5;
+	public static final double kWristShortPlatformAngle = -32.0;
+	public static final double kWristShortHangingAngle = -62.0;
 	public static final double kWristHangingAngle = -68.5;//-71.5
 	public static final double kWristBallHoldingAngle = 38.0;
 	public static final double kWristBallFeedingAngle = 60.5;
@@ -217,6 +220,7 @@ public class Constants {
 	public static final double kJackHeightTolerance = 1.0; //inches
 	public static final int kJackStartingEncPosition = 2472;
 	public static final double kJackStartingHeight = 0.0;
+	public static final double kJackShortClimbHeight = -10.0;
 	public static final double kJackMaxPhysicalHeight = 0.2;
 	public static final double kJackMinPhysicalHeight = -1.0;
 	public static final double kJackMaxControlHeight = 0.0;

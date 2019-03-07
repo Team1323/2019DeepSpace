@@ -53,13 +53,16 @@ public class TwoCloseOneBallMode extends AutoModeBase {
         runAction(new ResetPoseAction(left));
         DiskScorer.getInstance().conformToState(DiskScorer.State.GROUND_DETECTED);
         runAction(new SetTrajectoryAction(trajectories.startToCloseHatch.get(left), 30.0 * directionFactor, 1.0));
-        LimelightProcessor.getInstance().setPipeline(Pipeline.LEFTMOST);
-        runAction(new WaitToPassYCoordinateAction(-46.25 - Constants.kRobotWidth));
-        s.diskScoringState(Constants.kElevatorMidHatchHeight);
-        runAction(new WaitForDistanceAction(Constants.closeHatchPosition.getTranslation(), 102.0));
+        LimelightProcessor.getInstance().setPipeline(left ? Pipeline.LEFTMOST : Pipeline.RIGHTMOST);
+        runAction(new WaitToPassYCoordinateAction((46.25 + Constants.kRobotWidth) * directionFactor));
+        s.diskScoringState(Constants.kElevatorMidHatchHeight, true);
+        runAction(new WaitForDistanceAction(left ? Constants.closeHatchPosition.getTranslation() : Constants.rightCloseHatchPosition.getTranslation(), 102.0));
         runAction(new WaitForElevatorAction(19.6, true));
         runAction(new WaitForVisionAction(3.0));
-        runAction(new WaitForHeadingAction(-40.0, -25.0));
+        if(left)
+            runAction(new WaitForHeadingAction(-40.0, -25.0));
+        else
+            runAction(new WaitForHeadingAction(25.0, 40.0));
         s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(30.0 * directionFactor));
         runAction(new WaitForSuperstructureAction());
         runAction(new WaitAction(0.25));
@@ -67,30 +70,36 @@ public class TwoCloseOneBallMode extends AutoModeBase {
 
         runAction(new SetTrajectoryAction(trajectories.closeHatchToHumanLoader.get(left), 180.0 * directionFactor, 0.75));
         runAction(new WaitAction(0.5));
-        s.diskScoringState(12.4);
+        s.diskScoringState(12.4, false);
         LimelightProcessor.getInstance().setPipeline(Pipeline.RIGHTMOST);
         runAction(new WaitToPassXCoordinateAction(96.0));
-        runAction(new WaitForHeadingAction(-190.0, -160.0));
+        if(left)
+            runAction(new WaitForHeadingAction(-190.0, -160.0));
+        else
+            runAction(new WaitForHeadingAction(160.0, 190.0));
         runAction(new WaitForVisionAction(3.0));
         s.humanLoaderTrackingState();
         runAction(new WaitForSuperstructureAction());
 
 
         runAction(new SetTrajectoryAction(trajectories.humanLoaderToCloseHatch.get(left), 30.0 * directionFactor, 0.75));
-        LimelightProcessor.getInstance().setPipeline(Pipeline.LEFTMOST);
+        LimelightProcessor.getInstance().setPipeline(left ? Pipeline.LEFTMOST : Pipeline.RIGHTMOST);
         runAction(new RemainingProgressAction(2.5));
-        s.diskScoringState(Constants.kElevatorHighHatchHeight);
-        runAction(new WaitForHeadingAction(-40.0, -25.0));
-        runAction(new WaitForDistanceAction(Constants.closeHatchPosition.getTranslation(), 96.0));
+        s.diskScoringState(Constants.kElevatorHighHatchHeight, false);
+        if(left)
+            runAction(new WaitForHeadingAction(-40.0, -25.0));
+        else
+            runAction(new WaitForHeadingAction(25.0, 40.0));
+        runAction(new WaitForDistanceAction(left ? Constants.closeHatchPosition.getTranslation() : Constants.rightCloseHatchPosition.getTranslation(), 102.0));
         runAction(new WaitForElevatorAction(19.6, true));
-        s.diskTrackingState(Constants.kElevatorHighHatchHeight, Rotation2d.fromDegrees(30.0 * directionFactor));
+        s.diskTrackingState(Constants.kElevatorHighHatchHeight, Rotation2d.fromDegrees(28.0 * directionFactor));
         runAction(new WaitForSuperstructureAction());
         runAction(new WaitAction(0.25));
 
 
         runAction(new SetTrajectoryAction(trajectories.shortCloseHatchToHumanLoader.get(left), 180.0 * directionFactor, 0.75));
         runAction(new WaitAction(0.5));
-        s.diskScoringState(Constants.kElevatorLowHatchHeight);
+        s.diskScoringState(Constants.kElevatorLowHatchHeight, false);
 
 
         /*runAction(new SetTrajectoryAction(trajectories.closeHatchToBall.get(left), 45.0 * directionFactor, 1.0));

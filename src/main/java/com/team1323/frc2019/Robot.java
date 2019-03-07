@@ -350,12 +350,12 @@ public class Robot extends TimedRobot {
 		swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, driver.leftTrigger.isBeingPressed());
 
 		if (driver.rightCenterClick.shortReleased()) {
-			if (flickRotation) {
+			/*if (flickRotation) {
 				driver.rumble(3, 1);
 			} else {
 				driver.rumble(1, 1);
 			}
-			flickRotation = !flickRotation;
+			flickRotation = !flickRotation;*/
 		}
 
 		if (flickRotation) {
@@ -393,7 +393,7 @@ public class Robot extends TimedRobot {
 			// swerve.setTrajectory(generator.getTrajectorySet().startToCloseHatch.get(true),
 			// -30.0, 1.0);
 			swerve.setTrajectory(generator.getTrajectorySet().straightPath, 0.0, 1.0);*/
-			// swerve.setVelocity(new Rotation2d(), 24.0);
+			//swerve.setVelocity(new Rotation2d(), 72.0);
 		} else if (driver.startButton.shortReleased()) {
 			limelight.setPipeline(Pipeline.CLOSEST);
 			s.humanLoaderRetrievingState();
@@ -433,10 +433,12 @@ public class Robot extends TimedRobot {
 				s.ballIntakingState();
 			} else if (coDriver.aButton.wasReleased()) {
 				s.fullBallCycleState();
+			} else if (coDriver.leftTrigger.wasActivated()) {
+				elevator.setTargetHeight(elevator.nearestVisionHeight(diskScorer.hasDisk() ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges));
 			} else if (coDriver.xButton.wasActivated()) {
 				if(coDriver.leftTrigger.isBeingPressed()){
 					if(!swerve.isTracking()){
-						if(diskScorer.isExtended()){
+						if(diskScorer.hasDisk() || diskScorer.isExtended()){
 							limelight.setPipeline(Pipeline.LOWEST);
 							s.diskTrackingState(Constants.kElevatorMidHatchHeight);
 						}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
@@ -445,8 +447,8 @@ public class Robot extends TimedRobot {
 						}
 					}
 				}else{
-					if(diskScorer.isExtended()){
-						s.diskScoringState(Constants.kElevatorMidHatchHeight);
+					if(diskScorer.hasDisk() || diskScorer.isExtended()){
+						s.diskScoringState(Constants.kElevatorMidHatchHeight, false);
 					}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
 						s.ballScoringState(Constants.kElevatorMidBallHeight);
 					}
@@ -454,7 +456,7 @@ public class Robot extends TimedRobot {
 			} else if (coDriver.yButton.wasActivated()) {
 				if(coDriver.leftTrigger.isBeingPressed()){
 					if(!swerve.isTracking()){
-						if(diskScorer.isExtended()){
+						if(diskScorer.hasDisk() || diskScorer.isExtended()){
 							limelight.setPipeline(Pipeline.LOWEST);
 							s.diskTrackingState(Constants.kElevatorHighHatchHeight);
 						}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
@@ -463,8 +465,8 @@ public class Robot extends TimedRobot {
 						}
 					}
 				}else{
-					if(diskScorer.isExtended()){
-						s.diskScoringState(Constants.kElevatorHighHatchHeight);
+					if(diskScorer.hasDisk() || diskScorer.isExtended()){
+						s.diskScoringState(Constants.kElevatorHighHatchHeight, false);
 					}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
 						s.ballScoringState(Constants.kElevatorHighBallHeight);
 					}
@@ -472,7 +474,7 @@ public class Robot extends TimedRobot {
 			} else if (coDriver.bButton.shortReleased()) {
 				if(coDriver.leftTrigger.isBeingPressed()){
 					if(!swerve.isTracking()){
-						if(diskScorer.isExtended()){
+						if(diskScorer.hasDisk() || diskScorer.isExtended()){
 							limelight.setPipeline(Pipeline.LOWEST);
 							s.diskTrackingState(Constants.kElevatorLowHatchHeight);
 						}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
@@ -481,14 +483,14 @@ public class Robot extends TimedRobot {
 						}
 					}
 				}else{
-					if(diskScorer.isExtended()){
-						s.diskScoringState(Constants.kElevatorLowHatchHeight);
+					if(diskScorer.hasDisk() || diskScorer.isExtended()){
+						s.diskScoringState(Constants.kElevatorLowHatchHeight, false);
 					}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
 						s.ballScoringState(Constants.kElevatorLowBallHeight);
 					}
 				}
 			} else if (coDriver.bButton.longPressed()) {
-				s.diskScoringState(12.5);
+				s.diskScoringState(12.5, false);
 			} else if (coDriver.rightCenterClick.shortReleased()) {
 				s.request(new RequestList(Arrays.asList(
 					ballCarriage.stateRequest(BallCarriage.State.RECEIVING),
@@ -498,18 +500,20 @@ public class Robot extends TimedRobot {
 				ballIntake.conformToState(BallIntake.State.EJECTING);
 			}
 		}else{
-			if (coDriver.POV180.shortReleased()) {
-				s.postClimbingState();
-			}
+			
 		}
 
 		if (coDriver.POV0.shortReleased()) {
 			s.climbingState();
+		} else if (coDriver.POV90.shortReleased()) {
+			s.shortClimbingState();
+		} else if (coDriver.POV180.shortReleased()) {
+			s.postClimbingState();
 		}
 
 		if (diskScorer.needsToNotifyDrivers() || ballCarriage.needsToNotifyDrivers()) {
-			driver.rumble(1.0, 1.0);
-			coDriver.rumble(1.0, 1.0);
+			driver.rumble(1.0, 2.0);
+			coDriver.rumble(1.0, 2.0);
 		}
 
 		/*
