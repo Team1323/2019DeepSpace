@@ -79,15 +79,15 @@ public class Elevator extends Subsystem {
 		}
 		
 		if(Constants.kIsUsingCompBot){
-			master.setInverted(false);
-			motor2.setInverted(false);
+			master.setInverted(true);
+			motor2.setInverted(true);
 		}else{
 			master.setInverted(false);
 			motor2.setInverted(false);
 		}
 		
 		master.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-		master.setSensorPhase(false);
+		master.setSensorPhase(true);
 		//zeroSensors();
 		master.configReverseSoftLimitThreshold(Constants.kElevatorEncoderStartingPosition, 10);
 		master.configForwardSoftLimitThreshold(Constants.kElevatorEncoderStartingPosition + inchesToEncUnits(Constants.kElevatorMaxHeight), 10);

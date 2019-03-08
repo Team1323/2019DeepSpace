@@ -423,7 +423,7 @@ public class Superstructure extends Subsystem {
 		List<RequestList> queue = Arrays.asList(
 			new RequestList(Arrays.asList(
 				elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
-				wrist.angleRequest(Constants.kWristBallFeedingAngle, 0.1, false), 
+				wrist.angleRequest(Constants.kWristBallFeedingAngle, 0.2, false), 
 				ballIntake.stateRequest(BallIntake.State.FEEDING),
 				diskIntake.stateRequest(DiskIntake.State.OFF),
 				ballCarriage.waitForBallRequest()), true),
@@ -535,7 +535,7 @@ public class Superstructure extends Subsystem {
 		RequestList state = new RequestList(Arrays.asList(
 			//elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorDiskVisibleRanges)),
 			waitForVisionRequest(),
-			swerve.startTrackRequest(Constants.kDiskTargetHeight, 6.0, true, fixedOrientation),
+			swerve.startTrackRequest(Constants.kDiskTargetHeight, 5.0, true, fixedOrientation),
 			waitRequest(0.5),
 			//elevator.heightRequest(elevator.nearestVisionHeight(elevatorHeight, Constants.kElevatorDiskVisibleRanges)), 
 			wrist.angleRequest(Constants.kWristBallFeedingAngle),
@@ -632,7 +632,7 @@ public class Superstructure extends Subsystem {
 			/*wrist.angleRequest(Constants.kWristHangingAngle)*/), true);
 		RequestList queue = new RequestList(Arrays.asList(
 			ballIntake.stateRequest(BallIntake.State.PULLING),
-			swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 72.0)), true);
+			swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 48.0)), true);
 		request(state, queue);
 		isClimbing = true;
 	}

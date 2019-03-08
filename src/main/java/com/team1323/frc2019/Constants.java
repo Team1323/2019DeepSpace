@@ -16,7 +16,7 @@ public class Constants {
 	
 	public static final double kEpsilon = 0.0001;
 	
-	public static final boolean kIsUsingCompBot = false;
+	public static final boolean kIsUsingCompBot = true;
 	public static final boolean kIsUsingTractionWheels = true;
 
 	public static final boolean kDebuggingOutput = false;
@@ -38,7 +38,7 @@ public class Constants {
 	public static final Pose2d autoBallPosition = new Pose2d(new Translation2d(48.0 - 4.0 - kBallRadius, 97.0 - (3.0*kBallRadius) - 162.0), Rotation2d.fromDegrees(-45.0));
 	public static final Pose2d rocketPortPosition = new Pose2d(new Translation2d(229.13, 27.44 - 162.0), Rotation2d.fromDegrees(-90.0));
 
-	public static final double kDiskTargetHeight = 28.1875;
+	public static final double kDiskTargetHeight = 28.625;//28.1875
 	public static final double kBallTargetHeight = 36.9375;
 	public static final List<Rotation2d> kPossibleDiskTargetAngles = Arrays.asList(/*Rotation2d.fromDegrees(0.0),*/ Rotation2d.fromDegrees(30.0),
 		Rotation2d.fromDegrees(150.0), /*Rotation2d.fromDegrees(180.0),*/ Rotation2d.fromDegrees(-150.0),
@@ -63,7 +63,7 @@ public class Constants {
     public static final double kCameraXOffset = kRobotHalfLength - 15.0;//3.0
     public static final double kCameraZOffset = 16.45;//17.625
     public static final double kCameraYawAngleDegrees = 0.0;//-12.7
-    public static final double kCameraPitchAngleDegrees = 14.45;//17.25
+    public static final double kCameraPitchAngleDegrees = 19.4;//14.45
     
     //Goal tracker constants
     public static double kMaxGoalTrackAge = 0.5;//0.5
@@ -89,7 +89,7 @@ public class Constants {
     public static final double kSwerveRotationSpeedScalar = ((1.0 / 0.125) - 1.0) / kSwerveMaxSpeedInchesPerSecond;
     
     //Swerve Module Wheel Offsets (Rotation encoder values when the wheels are facing 0 degrees)
-	public static final int kFrontRightEncoderStartingPos = kIsUsingCompBot ? -4623 - 1024 : 249 - 1024;
+	public static final int kFrontRightEncoderStartingPos = kIsUsingCompBot ? -522 - 1024 : 249 - 1024;
 	public static final int kFrontLeftEncoderStartingPos = kIsUsingCompBot ? -1986 - 1024 : -2895 - 1024;
 	public static final int kRearLeftEncoderStartingPos = kIsUsingCompBot ? -349 - 1024 : -2639 - 1024;
 	public static final int kRearRightEncoderStartingPos = kIsUsingCompBot ? 2684 - 1024 : -1739 - 1024;
@@ -127,7 +127,7 @@ public class Constants {
 	//Elevator Constants
 	public static final double kElevatorMaxSpeedHighGear = 696.96 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
-	public static final int kElevatorEncoderStartingPosition = 333;
+	public static final int kElevatorEncoderStartingPosition = kIsUsingCompBot ? 1128 : 333;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 0.5; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.6;
@@ -166,7 +166,7 @@ public class Constants {
 	public static final double kWristMaxSpeedLowGear = 31.32 * 4096.0 / 600.0;//200.0;
 	public static final double kWristStartingAngle = 0.0;
 	/** Pulse width position of the wrist encoder when the wrist is upright (at 90 degrees, parallel to the elevator). */
-	public static final int kWristStartingEncoderPosition = kIsUsingCompBot ? 3249 : 2520;
+	public static final int kWristStartingEncoderPosition = kIsUsingCompBot ? 584 : 2520;
 	/** The number of rotations the wrist encoder undergoes for every rotation of the wrist. */
 	public static final double kWristEncoderToOutputRatio = 30.0 / 12.0; // 144 degrees before wrap
 	public static final double kWristAngleTolerance = 10.0; //degrees
@@ -218,7 +218,7 @@ public class Constants {
 	public static final double kJackMaxSpeed = 344.1749 * 4096.0 / 600.0;//2675.0;
 	public static final double kJackTicksPerInch = 13.3733539 * 4096.0 / 30.4444882;//1.219 inches before wrap
 	public static final double kJackHeightTolerance = 1.0; //inches
-	public static final int kJackStartingEncPosition = 2472;
+	public static final int kJackStartingEncPosition = kIsUsingCompBot ? 970 : 2472;
 	public static final double kJackStartingHeight = 0.0;
 	public static final double kJackShortClimbHeight = -10.0;
 	public static final double kJackMaxPhysicalHeight = 0.2;

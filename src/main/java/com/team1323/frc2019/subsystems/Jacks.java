@@ -50,6 +50,7 @@ public class Jacks extends Subsystem {
             motor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
         }else{
             motor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+            motor.setSensorPhase(true);
         }
 
         resetToAbsolutePosition();
@@ -203,7 +204,15 @@ public class Jacks extends Subsystem {
     }
 
     public boolean isSensorConnected(){
-		return DiskScorer.getInstance().isSensorConnected();
+        if(!Constants.kIsUsingCompBot){
+            return DiskScorer.getInstance().isSensorConnected();
+        }else{
+            int pulseWidthPeriod = motor.getSensorCollection().getPulseWidthRiseToRiseUs();
+            boolean connected = pulseWidthPeriod != 0;
+            if(!connected)
+                hasEmergency = true;
+            return connected;
+        }
 	}
 
     public void resetToAbsolutePosition(){
