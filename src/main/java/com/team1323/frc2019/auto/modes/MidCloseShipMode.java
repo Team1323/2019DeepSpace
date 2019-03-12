@@ -1,3 +1,10 @@
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
+
 package com.team1323.frc2019.auto.modes;
 
 import java.util.Arrays;
@@ -15,12 +22,14 @@ import com.team1323.frc2019.auto.actions.WaitForElevatorAction;
 import com.team1323.frc2019.auto.actions.WaitForHeadingAction;
 import com.team1323.frc2019.auto.actions.WaitForSuperstructureAction;
 import com.team1323.frc2019.auto.actions.WaitForVisionAction;
+import com.team1323.frc2019.auto.actions.WaitToFinishPathAction;
 import com.team1323.frc2019.auto.actions.WaitToPassXCoordinateAction;
 import com.team1323.frc2019.auto.actions.WaitToPassYCoordinateAction;
 import com.team1323.frc2019.loops.LimelightProcessor;
 import com.team1323.frc2019.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2019.subsystems.DiskScorer;
 import com.team1323.frc2019.subsystems.Superstructure;
+import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
@@ -28,7 +37,10 @@ import com.team254.lib.trajectory.timing.TimedState;
 
 import edu.wpi.first.wpilibj.Timer;
 
-public class TwoCloseOneBallMode extends AutoModeBase {
+/**
+ * Add your docs here.
+ */
+public class MidCloseShipMode extends AutoModeBase{
     Superstructure s;
 
     final boolean left;
@@ -36,11 +48,11 @@ public class TwoCloseOneBallMode extends AutoModeBase {
 
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
-        return Arrays.asList(trajectories.startToCloseHatch.get(left), trajectories.closeHatchToHumanLoader.get(left),
-                trajectories.humanLoaderToCloseHatch.get(left), trajectories.shortCloseHatchToHumanLoader.get(left));
+        return Arrays.asList(trajectories.startToMidShip.get(left), trajectories.midShipToHumanLoader.get(left),
+            trajectories.humanLoaderToCloseShip.get(left));
     }
 
-	public TwoCloseOneBallMode(boolean left) {
+	public MidCloseShipMode(boolean left) {
         s = Superstructure.getInstance();
         this.left = left;
         directionFactor = left ? -1.0 : 1.0;
@@ -49,25 +61,22 @@ public class TwoCloseOneBallMode extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
         super.startTime = Timer.getFPGATimestamp();
-        runAction(new ResetPoseAction(left));
+
+        runAction(new ResetPoseAction(left ? new Pose2d(Constants.kRobotLeftStartingPose.getTranslation(), Rotation2d.fromDegrees(90.0)) : new Pose2d(Constants.kRobotRightStartingPose.getTranslation(), Rotation2d.fromDegrees(-90.0))));
         DiskScorer.getInstance().conformToState(DiskScorer.State.GROUND_DETECTED);
-        runAction(new SetTrajectoryAction(trajectories.startToCloseHatch.get(left), 30.0 * directionFactor, 1.0));
-        LimelightProcessor.getInstance().setPipeline(left ? Pipeline.LEFTMOST : Pipeline.RIGHTMOST);
-        runAction(new WaitToPassYCoordinateAction((46.25 + Constants.kRobotWidth) * directionFactor));
-        s.diskScoringState(Constants.kElevatorMidHatchHeight, true);
-        runAction(new WaitForDistanceAction(left ? Constants.closeHatchPosition.getTranslation() : Constants.rightCloseHatchPosition.getTranslation(), 102.0));
+        runAction(new SetTrajectoryAction(trajectories.startToMidShip.get(left), -90.0 * directionFactor, 1.0));
+        LimelightProcessor.getInstance().setPipeline(left ? Pipeline.CLOSEST : Pipeline.CLOSEST);
+        runAction(new WaitToPassXCoordinateAction((96.0 + Constants.kRobotWidth)));
+        s.diskScoringState(20.0, true);
+        runAction(new WaitToPassXCoordinateAction(275.0));
         runAction(new WaitForElevatorAction(19.6, true));
-        runAction(new WaitForVisionAction(3.0));
-        if(left)
-            runAction(new WaitForHeadingAction(-40.0, -25.0));
-        else
-            runAction(new WaitForHeadingAction(25.0, 40.0));
-        s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(30.0 * directionFactor));
+        runAction(new WaitForVisionAction(2.0));
+        s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor));
         runAction(new WaitForSuperstructureAction());
         runAction(new WaitAction(0.25));
 
 
-        runAction(new SetTrajectoryAction(trajectories.closeHatchToHumanLoader.get(left), 180.0 * directionFactor, 0.75));
+        runAction(new SetTrajectoryAction(trajectories.midShipToHumanLoader.get(left), -180.0 * directionFactor, 0.75));
         runAction(new WaitAction(0.5));
         s.diskScoringState(12.4, false);
         LimelightProcessor.getInstance().setPipeline(Pipeline.RIGHTMOST);
@@ -81,33 +90,16 @@ public class TwoCloseOneBallMode extends AutoModeBase {
         runAction(new WaitForSuperstructureAction());
 
 
-        runAction(new SetTrajectoryAction(trajectories.humanLoaderToCloseHatch.get(left), 30.0 * directionFactor, 0.75));
-        LimelightProcessor.getInstance().setPipeline(left ? Pipeline.LEFTMOST : Pipeline.RIGHTMOST);
-        runAction(new RemainingProgressAction(2.5));
-        s.diskScoringState(Constants.kElevatorHighHatchHeight, false);
-        if(left)
-            runAction(new WaitForHeadingAction(-40.0, -25.0));
-        else
-            runAction(new WaitForHeadingAction(25.0, 40.0));
-        runAction(new WaitForDistanceAction(left ? Constants.closeHatchPosition.getTranslation() : Constants.rightCloseHatchPosition.getTranslation(), 102.0));
+        runAction(new SetTrajectoryAction(trajectories.humanLoaderToCloseShip.get(left), -90.0 * directionFactor, 1.0));
+        LimelightProcessor.getInstance().setPipeline(left ? Pipeline.RIGHTMOST : Pipeline.LEFTMOST);
+        runAction(new WaitToPassXCoordinateAction((96.0 + Constants.kRobotWidth)));
+        s.diskScoringState(20.0, true);
+        runAction(new WaitToPassXCoordinateAction(255.0));
         runAction(new WaitForElevatorAction(19.6, true));
-        s.diskTrackingState(Constants.kElevatorHighHatchHeight, Rotation2d.fromDegrees((left ? 28.0 : 32.0) * directionFactor));
+        runAction(new WaitForVisionAction(2.0));
+        s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor));
         runAction(new WaitForSuperstructureAction());
         runAction(new WaitAction(0.25));
-
-
-        runAction(new SetTrajectoryAction(trajectories.shortCloseHatchToHumanLoader.get(left), 180.0 * directionFactor, 0.75));
-        runAction(new WaitAction(0.5));
-        s.diskScoringState(Constants.kElevatorLowHatchHeight, false);
-
-
-        /*runAction(new SetTrajectoryAction(trajectories.closeHatchToBall.get(left), 45.0 * directionFactor, 1.0));
-        runAction(new WaitAction(0.5));
-        s.ballScoringState(Constants.kElevatorLowBallHeight);
-        runAction(new RemainingProgressAction(1.5));
-        s.ballIntakingState();
-        runAction(new WaitToFinishPathAction());
-        s.fullBallCycleState();*/
 
         System.out.println("Auto mode finished in " + currentTime() + " seconds");
 	}

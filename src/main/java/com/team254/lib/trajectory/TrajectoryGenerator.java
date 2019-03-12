@@ -89,11 +89,15 @@ public class TrajectoryGenerator {
     static final Pose2d ballIntakePose = new Pose2d(Constants.autoBallPosition.transformBy(Pose2d.fromTranslation(new Translation2d(Constants.kRobotHalfLength + 9.0, 0.0))).getTranslation(), Rotation2d.fromDegrees(0.0));
     static final Pose2d portScoringPose = Constants.rocketPortPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 6.0, 0.0)));
 
+    static final Pose2d farShipScoringPose = Constants.farShipPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 4.0, 0.0)));
+    static final Pose2d midShipScoringPose = Constants.midShipPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 4.0, 0.0)));
+    static final Pose2d closeShipScoringPose = Constants.closeShipPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 4.0, 0.0)));
+
     public class TrajectorySet {
         public class MirroredTrajectory {
             public MirroredTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> left) {
                 this.left = left;
-                this.right = TrajectoryUtil.mirrorTimed(left);
+                this.right = TrajectoryUtil.mirrorTimed(left, left.defaultVelocity());
             }
 
             public Trajectory<TimedState<Pose2dWithCurvature>> get(boolean left) {
@@ -121,6 +125,11 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory humanLoaderToFarHatch;
         public final MirroredTrajectory farHatchToBall;
 
+        //Elim Auto Paths
+        public final MirroredTrajectory startToMidShip;
+        public final MirroredTrajectory midShipToHumanLoader;
+        public final MirroredTrajectory humanLoaderToCloseShip;
+
         private TrajectorySet() {
             //Test Paths
             straightPath = getStraightPath();
@@ -138,6 +147,11 @@ public class TrajectoryGenerator {
             farHatchToHumanLoader = new MirroredTrajectory(getFarHatchToHumanLoader());
             humanLoaderToFarHatch = new MirroredTrajectory(getHumanLoaderToFarHatch());
             farHatchToBall = new MirroredTrajectory(getFarHatchToBall());
+
+            //Elim Auto Paths
+            startToMidShip = new MirroredTrajectory(getStartToMidShip());
+            midShipToHumanLoader = new MirroredTrajectory(getMidShipToHumanLoader());
+            humanLoaderToCloseShip = new MirroredTrajectory(getHumanLoaderToCloseShip());
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getStraightPath(){
@@ -174,7 +188,7 @@ public class TrajectoryGenerator {
             waypoints.add(humanLoaderPose);
             waypoints.add(closeHatchScoringPose);
 
-            return generateTrajectory(false, waypoints, Arrays.asList(), 84.0, kMaxAccel, 24.0, kMaxVoltage, 72.0, 2);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 78.0, kMaxAccel, 24.0, kMaxVoltage, 66.0, 2);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getShortCloseHatchToHumanLoader(){
@@ -244,6 +258,32 @@ public class TrajectoryGenerator {
             //waypoints.add(ballIntakePose);
 
             return generateTrajectory(true, waypoints, Arrays.asList(), 60.0, kMaxAccel, 24.0, kMaxVoltage, 42.0, 4);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getStartToMidShip(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(autoStartingPose.getTranslation(), Rotation2d.fromDegrees(0.0)));
+            waypoints.add(midShipScoringPose);
+
+            return generateTrajectory(false, waypoints, Arrays.asList(), 72.0, kMaxAccel, 24.0, kMaxVoltage, 48.0, 2);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getMidShipToHumanLoader(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(midShipScoringPose);
+            waypoints.add(new Pose2d(portScoringPose.transformBy(Pose2d.fromTranslation(new Translation2d(-6.0, 0.0))).getTranslation(), Rotation2d.fromDegrees(0.0)));
+            waypoints.add(humanLoaderPose);
+
+            return generateTrajectory(true, waypoints, Arrays.asList(), 72.0, kMaxAccel, 24.0, kMaxVoltage, 48.0, 2);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getHumanLoaderToCloseShip(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(humanLoaderPose);
+            waypoints.add(new Pose2d(portScoringPose.transformBy(Pose2d.fromTranslation(new Translation2d(-6.0, 0.0))).getTranslation(), Rotation2d.fromDegrees(0.0)));
+            waypoints.add(closeShipScoringPose);
+
+            return generateTrajectory(false, waypoints, Arrays.asList(), 72.0, kMaxAccel, 24.0, kMaxVoltage, 48.0, 2);
         }
     }
     

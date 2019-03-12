@@ -495,7 +495,7 @@ public class Swerve extends Subsystem{
 				for(Rotation2d r : (robotHasDisk ? Constants.kPossibleDiskTargetAngles : Constants.kPossibleBallTargetAngles)){
 					if(Math.abs(r.distance(/*orientedTarget.get().getRotation()*/robotToTarget)) < distance){
 						closestHeading = r;
-						distance = Math.abs(r.distance(orientedTarget.get().getRotation()));
+						distance = Math.abs(r.distance(/*orientedTarget.get().getRotation()*/robotToTarget));
 					}
 				}
 			}
@@ -768,9 +768,11 @@ public class Swerve extends Subsystem{
 						driveVector = lastTrajectoryVector;
 						setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
 							rotationInput, pose, false), 0.0);
+						//System.out.println("Trajectory Vector set: " + driveVector.toString());
 					}else{
 						setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
-						rotationInput, pose, false));
+							rotationInput, pose, false));
+						//System.out.println("Trajectory Vector set: " + driveVector.toString());
 					}
 				}else if(!moduleConfigRequested){
 					//set10VoltRotationMode(true);

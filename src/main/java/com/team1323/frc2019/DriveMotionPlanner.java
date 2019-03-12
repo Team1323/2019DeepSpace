@@ -208,21 +208,29 @@ public class DriveMotionPlanner implements CSVWritable {
         Rotation2d steeringDirection = lookaheadTranslation.direction();
         double normalizedSpeed = Math.abs(mSetpoint.velocity()) / Constants.kSwerveMaxSpeedInchesPerSecond;
 
+        //System.out.println("Lookahead point: " + lookahead_state.state().getTranslation().toString() + " Current State: " + current_state.getTranslation().toString() + " Lookahad translation: " + lookaheadTranslation.toString());
+
+        //System.out.println("Speed: " + normalizedSpeed + " DefaultCook: " + defaultCook + " setpoint t:" + mSetpoint.t() + " Length: " + currentTrajectoryLength);
         if(normalizedSpeed > defaultCook || mSetpoint.t() > (currentTrajectoryLength / 2.0)){
             useDefaultCook = false;
         }
         if(useDefaultCook){
             normalizedSpeed = defaultCook;
         }
+
+        //System.out.println("Steering direction " + steeringDirection.getDegrees() + " Speed: " + normalizedSpeed);
         
         final Translation2d steeringVector = Translation2d.fromPolar(steeringDirection, normalizedSpeed);
         
+        //System.out.println("Pure pursuit updated, vector is: " + steeringVector.toString());
         return steeringVector;
     }
 
     public Translation2d update(double timestamp, Pose2d current_state) {
-        if (mCurrentTrajectory == null) return Translation2d.identity();
-
+        if (mCurrentTrajectory == null){
+            //System.out.println("Trajectory is null, returning zero trajectory");
+            return Translation2d.identity();
+        } 
         if (mCurrentTrajectory.getProgress() == 0.0 && !Double.isFinite(mLastTime)) {
             mLastTime = timestamp;
         }
@@ -264,6 +272,7 @@ public class DriveMotionPlanner implements CSVWritable {
         } else {
             // TODO Possibly switch to a pose stabilizing controller?
             mOutput = Translation2d.identity();
+           // System.out.println("Motion planner done, returning zero trajectory");
         }
         return mOutput;
     }

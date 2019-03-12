@@ -87,7 +87,7 @@ public class Elevator extends Subsystem {
 		}
 		
 		master.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-		master.setSensorPhase(true);
+		master.setSensorPhase(Constants.kIsUsingCompBot ? true : false);
 		//zeroSensors();
 		master.configReverseSoftLimitThreshold(Constants.kElevatorEncoderStartingPosition, 10);
 		master.configForwardSoftLimitThreshold(Constants.kElevatorEncoderStartingPosition + inchesToEncUnits(Constants.kElevatorMaxHeight), 10);

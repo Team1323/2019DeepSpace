@@ -1,9 +1,9 @@
 package com.team1323.frc2019.auto;
 
 import com.team1323.frc2019.auto.modes.CloseFarBallMode;
+import com.team1323.frc2019.auto.modes.MidCloseShipMode;
 import com.team1323.frc2019.auto.modes.StandStillMode;
 import com.team1323.frc2019.auto.modes.TwoCloseOneBallMode;
-import com.team1323.frc2019.auto.modes.TwoFarOneBallMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,13 +19,13 @@ public class SmartDashboardInteractions {
     public void initWithDefaults(){
     	modeChooser = new SendableChooser<AutoOption>();
         modeChooser.setDefaultOption(DEFAULT_MODE.name, DEFAULT_MODE);
-        modeChooser.addOption(AutoOption.TWO_FAR_ONE_BALL.name, AutoOption.TWO_FAR_ONE_BALL);
         modeChooser.addOption(AutoOption.CLOSE_FAR_BALL.name, AutoOption.CLOSE_FAR_BALL);
-        modeChooser.addOption(AutoOption.FAR_CLOSE_BALL.name, AutoOption.FAR_CLOSE_BALL);
+        modeChooser.addOption(AutoOption.MID_CLOSE_SHIP.name, AutoOption.MID_CLOSE_SHIP);
+
 
         sideChooser = new SendableChooser<Side>();
-        sideChooser.setDefaultOption("Left", Side.LEFT);
-        sideChooser.addOption("Right", Side.RIGHT);
+        sideChooser.setDefaultOption("Right", Side.RIGHT);
+        sideChooser.addOption("Left", Side.LEFT);
     	
         SmartDashboard.putData("Mode Chooser", modeChooser);
         SmartDashboard.putData("Side Chooser", sideChooser);
@@ -47,9 +47,8 @@ public class SmartDashboardInteractions {
     
     enum AutoOption{
         TWO_CLOSE_ONE_BALL("2 Close, 1 Ball"),
-        TWO_FAR_ONE_BALL("2 Far, 1 Ball"),
         CLOSE_FAR_BALL("1 Close, 1 Far, 1 Ball"),
-        FAR_CLOSE_BALL("1 Far, 1 Close, 1 Ball");
+        MID_CLOSE_SHIP("Mid and Close Cargo Ship");
     	
     	public final String name;
     	
@@ -66,12 +65,10 @@ public class SmartDashboardInteractions {
     	switch(option){
 			case TWO_CLOSE_ONE_BALL:
                 return new TwoCloseOneBallMode(left);
-            case TWO_FAR_ONE_BALL:
-                return new TwoFarOneBallMode(left);
             case CLOSE_FAR_BALL:
                 return new CloseFarBallMode(left);
-            case FAR_CLOSE_BALL:
-                return new CloseFarBallMode(left);
+            case MID_CLOSE_SHIP:
+                return new MidCloseShipMode(left);
             default:
                 System.out.println("ERROR: unexpected auto mode: " + option);
                 return new StandStillMode();

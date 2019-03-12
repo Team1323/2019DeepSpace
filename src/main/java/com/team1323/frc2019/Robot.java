@@ -12,7 +12,7 @@ import java.util.Arrays;
 import com.team1323.frc2019.auto.AutoModeBase;
 import com.team1323.frc2019.auto.AutoModeExecuter;
 import com.team1323.frc2019.auto.SmartDashboardInteractions;
-import com.team1323.frc2019.auto.modes.CloseFarBallMode;
+import com.team1323.frc2019.auto.modes.MidCloseShipMode;
 import com.team1323.frc2019.loops.LimelightProcessor;
 import com.team1323.frc2019.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2019.loops.Looper;
@@ -142,8 +142,8 @@ public class Robot extends TimedRobot {
 
 		generator.generateTrajectories();
 
-		AutoModeBase auto = new CloseFarBallMode(true);
-		//qTransmitter.addPaths(auto.getPaths());
+		AutoModeBase auto = new MidCloseShipMode(false);
+		qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 
 	}
@@ -377,11 +377,12 @@ public class Robot extends TimedRobot {
 		else if (driver.leftBumper.shortReleased())
 			swerve.rotate(-25);
 		else if(driver.leftBumper.longPressed())
-			swerve.rotate(-150.0);
+			swerve.rotate(-152.0);
 		else if (driver.rightBumper.shortReleased())
 			swerve.rotate(25);
 		else if(driver.rightBumper.longPressed())
 			swerve.rotate(150.0);
+
 		if (driver.backButton.shortReleased() || driver.backButton.longPressed()) {
 			swerve.temporarilyDisableHeadingController();
 			swerve.zeroSensors(Constants.kRobotLeftStartingPose);
@@ -410,8 +411,10 @@ public class Robot extends TimedRobot {
 		if(!s.isClimbing()){
 			if (coDriver.startButton.shortReleased()) {
 				if(coDriver.leftTrigger.isBeingPressed()){
-					limelight.setPipeline(Pipeline.CLOSEST);
-					s.humanLoaderRetrievingState();
+					if(!swerve.isTracking()){
+						limelight.setPipeline(Pipeline.CLOSEST);
+						s.humanLoaderRetrievingState();
+					}
 				}else{
 					s.diskReceivingState();
 				}
@@ -419,10 +422,6 @@ public class Robot extends TimedRobot {
 				s.ballScoringState(Constants.kElevatorBallCargoShipHeight);
 			} else if (coDriver.rightBumper.shortReleased()) {
 				s.diskIntakingState();
-			} else if (coDriver.leftBumper.shortReleased()) {
-				diskIntake.conformToState(DiskIntake.State.EJECTING);
-			} else if (coDriver.leftBumper.longPressed()) {
-				diskIntake.conformToState(DiskIntake.State.OFF);
 			} else if (driver.rightTrigger.shortReleased()) {
 				ballCarriage.conformToState(BallCarriage.State.EJECTING);
 			} else if(driver.rightTrigger.longPressed()){
@@ -509,6 +508,8 @@ public class Robot extends TimedRobot {
 			s.shortClimbingState();
 		} else if (coDriver.POV180.shortReleased()) {
 			s.postClimbingState();
+		} else if (coDriver.POV270.shortReleased()) {
+			s.lockedJackState();
 		}
 
 		if (diskScorer.needsToNotifyDrivers() || ballCarriage.needsToNotifyDrivers()) {
@@ -516,15 +517,16 @@ public class Robot extends TimedRobot {
 			coDriver.rumble(1.0, 2.0);
 		}
 
-		/*
-		 * 
-		 * if(coDriver.startButton.longPressed()){ elevator.setManualSpeed(0.75);
-		 * elevator.enableLimits(false); coDriver.rumble(1.0, 1.0); }else
-		 * if(!s.elevator.limitsEnabled() && coDriver.startButton.longReleased()){
-		 * elevator.zeroSensors(); elevator.enableLimits(true);
-		 * elevator.setManualSpeed(Constants.kElevatorTeleopManualSpeed);
-		 * elevator.lockHeight(); }
-		 */
+		if(coDriver.leftBumper.longPressed()){ 
+			elevator.setManualSpeed(0.5);
+			elevator.enableLimits(false); 
+			coDriver.rumble(1.0, 1.0); 
+		}else if(!elevator.limitsEnabled() && coDriver.leftBumper.longReleased()){
+		  elevator.zeroSensors(); 
+		  elevator.enableLimits(true);
+		  elevator.setManualSpeed(Constants.kElevatorTeleopManualSpeed);
+		  elevator.lockHeight(); 
+		} 
 	}
 
 	private void oneControllerMode() {

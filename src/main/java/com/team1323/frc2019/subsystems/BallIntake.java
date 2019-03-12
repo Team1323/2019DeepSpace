@@ -105,10 +105,10 @@ public class BallIntake extends Subsystem {
   public enum State {
     OFF(0, 0), INTAKING(Constants.kIntakingOutput, 0.5),
     EJECTING(Constants.kIntakeEjectOutput, Constants.kIntakeEjectOutput),
-    HOLDING(Constants.kIntakingOutput, 0.75),
+    HOLDING(Constants.kIntakingOutput, 0.5),
     CLIMBING(Constants.kIntakeClimbOutput, 0),
     PULLING(Constants.kIntakePullOutput, 0),
-    FEEDING(Constants.kIntakeWeakHoldingOutput, 0.75),
+    FEEDING(Constants.kIntakeWeakHoldingOutput, 0.5),
     POST_FEEDING(0, 0);
 
     public double grabberOutput = 0;

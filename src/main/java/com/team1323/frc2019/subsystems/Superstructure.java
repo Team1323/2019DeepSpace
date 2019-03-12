@@ -362,7 +362,7 @@ public class Superstructure extends Subsystem {
 
 	public void neutralState(){
 		RequestList state = new RequestList(Arrays.asList(
-			ballCarriage.stateRequest(BallCarriage.State.OFF), 
+			//ballCarriage.stateRequest(BallCarriage.State.OFF), 
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
 			diskScorer.stateRequest(diskScorer.isExtended() ? DiskScorer.State.NEUTRAL_EXTENDED : DiskScorer.State.STOWED)), true);
@@ -614,13 +614,32 @@ public class Superstructure extends Subsystem {
 				wrist.angleRequest(Constants.kWristShortHangingAngle)), true),
 			new RequestList(Arrays.asList(
 				ballIntake.stateRequest(BallIntake.State.PULLING),
-				swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 72.0)), true)
+				swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 48.0)), true)
 		);
 		request(state);
 		replaceQueue(queue);
 	}
 
 	public void climbingState(){
+		/*RequestList state = new RequestList(Arrays.asList(
+			wrist.angleRequest(37.0)), true);
+		List<RequestList> queue = Arrays.asList(
+			new RequestList(Arrays.asList(
+				wrist.gearShiftRequest(false),
+				jacks.shiftPowerRequest(true),
+				interpolatorRequest(true),
+				elevator.heightRequest(Constants.kElevatorLowBallHeight),
+				diskScorer.stateRequest(DiskScorer.State.STOWED),
+				ballIntake.stateRequest(BallIntake.State.CLIMBING),
+				ballCarriage.stateRequest(BallCarriage.State.OFF),
+				jacks.heightRequest(Constants.kJackMinControlHeight)), true),
+			new RequestList(Arrays.asList(
+				ballIntake.stateRequest(BallIntake.State.PULLING),
+				swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 48.0)), true)
+		);
+		request(state);
+		replaceQueue(queue);*/
+
 		RequestList state = new RequestList(Arrays.asList(
 			wrist.gearShiftRequest(false),
 			jacks.shiftPowerRequest(true),
@@ -633,6 +652,7 @@ public class Superstructure extends Subsystem {
 		RequestList queue = new RequestList(Arrays.asList(
 			ballIntake.stateRequest(BallIntake.State.PULLING),
 			swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 48.0)), true);
+
 		request(state, queue);
 		isClimbing = true;
 	}
@@ -645,13 +665,20 @@ public class Superstructure extends Subsystem {
 			diskScorer.stateRequest(DiskScorer.State.STOWED),
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			ballCarriage.stateRequest(BallCarriage.State.OFF),
-			swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 0.0),
+			swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 18.0),
 			wrist.angleRequest(Constants.kWristBallFeedingAngle),
 			jacks.heightRequest(Constants.kJackStartingHeight)), true);
 		RequestList queue = new RequestList(Arrays.asList(
 			jacks.shiftPowerRequest(false),
 			wrist.gearShiftRequest(true)), true);
 		request(state, queue);
+	}
+
+	public void lockedJackState(){
+		RequestList state = new RequestList(Arrays.asList(
+			jacks.shiftPowerRequest(true),
+			jacks.heightRequest(Constants.kJackMaxControlHeight)), false);
+		request(state);
 	}
 
 }
