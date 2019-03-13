@@ -231,6 +231,18 @@ public class Constants {
 	public static final double kJackMinControlHeight = -21.0; //-24.5
 	public static final int kJackCurrentLimit = 60;
 
+	//LED Colors
+	public static final List<Double> pink = Arrays.asList(255.0, 20.0, 30.0);
+	public static final List<Double> blue = Arrays.asList(0.0, 0.0, 255.0);
+	public static final List<Double> red = Arrays.asList(255.0, 0.0, 0.0);
+	public static final List<Double> orange = Arrays.asList(255.0, 20.0, 0.0);
+	public static final List<Double> yellow = Arrays.asList(255.0, 60.0, 0.0);
+	public static final List<Double> green = Arrays.asList(0.0, 255.0, 0.0);
+	public static final List<Double> purple = Arrays.asList(255.0, 0.0, 255.0);
+
+	//LED Arrays
+	public static final List<List<Double>> rainbow = Arrays.asList(red, orange, yellow, green, blue, pink, purple);
+
 	//Jack Height Treemap
 	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kJackHeightTreeMap = new InterpolatingTreeMap<>();
 	static{
