@@ -7,7 +7,6 @@
 
 package com.team1323.frc2019.subsystems;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,11 +17,13 @@ import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.requests.Request;
 import com.team1323.frc2019.Constants;
+import com.team1323.lib.util.HSVtoRGB;
+import com.team1323.lib.util.MovingAverage;
 
 import edu.wpi.first.wpilibj.Timer;
 
 /**
- * 
+ * Brings all da colors to da club
  */
 public class LEDs extends Subsystem{
     private static LEDs instance = null;
@@ -41,6 +42,7 @@ public class LEDs extends Subsystem{
     boolean lit = false;
     double lastOnTime = 0.0;
     double lastOffTime = 0.0;
+    double transTime = 0.0;
 
     public enum State{
         OFF(0.0, 0.0, 0.0, Double.POSITIVE_INFINITY, 0.0, false),
@@ -54,9 +56,10 @@ public class LEDs extends Subsystem{
         TARGET_VISIBLE(0.0, 255.0, 0.0, Double.POSITIVE_INFINITY, 0.0, false),
         TARGET_TRACKING(0.0, 255.0, 0.0, 0.0625, 0.0625, false),
         CLIMBING(255.0, 0.0, 255.0, Double.POSITIVE_INFINITY, 0.0, false),
-        RAINBOW(Constants.rainbow, 0.5, true);
+        RAINBOW(0);
 
-        double red, green, blue, onTime, offTime, cycleTime;
+        double red, green, blue, onTime, offTime, cycleTime, transitionTime;
+        float startingHue;
         List<List<Double>> colors = new ArrayList<List<Double>>();
         boolean isCycleColors;
         private State(double r, double g, double b, double onTime, double offTime, boolean isCycleColors){
@@ -67,10 +70,15 @@ public class LEDs extends Subsystem{
             this.offTime = offTime;
         }
 
-        private State(List<List<Double>> colors, double cycleTime, boolean isCycleColors) {
+        private State(float hue) {
+            this.startingHue = hue;
+        }
+
+        private State(List<List<Double>> colors, double cycleTime, boolean isCycleColors, double transitionTime) {
             this.colors = colors;
             this.cycleTime = cycleTime;
             this.isCycleColors = isCycleColors;
+            this.transitionTime = transitionTime;
         }
     }
 
@@ -128,7 +136,9 @@ public class LEDs extends Subsystem{
         };
     }
 
-    public int x = 0;
+    public float stateHue = 0;
+    public float saturation = 1.0f; // Ensures that the colors are on the outside of the color wheel
+    public float value = 0.05f; // Hardcoded brightness
 
     @Override
     public void writePeriodicOutputs(){
@@ -143,13 +153,40 @@ public class LEDs extends Subsystem{
                 lastOffTime = timestamp;
                 lit = false;
             }
-        } else if (currentState.isCycleColors == true && currentState == State.RAINBOW) {
-            if ((timestamp - lastOnTime) >= currentState.cycleTime) {
-                if (x > currentState.colors.size()) x = 0;
-                x += 1;
-                setLEDs(currentState.colors.get(x).get(0), currentState.colors.get(x).get(1), currentState.colors.get(x).get(2));
-            } 
-            setLEDs(currentState.colors.get(x).get(0), currentState.colors.get(x).get(1), currentState.colors.get(x).get(2));
+        } else if (currentState == State.RAINBOW) {
+            stateHue += 1;
+            if (stateHue >= (360 - State.RAINBOW.startingHue)) {
+                stateHue = State.RAINBOW.startingHue;
+            }
+
+            float rgb[] = new float[3];
+            MovingAverage averageR = new MovingAverage(10);
+            MovingAverage averageG = new MovingAverage(10);
+            MovingAverage averageB = new MovingAverage(10);
+
+            if (saturation > 1) {
+                saturation = 1;
+            }
+            if (saturation < 0) {
+                saturation = 0;
+            }
+            if (value > 1) {
+                value = 1;
+            }
+            if (value < 0) {
+                value = 0;
+            }
+            
+            rgb = HSVtoRGB.convert(stateHue, saturation, value);
+
+            rgb[0] = averageR.process(rgb[0]);
+            rgb[1] = averageG.process(rgb[1]);
+            rgb[2] = averageB.process(rgb[2]);
+
+            canifier.setLEDOutput(rgb[0], LEDChannel.LEDChannelA);
+            canifier.setLEDOutput(rgb[1], LEDChannel.LEDChannelB);
+            canifier.setLEDOutput(rgb[2], LEDChannel.LEDChannelC);
+
         }
     }
 
