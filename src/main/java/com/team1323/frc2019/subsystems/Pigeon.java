@@ -33,6 +33,7 @@ public class Pigeon {
 		double [] ypr = new double[3];
 		pigeon.getYawPitchRoll(ypr);
 		PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
+		SmartDashboard.putNumber("Pigeon Heading", -pigeon.getFusedHeading(fusionStatus));
 		return Rotation2d.fromDegrees(-pigeon.getFusedHeading(fusionStatus)/*-ypr[0]*/);
 	}
 
@@ -55,8 +56,9 @@ public class Pigeon {
 	}
 	
 	public void setAngle(double angle){
-		pigeon.setFusedHeading(-angle, 10);
+		pigeon.setFusedHeading(-angle * 64.0, 10);
 		pigeon.setYaw(-angle, 10);
+		System.out.println("Pigeon angle set to: " + angle);
 	}
 	
 	public void outputToSmartDashboard(){

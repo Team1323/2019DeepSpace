@@ -101,6 +101,7 @@ public class DiskScorer extends Subsystem {
     private boolean hasDisk = false;
     public boolean hasDisk(){ return hasDisk; }
     public void feignDisk(){ hasDisk = true; }
+    public void loseDisk(){ hasDisk = false; }
 
     private boolean needsToNotifyDrivers = false;
     public boolean needsToNotifyDrivers() {
@@ -254,8 +255,8 @@ public class DiskScorer extends Subsystem {
     public boolean isSensorConnected(){
 		int pulseWidthPeriod = motor.getSensorCollection().getPulseWidthRiseToRiseUs();
 		boolean connected = pulseWidthPeriod != 0;
-		if(!connected)
-			hasEmergency = true;
+		//if(!connected)
+		//	hasEmergency = true;
 		return connected;
 	}
 

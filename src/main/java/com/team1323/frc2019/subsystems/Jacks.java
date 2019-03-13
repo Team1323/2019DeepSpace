@@ -227,7 +227,7 @@ public class Jacks extends Subsystem {
             double jackHeight = encUnitsToJackHeight(absolutePosition);
             if(jackHeight > Constants.kJackMaxPhysicalHeight || jackHeight < Constants.kJackMinPhysicalHeight){
                 DriverStation.reportError("Jack height is out of bounds", false);
-                hasEmergency = true;
+                //hasEmergency = true;
             }
             DiskScorer.getInstance().setSensorPosition(absolutePosition);
         }else{

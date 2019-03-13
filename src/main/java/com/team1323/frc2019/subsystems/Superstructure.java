@@ -510,6 +510,7 @@ public class Superstructure extends Subsystem {
 		request(state); 
 	}
 
+	/** Used for teleop tracking */
 	public void diskTrackingState(double elevatorHeight){
 		RequestList state = new RequestList(Arrays.asList(
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorDiskVisibleRanges)),
@@ -536,7 +537,7 @@ public class Superstructure extends Subsystem {
 			//elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorDiskVisibleRanges)),
 			waitForVisionRequest(),
 			swerve.startTrackRequest(Constants.kDiskTargetHeight, 5.0, true, fixedOrientation),
-			waitRequest(0.5),
+			//waitRequest(0.5),
 			//elevator.heightRequest(elevator.nearestVisionHeight(elevatorHeight, Constants.kElevatorDiskVisibleRanges)), 
 			wrist.angleRequest(Constants.kWristBallFeedingAngle),
 			ballCarriage.stateRequest(BallCarriage.State.OFF), 
@@ -545,7 +546,23 @@ public class Superstructure extends Subsystem {
 			diskIntake.stateRequest(DiskIntake.State.OFF),
 			swerve.waitForTrackRequest()), false);
 		RequestList queue = new RequestList(Arrays.asList(
-			waitRequest(0.25),
+			//waitRequest(0.25),
+			elevator.heightRequest(elevatorHeight),
+			diskScorer.stateRequest(DiskScorer.State.SCORING)), false);
+		request(state, queue); 
+	}
+
+	public void diskTrackingState(double elevatorHeight, Rotation2d fixedOrientation, double cutoffDistance){
+		RequestList state = new RequestList(Arrays.asList(
+			//elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorDiskVisibleRanges)),
+			waitForVisionRequest(),
+			swerve.startTrackRequest(Constants.kDiskTargetHeight, 5.0, true, fixedOrientation, cutoffDistance, Constants.kDefaultVisionTrackingSpeed),
+			ballIntake.stateRequest(BallIntake.State.OFF),
+			diskScorer.stateRequest(DiskScorer.State.HOLDING),
+			diskIntake.stateRequest(DiskIntake.State.OFF),
+			swerve.waitForTrackRequest()), false);
+		RequestList queue = new RequestList(Arrays.asList(
+			//waitRequest(0.25),
 			elevator.heightRequest(elevatorHeight),
 			diskScorer.stateRequest(DiskScorer.State.SCORING)), false);
 		request(state, queue); 

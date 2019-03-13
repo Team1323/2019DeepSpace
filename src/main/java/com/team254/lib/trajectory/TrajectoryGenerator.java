@@ -265,7 +265,7 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(autoStartingPose.getTranslation(), Rotation2d.fromDegrees(0.0)));
             waypoints.add(midShipScoringPose);
 
-            return generateTrajectory(false, waypoints, Arrays.asList(), 72.0, kMaxAccel, 24.0, kMaxVoltage, 48.0, 2);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 108.0, kMaxAccel, 24.0, kMaxVoltage, 72.0, 20);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getMidShipToHumanLoader(){
@@ -274,7 +274,7 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(portScoringPose.transformBy(Pose2d.fromTranslation(new Translation2d(-6.0, 0.0))).getTranslation(), Rotation2d.fromDegrees(0.0)));
             waypoints.add(humanLoaderPose);
 
-            return generateTrajectory(true, waypoints, Arrays.asList(), 72.0, kMaxAccel, 24.0, kMaxVoltage, 48.0, 2);
+            return generateTrajectory(true, waypoints, Arrays.asList(), 120.0, kMaxAccel, 24.0, kMaxVoltage, 72.0, 40);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getHumanLoaderToCloseShip(){
@@ -283,7 +283,7 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(portScoringPose.transformBy(Pose2d.fromTranslation(new Translation2d(-6.0, 0.0))).getTranslation(), Rotation2d.fromDegrees(0.0)));
             waypoints.add(closeShipScoringPose);
 
-            return generateTrajectory(false, waypoints, Arrays.asList(), 72.0, kMaxAccel, 24.0, kMaxVoltage, 48.0, 2);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 120.0, kMaxAccel, 24.0, kMaxVoltage, 72.0, 20);
         }
     }
     

@@ -142,7 +142,7 @@ public class Robot extends TimedRobot {
 
 		generator.generateTrajectories();
 
-		AutoModeBase auto = new MidCloseShipMode(false);
+		AutoModeBase auto = new MidCloseShipMode(true);
 		qTransmitter.addPaths(auto.getPaths());
 		System.out.println("Total path time: " + qTransmitter.getTotalPathTime(auto.getPaths()));
 
@@ -375,13 +375,13 @@ public class Robot extends TimedRobot {
 		else if (driver.xButton.isBeingPressed())
 			swerve.rotate(270);
 		else if (driver.leftBumper.shortReleased())
-			swerve.rotate(-25);
+			swerve.rotate(-24);
 		else if(driver.leftBumper.longPressed())
-			swerve.rotate(-152.0);
+			swerve.rotate(-151.0);
 		else if (driver.rightBumper.shortReleased())
-			swerve.rotate(25);
+			swerve.rotate(24);
 		else if(driver.rightBumper.longPressed())
-			swerve.rotate(150.0);
+			swerve.rotate(151.0);
 
 		if (driver.backButton.shortReleased() || driver.backButton.longPressed()) {
 			swerve.temporarilyDisableHeadingController();
@@ -396,6 +396,7 @@ public class Robot extends TimedRobot {
 			swerve.setTrajectory(generator.getTrajectorySet().straightPath, 0.0, 1.0);*/
 			//swerve.setVelocity(new Rotation2d(), 72.0);
 		} else if (driver.startButton.shortReleased()) {
+			diskScorer.loseDisk();
 			limelight.setPipeline(Pipeline.CLOSEST);
 			s.humanLoaderRetrievingState();
 		} /*else if (driver.leftBumper.isBeingPressed()) {
@@ -412,6 +413,7 @@ public class Robot extends TimedRobot {
 			if (coDriver.startButton.shortReleased()) {
 				if(coDriver.leftTrigger.isBeingPressed()){
 					if(!swerve.isTracking()){
+						diskScorer.loseDisk();
 						limelight.setPipeline(Pipeline.CLOSEST);
 						s.humanLoaderRetrievingState();
 					}
@@ -512,7 +514,7 @@ public class Robot extends TimedRobot {
 			s.lockedJackState();
 		}
 
-		if (diskScorer.needsToNotifyDrivers() || ballCarriage.needsToNotifyDrivers()) {
+		if (diskScorer.needsToNotifyDrivers() || ballCarriage.needsToNotifyDrivers() || swerve.needsToNotifyDrivers()) {
 			driver.rumble(1.0, 2.0);
 			coDriver.rumble(1.0, 2.0);
 		}
@@ -522,10 +524,10 @@ public class Robot extends TimedRobot {
 			elevator.enableLimits(false); 
 			coDriver.rumble(1.0, 1.0); 
 		}else if(!elevator.limitsEnabled() && coDriver.leftBumper.longReleased()){
-		  elevator.zeroSensors(); 
-		  elevator.enableLimits(true);
-		  elevator.setManualSpeed(Constants.kElevatorTeleopManualSpeed);
-		  elevator.lockHeight(); 
+			elevator.zeroSensors(); 
+			elevator.enableLimits(true);
+			elevator.setManualSpeed(Constants.kElevatorTeleopManualSpeed);
+			elevator.lockHeight(); 
 		} 
 	}
 

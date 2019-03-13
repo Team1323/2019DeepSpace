@@ -98,6 +98,14 @@ public class Swerve extends Subsystem{
 		return currentState == ControlState.VISION;
 	}
 
+	boolean needsToNotifyDrivers = false;
+	public boolean needsToNotifyDrivers(){
+		if(needsToNotifyDrivers){
+			needsToNotifyDrivers = false;
+			return true;
+		}		
+		return false;
+	}
 
 	//Name says it all
 	TrajectoryGenerator generator;
@@ -121,9 +129,9 @@ public class Swerve extends Subsystem{
 	public void alwaysConfigureModules(){
 		alwaysConfigureModules = true;
 	}
-	boolean startingLeft = true;
-	public void setStartingSide(boolean left){
-		startingLeft = left;
+	Pose2d startingPose = Constants.kRobotLeftStartingPose;
+	public void setStartingPose(Pose2d newPose){
+		startingPose = newPose;
 	}
 
 	//Trajectory variables
@@ -517,6 +525,9 @@ public class Swerve extends Subsystem{
 			rotationScalar = 0.25;
 			visionTargetHeading = robotScoringPosition.get().getRotation();
 			visionUpdateCount++;
+			if(currentState != ControlState.VISION){
+				needsToNotifyDrivers = true;
+			}
 			setState(ControlState.VISION);
 			System.out.println("Vision trajectory updated " + visionUpdateCount + " times. Distance: " + aimingParameters.get().getRange());
 		}else{
@@ -758,7 +769,7 @@ public class Swerve extends Subsystem{
 				if(modulesReady){
 					if(!hasStartedFollowing){
 						if(moduleConfigRequested){
-							zeroSensors(startingLeft ? Constants.kRobotLeftStartingPose : Constants.kRobotRightStartingPose);
+							zeroSensors(startingPose);
 							System.out.println("Position reset for auto");
 						}
 						hasStartedFollowing = true;
@@ -955,6 +966,23 @@ public class Swerve extends Subsystem{
 				useFixedVisionOrientation = true;
 				visionCutoffDistance = Constants.kClosestVisionDistance;
 				visionTrackingSpeed = Constants.kDefaultVisionTrackingSpeed;
+				resetVisionUpdates();
+				setVisionTrajectory(visionTargetHeight, endDistance, false);
+			}
+
+		};
+	}
+
+	public Request startTrackRequest(double visionTargetHeight, double endDistance, boolean hasDisk, Rotation2d fixedOrientation, double cutoffDistance, double trackingSpeed){
+		return new Request(){
+		
+			@Override
+			public void act() {
+				robotHasDisk = hasDisk;
+				fixedVisionOrientation = fixedOrientation;
+				useFixedVisionOrientation = true;
+				visionCutoffDistance = cutoffDistance;
+				visionTrackingSpeed = trackingSpeed;
 				resetVisionUpdates();
 				setVisionTrajectory(visionTargetHeight, endDistance, false);
 			}

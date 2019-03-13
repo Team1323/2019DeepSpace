@@ -67,7 +67,7 @@ public class Constants {
     public static final double kCameraXOffset = kRobotHalfLength - 15.0;//3.0
     public static final double kCameraZOffset = 16.45;//17.625
     public static final double kCameraYawAngleDegrees = 0.0;//-12.7
-    public static final double kCameraPitchAngleDegrees = kIsUsingCompBot ? 19.4 : 14.45;//14.45
+    public static final double kCameraPitchAngleDegrees = kIsUsingCompBot ? 19.4 : 17.45;//14.45
     
     //Goal tracker constants
     public static double kMaxGoalTrackAge = 0.5;//0.5

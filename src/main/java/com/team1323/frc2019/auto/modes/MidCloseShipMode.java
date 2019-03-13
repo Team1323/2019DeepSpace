@@ -65,13 +65,13 @@ public class MidCloseShipMode extends AutoModeBase{
         runAction(new ResetPoseAction(left ? new Pose2d(Constants.kRobotLeftStartingPose.getTranslation(), Rotation2d.fromDegrees(90.0)) : new Pose2d(Constants.kRobotRightStartingPose.getTranslation(), Rotation2d.fromDegrees(-90.0))));
         DiskScorer.getInstance().conformToState(DiskScorer.State.GROUND_DETECTED);
         runAction(new SetTrajectoryAction(trajectories.startToMidShip.get(left), -90.0 * directionFactor, 1.0));
-        LimelightProcessor.getInstance().setPipeline(left ? Pipeline.CLOSEST : Pipeline.CLOSEST);
+        LimelightProcessor.getInstance().setPipeline(left ? Pipeline.LEFTMOST : Pipeline.RIGHTMOST);
         runAction(new WaitToPassXCoordinateAction((96.0 + Constants.kRobotWidth)));
         s.diskScoringState(20.0, true);
-        runAction(new WaitToPassXCoordinateAction(275.0));
+        runAction(new WaitToPassXCoordinateAction(265.0));//282.55
         runAction(new WaitForElevatorAction(19.6, true));
         runAction(new WaitForVisionAction(2.0));
-        s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor));
+        s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor), 48.0);
         runAction(new WaitForSuperstructureAction());
         runAction(new WaitAction(0.25));
 
@@ -82,9 +82,9 @@ public class MidCloseShipMode extends AutoModeBase{
         LimelightProcessor.getInstance().setPipeline(Pipeline.RIGHTMOST);
         runAction(new WaitToPassXCoordinateAction(96.0));
         if(left)
-            runAction(new WaitForHeadingAction(-190.0, -160.0));
-        else
             runAction(new WaitForHeadingAction(160.0, 190.0));
+        else
+            runAction(new WaitForHeadingAction(-190.0, -160.0));
         runAction(new WaitForVisionAction(3.0));
         s.humanLoaderTrackingState();
         runAction(new WaitForSuperstructureAction());
@@ -94,10 +94,10 @@ public class MidCloseShipMode extends AutoModeBase{
         LimelightProcessor.getInstance().setPipeline(left ? Pipeline.RIGHTMOST : Pipeline.LEFTMOST);
         runAction(new WaitToPassXCoordinateAction((96.0 + Constants.kRobotWidth)));
         s.diskScoringState(20.0, true);
-        runAction(new WaitToPassXCoordinateAction(255.0));
+        runAction(new WaitToPassXCoordinateAction(255.0));//260.8
         runAction(new WaitForElevatorAction(19.6, true));
         runAction(new WaitForVisionAction(2.0));
-        s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor));
+        s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor), 48.0);
         runAction(new WaitForSuperstructureAction());
         runAction(new WaitAction(0.25));
 
