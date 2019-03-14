@@ -57,7 +57,7 @@ public class LEDs extends Subsystem{
         TARGET_TRACKING(0.0, 255.0, 0.0, 0.0625, 0.0625, false),
         CLIMBING(255.0, 0.0, 255.0, Double.POSITIVE_INFINITY, 0.0, false),
         RAINBOW(0, true),
-        BREATHING_PINK(342, 1.0, true);
+        BREATHING_PINK(357, 10.0, true);
 
         double red, green, blue, onTime, offTime, cycleTime, transitionTime;
         float startingHue;
@@ -73,11 +73,13 @@ public class LEDs extends Subsystem{
 
         private State(float hue, boolean cycle) {
             this.startingHue = hue;
+            this.isCycleColors = cycle;
         }
 
         private State(float hue, double transTime, boolean cycle) {
             this.startingHue = hue;
             this.transitionTime = transTime;
+            this.isCycleColors = cycle;
         }
 
         private State(List<List<Double>> colors, double cycleTime, boolean isCycleColors, double transitionTime) {
@@ -147,6 +149,7 @@ public class LEDs extends Subsystem{
     public float value = 1.0f; // Hardcoded brightness
     public double startingTransTime = 0.0;
     public double breathingHue = State.BREATHING_PINK.startingHue;
+    public boolean resetBreath = false;
 
     @Override
     public void writePeriodicOutputs(){
@@ -181,9 +184,35 @@ public class LEDs extends Subsystem{
             rgb[1] = averageG.process(rgb[1]);
             rgb[2] = averageB.process(rgb[2]);
 
-            canifier.setLEDOutput(rgb[0], LEDChannel.LEDChannelA);
-            canifier.setLEDOutput(rgb[1], LEDChannel.LEDChannelB);
-            canifier.setLEDOutput(rgb[2], LEDChannel.LEDChannelC);
+            setLEDs(rgb[0], rgb[1], rgb[2]);
+
+        } else if (currentState == State.BREATHING_PINK && currentState.isCycleColors == true) {
+            if (startingTransTime <= currentState.transitionTime && !resetBreath) {
+                startingTransTime += currentState.transitionTime / 60.0;
+            } else if (resetBreath) {
+                startingTransTime -= currentState.transitionTime / 60.0;
+            }
+            if (resetBreath && startingTransTime <= 0.0) {
+                resetBreath = false;
+            } else if (!resetBreath && startingTransTime >= currentState.transitionTime) {
+                resetBreath = true;
+            }
+
+
+            float rgb[] = new float[3];
+            MovingAverage averageR = new MovingAverage(10);
+            MovingAverage averageG = new MovingAverage(10);
+            MovingAverage averageB = new MovingAverage(10);
+
+            double valueBasedOnTime = currentState.transitionTime - startingTransTime;
+            
+            rgb = HSVtoRGB.convert(State.BREATHING_PINK.startingHue, 0.922f, valueBasedOnTime);
+
+            rgb[0] = averageR.process(rgb[0]);
+            rgb[1] = averageG.process(rgb[1]);
+            rgb[2] = averageB.process(rgb[2]);
+
+            setLEDs(rgb[0], rgb[1], rgb[2]);
 
         } else if(!lit && (timestamp - lastOffTime) >= currentState.offTime && currentState.isCycleColors == false){
             setLEDs(currentState.red, currentState.green, currentState.blue);
@@ -195,38 +224,7 @@ public class LEDs extends Subsystem{
                 lastOffTime = timestamp;
                 lit = false;
             }
-        } else if (currentState == State.BREATHING_PINK && currentState.isCycleColors == true) {
-            if (startingTransTime <= currentState.transitionTime) {
-                startingTransTime += currentState.transitionTime / 50.0;
-                System.out.print("Starting Transition Time: " + startingTransTime);
-            } else if (startingTransTime >= currentState.transitionTime) {
-                startingTransTime = 0.0;
-            }
-            float rgb[] = new float[3];
-            MovingAverage averageR = new MovingAverage(10);
-            MovingAverage averageG = new MovingAverage(10);
-            MovingAverage averageB = new MovingAverage(10);
-
-            if (saturation > 1) {
-                saturation = 1;
-            }
-            if (saturation < 0) {
-                saturation = 0;
-            }
-
-            double valueBasedOnTime = currentState.transitionTime - startingTransTime;
-
-            rgb = HSVtoRGB.convert(State.BREATHING_PINK.startingHue, saturation, valueBasedOnTime);
-
-            rgb[0] = averageR.process(rgb[0]);
-            rgb[1] = averageG.process(rgb[1]);
-            rgb[2] = averageB.process(rgb[2]);
-
-            canifier.setLEDOutput(rgb[0], LEDChannel.LEDChannelA);
-            canifier.setLEDOutput(rgb[1], LEDChannel.LEDChannelB);
-            canifier.setLEDOutput(rgb[2], LEDChannel.LEDChannelC);
-
-        }
+        } 
     }
 
     @Override

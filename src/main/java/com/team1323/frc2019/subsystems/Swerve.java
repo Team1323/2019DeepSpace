@@ -11,6 +11,7 @@ import com.team1323.frc2019.Ports;
 import com.team1323.frc2019.RobotState;
 import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.Loop;
+import com.team1323.frc2019.loops.QuinticPathTransmitter;
 import com.team1323.frc2019.subsystems.requests.Request;
 import com.team1323.frc2019.vision.ShooterAimingParameters;
 import com.team1323.lib.math.vectors.VectorField;
@@ -473,12 +474,17 @@ public class Swerve extends Subsystem{
 	}
 
 	public synchronized void setRobotCentricTrajectory(Translation2d relativeEndPos, double targetHeading){
+		setRobotCentricTrajectory(relativeEndPos, targetHeading, 45.0);
+	}
+
+	public synchronized void setRobotCentricTrajectory(Translation2d relativeEndPos, double targetHeading, double defaultVel){
 		modulesReady = true;
-		Rotation2d startHeading = relativeEndPos.translateBy(pose.getTranslation().inverse()).direction();
+		Translation2d endPos = pose.transformBy(Pose2d.fromTranslation(relativeEndPos)).getTranslation();
+		Rotation2d startHeading = endPos.translateBy(pose.getTranslation().inverse()).direction();
 		List<Pose2d> waypoints = new ArrayList<>();
 		waypoints.add(new Pose2d(pose.getTranslation(), startHeading));	
 		waypoints.add(new Pose2d(pose.transformBy(Pose2d.fromTranslation(relativeEndPos)).getTranslation(), startHeading));
-		Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 96.0, 60.0, 60.0, 9.0, 45.0, 1);
+		Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 96.0, 60.0, 60.0, 9.0, defaultVel, 1);
 		double heading = Util.placeInAppropriate0To360Scope(pose.getRotation().getUnboundedDegrees(), targetHeading);
 		setTrajectory(trajectory, heading, 1.0);
 	}
@@ -1022,17 +1028,28 @@ public class Swerve extends Subsystem{
 		};
 	}
 
-	public Request trajectoryRequest(Translation2d relativeEndPos, double targetHeading){
+	public Request trajectoryRequest(Translation2d relativeEndPos, double targetHeading, double defaultVel){
 		return new Request(){
 		
 			@Override
 			public void act() {
-				setRobotCentricTrajectory(relativeEndPos, targetHeading);
+				setRobotCentricTrajectory(relativeEndPos, targetHeading, defaultVel);
 			}
 
 			@Override
 			public boolean isFinished(){
 				return getState() == ControlState.TRAJECTORY && motionPlanner.isDone();
+			}
+
+		};
+	}
+
+	public Request startTrajectoryRequest(Translation2d relativeEndPos, double targetHeading, double defaultVel){
+		return new Request(){
+		
+			@Override
+			public void act() {
+				setRobotCentricTrajectory(relativeEndPos, targetHeading, defaultVel);
 			}
 
 		};
@@ -1128,6 +1145,7 @@ public class Swerve extends Subsystem{
 	public synchronized void setYCoordinate(double y){
 		pose.getTranslation().setY(y);
 		modules.forEach((m) -> m.zeroSensors(pose));
+		System.out.println("Y coordinate reset to: " + pose.getTranslation().y());
 	}
 
 	@Override

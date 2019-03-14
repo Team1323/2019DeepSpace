@@ -67,7 +67,7 @@ public class Constants {
     public static final double kCameraXOffset = kRobotHalfLength - 15.0;//3.0
     public static final double kCameraZOffset = 16.45;//17.625
     public static final double kCameraYawAngleDegrees = 0.0;//-12.7
-    public static final double kCameraPitchAngleDegrees = kIsUsingCompBot ? 19.4 : 17.45;//14.45
+    public static final double kCameraPitchAngleDegrees = kIsUsingCompBot ? 19.4 : 15.45;//14.45
     
     //Goal tracker constants
     public static double kMaxGoalTrackAge = 0.5;//0.5
@@ -214,9 +214,9 @@ public class Constants {
 	public static final double kDiskIntakingResuckingOutput = 6.0/12.0;
 
 	//Disk Scorer Constants
-	public static final double kDiskScorerIntakingOutput = 1.0;
+	public static final double kDiskScorerIntakingOutput = 0.75;
 	public static final double kDiskScorerHoldingOutput = 2.0/12.0;
-	public static final double kDiskScorerEjectOutput = -1.0;
+	public static final double kDiskScorerEjectOutput = -0.5;
 
 	//Jack Constants
 	public static final double kJackMaxSpeed = 344.1749 * 4096.0 / 600.0;//2675.0;

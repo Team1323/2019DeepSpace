@@ -334,7 +334,7 @@ public class SwerveDriveModule extends Subsystem{
 	}
 	
 	public synchronized void zeroSensors(Pose2d robotPose) {
-		driveMotor.setSelectedSensorPosition(0, 0, 100);
+		//driveMotor.setSelectedSensorPosition(0, 0, 100); TODO check if this is necessary
 		resetPose(robotPose);
 		estimatedRobotPose = robotPose;
 		previousEncDistance = getDriveDistanceInches();

@@ -13,25 +13,23 @@ import java.util.List;
 import com.team1323.frc2019.Constants;
 import com.team1323.frc2019.auto.AutoModeBase;
 import com.team1323.frc2019.auto.AutoModeEndedException;
-import com.team1323.frc2019.auto.actions.RemainingProgressAction;
 import com.team1323.frc2019.auto.actions.ResetPoseAction;
 import com.team1323.frc2019.auto.actions.SetTrajectoryAction;
 import com.team1323.frc2019.auto.actions.WaitAction;
-import com.team1323.frc2019.auto.actions.WaitForDistanceAction;
 import com.team1323.frc2019.auto.actions.WaitForElevatorAction;
 import com.team1323.frc2019.auto.actions.WaitForHeadingAction;
 import com.team1323.frc2019.auto.actions.WaitForSuperstructureAction;
 import com.team1323.frc2019.auto.actions.WaitForVisionAction;
-import com.team1323.frc2019.auto.actions.WaitToFinishPathAction;
 import com.team1323.frc2019.auto.actions.WaitToPassXCoordinateAction;
-import com.team1323.frc2019.auto.actions.WaitToPassYCoordinateAction;
 import com.team1323.frc2019.loops.LimelightProcessor;
 import com.team1323.frc2019.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2019.subsystems.DiskScorer;
 import com.team1323.frc2019.subsystems.Superstructure;
+import com.team1323.frc2019.subsystems.Swerve;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 
@@ -49,7 +47,7 @@ public class MidCloseShipMode extends AutoModeBase{
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
         return Arrays.asList(trajectories.startToMidShip.get(left), trajectories.midShipToHumanLoader.get(left),
-            trajectories.humanLoaderToCloseShip.get(left));
+            trajectories.humanLoaderToCloseShip.get(left), trajectories.closeShipToHumanLoader.get(left));
     }
 
 	public MidCloseShipMode(boolean left) {
@@ -71,8 +69,9 @@ public class MidCloseShipMode extends AutoModeBase{
         runAction(new WaitToPassXCoordinateAction(265.0));//282.55
         runAction(new WaitForElevatorAction(19.6, true));
         runAction(new WaitForVisionAction(2.0));
-        s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor), 48.0);
+        s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor), 54.0);
         runAction(new WaitForSuperstructureAction());
+        Swerve.getInstance().setXCoordinate(Constants.midShipPosition.getTranslation().x());
         runAction(new WaitAction(0.25));
 
 
@@ -88,6 +87,7 @@ public class MidCloseShipMode extends AutoModeBase{
         runAction(new WaitForVisionAction(3.0));
         s.humanLoaderTrackingState();
         runAction(new WaitForSuperstructureAction());
+        Swerve.getInstance().setYCoordinate(Constants.humanLoaderPosition.getTranslation().y());
 
 
         runAction(new SetTrajectoryAction(trajectories.humanLoaderToCloseShip.get(left), -90.0 * directionFactor, 1.0));
@@ -99,7 +99,11 @@ public class MidCloseShipMode extends AutoModeBase{
         runAction(new WaitForVisionAction(2.0));
         s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor), 48.0);
         runAction(new WaitForSuperstructureAction());
+        Swerve.getInstance().setXCoordinate(Constants.closeShipPosition.getTranslation().x());
         runAction(new WaitAction(0.25));
+
+        //runAction(new SetTrajectoryAction(trajectories.closeShipToHumanLoader.get(left), -180.0 * directionFactor, 1.0));
+        Swerve.getInstance().setRobotCentricTrajectory(new Translation2d(-36.0, 0.0), -90.0 * directionFactor);
 
         System.out.println("Auto mode finished in " + currentTime() + " seconds");
 	}

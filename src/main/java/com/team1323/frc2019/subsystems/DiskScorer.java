@@ -117,8 +117,12 @@ public class DiskScorer extends Subsystem {
     }
 
     public void conformToState(State newState){
+        conformToState(newState, newState.output);
+    }
+
+    public void conformToState(State newState, double outputOverride){
         extender.set(newState.extended);
-        setOpenLoop(newState.output);
+        setOpenLoop(outputOverride);
         setState(newState);
     }
 
@@ -128,6 +132,17 @@ public class DiskScorer extends Subsystem {
             @Override
             public void act() {
                 conformToState(newState);
+            }
+
+        };
+    }
+
+    public Request ejectRequest(double output){
+        return new Request(){
+        
+            @Override
+            public void act() {
+                conformToState(State.SCORING, output);
             }
 
         };

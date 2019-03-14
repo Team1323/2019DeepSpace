@@ -78,9 +78,9 @@ public class HSVtoRGB {
 					break;
 			}
 		}
-		RGB[0] = (float) R;
-		RGB[1] = (float) G;
-		RGB[2] = (float) B;
+		RGB[0] = (float) R / 10;
+		RGB[1] = (float) G / 10;
+		RGB[2] = (float) B / 10;
 
 		return RGB;
 	}
