@@ -609,7 +609,7 @@ public class Superstructure extends Subsystem {
 			new RequestList(Arrays.asList(
 				//swerve.waitForTrackRequest(),
 				diskScorer.stateRequest(DiskScorer.State.DETECTED),
-				/*swerve.trajectoryRequest(new Translation2d(-84.0, -36.0), -30.0),*/
+				swerve.trajectoryRequest(new Translation2d(-24.0, 0.0), 180.0),
 				swerve.openLoopRequest(new Translation2d(), 0.0)), false)
 		);
 		request(state); 

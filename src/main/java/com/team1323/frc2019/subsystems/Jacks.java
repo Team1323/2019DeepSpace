@@ -249,7 +249,7 @@ public class Jacks extends Subsystem {
     
     @Override
     public void readPeriodicInputs() {
-        periodicIO.position = motor.getSelectedSensorPosition();
+        //periodicIO.position = motor.getSelectedSensorPosition();
         if(Constants.kDebuggingOutput){
             periodicIO.velocity = motor.getSelectedSensorVelocity();
             periodicIO.voltage = motor.getMotorOutputVoltage();
