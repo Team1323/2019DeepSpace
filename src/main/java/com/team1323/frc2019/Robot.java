@@ -287,7 +287,7 @@ public class Robot extends TimedRobot {
 			enabledLooper.stop();
 			subsystems.stop();
 			disabledLooper.start();
-			leds.conformToState(LEDs.State.DISABLED);
+			leds.conformToState(LEDs.State.BREATHING_PINK);
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;
