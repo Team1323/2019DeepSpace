@@ -91,7 +91,7 @@ public class TrajectoryGenerator {
 
     static final Pose2d farShipScoringPose = Constants.farShipPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 4.0, 0.0)));
     static final Pose2d midShipScoringPose = Constants.midShipPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 4.0, 0.0)));
-    static final Pose2d closeShipScoringPose = Constants.closeShipPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 4.0, 0.0)));
+    static final Pose2d closeShipScoringPose = Constants.closeShipPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 4.0, 6.0)));
 
     public class TrajectorySet {
         public class MirroredTrajectory {
@@ -265,7 +265,7 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getStartToMidShip(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(new Pose2d(autoStartingPose.getTranslation(), Rotation2d.fromDegrees(0.0)));
-            waypoints.add(midShipScoringPose);
+            waypoints.add(Constants.midShipPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 4.0, 6.0))));
 
             return generateTrajectory(false, waypoints, Arrays.asList(), 108.0, kMaxAccel, 24.0, kMaxVoltage, 72.0, 20);
         }

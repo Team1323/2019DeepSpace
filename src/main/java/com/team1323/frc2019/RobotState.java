@@ -272,6 +272,13 @@ public class RobotState {
             SmartDashboard.putNumberArray("Path Pose", new double[]{targetPosition.x(), targetPosition.y(), 0.0, 0.0}); 
         }*/
 
+        Optional<ShooterAimingParameters> aim = /*getCachedAimingParameters();*/getAimingParameters();
+            if (aim.isPresent()) {
+                SmartDashboard.putNumber("goal_range", aim.get().getRange());
+            } else {
+                SmartDashboard.putNumber("goal_range", 0.0);
+            }
+
         if(Constants.kDebuggingOutput){
             List<Pose2d> poses = getCaptureTimeFieldToGoal();
             for (Pose2d pose : poses) {

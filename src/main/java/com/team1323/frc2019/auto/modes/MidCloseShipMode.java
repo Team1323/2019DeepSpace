@@ -66,10 +66,10 @@ public class MidCloseShipMode extends AutoModeBase{
         LimelightProcessor.getInstance().setPipeline(left ? Pipeline.LEFTMOST : Pipeline.RIGHTMOST);
         runAction(new WaitToPassXCoordinateAction((96.0 + Constants.kRobotWidth)));
         s.diskScoringState(20.0, true);
-        runAction(new WaitToPassXCoordinateAction(265.0));//282.55
+        runAction(new WaitToPassXCoordinateAction(264.0));//282.55
         runAction(new WaitForElevatorAction(19.6, true));
         runAction(new WaitForVisionAction(2.0));
-        s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor), 54.0);
+        s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor), 42.0);
         runAction(new WaitForSuperstructureAction());
         Swerve.getInstance().setXCoordinate(Constants.midShipPosition.getTranslation().x());
         runAction(new WaitAction(0.25));
@@ -94,10 +94,10 @@ public class MidCloseShipMode extends AutoModeBase{
         LimelightProcessor.getInstance().setPipeline(left ? Pipeline.RIGHTMOST : Pipeline.LEFTMOST);
         runAction(new WaitToPassXCoordinateAction((96.0 + Constants.kRobotWidth)));
         s.diskScoringState(20.0, true);
-        runAction(new WaitToPassXCoordinateAction(255.0));//260.8
+        runAction(new WaitToPassXCoordinateAction(238.0));//260.8
         runAction(new WaitForElevatorAction(19.6, true));
         runAction(new WaitForVisionAction(2.0));
-        s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor), 48.0);
+        s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor), 42.0);
         runAction(new WaitForSuperstructureAction());
         Swerve.getInstance().setXCoordinate(Constants.closeShipPosition.getTranslation().x());
         runAction(new WaitAction(0.25));

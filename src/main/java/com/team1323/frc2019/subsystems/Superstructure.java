@@ -502,8 +502,8 @@ public class Superstructure extends Subsystem {
 
 	public void diskScoringState(){
 		RequestList state = new RequestList(Arrays.asList(
-			swerve.startTrajectoryRequest(new Translation2d(6.0, 0.0), swerve.getPose().getRotation().getUnboundedDegrees(), 24.0),
-			waitRequest(0.75),
+			//swerve.startTrajectoryRequest(new Translation2d(6.0, 0.0), swerve.getPose().getRotation().getUnboundedDegrees(), 24.0),
+			//waitRequest(0.75),
 			diskScorer.stateRequest(DiskScorer.State.SCORING),
 			swerve.trajectoryRequest(new Translation2d(-24.0, 0.0), swerve.getPose().getRotation().getUnboundedDegrees(), 36.0)), false);
 		request(state); 
@@ -536,8 +536,9 @@ public class Superstructure extends Subsystem {
 		RequestList queue = new RequestList(Arrays.asList(
 			elevator.heightRequest(elevatorHeight),
 			swerve.strictWaitForTrackRequest(),
-			diskScorer.stateRequest(DiskScorer.State.SCORING)/*,
-			swerve.trajectoryRequest(new Translation2d(-24.0, 0.0), swerve.getPose().getRotation().getUnboundedDegrees())*/), false);
+			diskScorer.stateRequest(DiskScorer.State.SCORING),
+			waitRequest(0.5),
+			swerve.trajectoryRequest(new Translation2d(-24.0, 0.0), swerve.getPose().getRotation().getUnboundedDegrees(), 36.0)), false);
 		request(state, queue); 
 	}
 
@@ -565,7 +566,7 @@ public class Superstructure extends Subsystem {
 		RequestList state = new RequestList(Arrays.asList(
 			//elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorDiskVisibleRanges)),
 			waitForVisionRequest(),
-			swerve.startTrackRequest(Constants.kDiskTargetHeight, 4.0, true, fixedOrientation, cutoffDistance, Constants.kDefaultVisionTrackingSpeed),
+			swerve.startTrackRequest(Constants.kDiskTargetHeight, 6.0, true, fixedOrientation, cutoffDistance, Constants.kDefaultVisionTrackingSpeed),
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			diskScorer.stateRequest(DiskScorer.State.HOLDING),
 			diskIntake.stateRequest(DiskIntake.State.OFF),

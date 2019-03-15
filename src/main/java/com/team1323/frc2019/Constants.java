@@ -26,7 +26,7 @@ public class Constants {
 	public static final double kRobotLength = 36.5;
 	public static final double kRobotHalfWidth = kRobotWidth / 2.0;
 	public static final double kRobotHalfLength = kRobotLength / 2.0;
-	public static final double kRobotProbeExtrusion = 7.0;
+	public static final double kRobotProbeExtrusion = 4.0;
 
 	public static final double kBallRadius = 6.5;
 	
@@ -78,7 +78,7 @@ public class Constants {
 	public static final double kDefaultCurveDistance = kRobotHalfLength + 36.0;
 	public static final double kVisionUpdateDistance = kRobotHalfLength + 75.0;
 	public static final double kVisionDistanceStep = kVisionUpdateDistance / 12.0;
-	public static final double kClosestVisionDistance = 36.0;
+	public static final double kClosestVisionDistance = 25.0;//36.0
 	public static final double kDefaultVisionTrackingSpeed = 42.0;
     
     //Path following constants
@@ -176,8 +176,8 @@ public class Constants {
 	public static final double kWristAngleTolerance = 10.0; //degrees
 	public static final double kWristMinControlAngle = -80.0; //degrees
 	public static final double kWristMaxControlAngle = 85.0; //degrees
-	public static final double kWristMinPhysicalAngle = -40.0;
-	public static final double kWristMaxPhysicalAngle = 90.0;//95.192
+	public static final double kWristMinPhysicalAngle = -35.0;
+	public static final double kWristMaxPhysicalAngle = 95.0;//95.192
 	public static final double kWristIntakingAngle = kIsUsingCompBot ? 5.0 : 5.0;
 	public static final double kWristPrimaryStowAngle = 60.5;
 	public static final double kWristShortPlatformAngle = -32.0;

@@ -945,6 +945,13 @@ public class Swerve extends Subsystem{
 				useFixedVisionOrientation = false;
 				visionCutoffDistance = Constants.kClosestVisionDistance;
 				visionTrackingSpeed = Constants.kDefaultVisionTrackingSpeed;
+				Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
+				if(aim.isPresent()){
+					if(aim.get().getRange() < 54.0){
+						visionTrackingSpeed = 30.0;
+						System.out.println("Vision tracking speed set low");
+					}
+				}
 				resetVisionUpdates();
 				setVisionTrajectory(visionTargetHeight, endDistance, false);
 			}
@@ -1038,7 +1045,7 @@ public class Swerve extends Subsystem{
 
 			@Override
 			public boolean isFinished(){
-				return getState() == ControlState.TRAJECTORY && motionPlanner.isDone();
+				return (getState() == ControlState.TRAJECTORY && motionPlanner.isDone()) || getState() == ControlState.MANUAL;
 			}
 
 		};
