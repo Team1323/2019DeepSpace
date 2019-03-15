@@ -148,14 +148,13 @@ public class LEDs extends Subsystem{
     public float saturation = 1.0f; // Ensures that the colors are on the outside of the color wheel
     public float value = 1.0f; // Hardcoded brightness
     public double startingTransTime = 0.0;
-    public double breathingHue = State.BREATHING_PINK.startingHue;
     public boolean resetBreath = false;
 
     @Override
     public void writePeriodicOutputs(){
         double timestamp = Timer.getFPGATimestamp();
         if (currentState == State.RAINBOW && currentState.isCycleColors == true) {
-            stateHue += 1;
+            stateHue += 2;
             if (stateHue >= (360 - State.RAINBOW.startingHue)) {
                 stateHue = State.RAINBOW.startingHue;
             }
@@ -188,9 +187,9 @@ public class LEDs extends Subsystem{
 
         } else if (currentState == State.BREATHING_PINK && currentState.isCycleColors == true) {
             if (startingTransTime <= currentState.transitionTime && !resetBreath) {
-                startingTransTime += currentState.transitionTime / 60.0;
+                startingTransTime += currentState.transitionTime / 50.0;
             } else if (resetBreath) {
-                startingTransTime -= currentState.transitionTime / 60.0;
+                startingTransTime -= currentState.transitionTime / 50.0;
             }
             if (resetBreath && startingTransTime <= 0.0) {
                 resetBreath = false;
