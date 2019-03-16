@@ -160,9 +160,9 @@ public class LEDs extends Subsystem{
             }
 
             float rgb[] = new float[3];
-            MovingAverage averageR = new MovingAverage(10);
-            MovingAverage averageG = new MovingAverage(10);
-            MovingAverage averageB = new MovingAverage(10);
+            MovingAverage averageR = new MovingAverage(5);
+            MovingAverage averageG = new MovingAverage(5);
+            MovingAverage averageB = new MovingAverage(5);
 
             if (saturation > 1) {
                 saturation = 1;

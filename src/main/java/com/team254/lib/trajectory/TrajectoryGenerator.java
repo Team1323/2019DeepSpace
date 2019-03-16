@@ -255,11 +255,11 @@ public class TrajectoryGenerator {
         private Trajectory<TimedState<Pose2dWithCurvature>> getFarHatchToBall(){
             List<Pose2d> waypoints = new ArrayList<>();
             waypoints.add(farHatchScoringPose);
-            waypoints.add(farHatchScoringPose.transformBy(Pose2d.fromTranslation(new Translation2d(-18.0, 0.0))));
+            waypoints.add(farHatchScoringPose.transformBy(Pose2d.fromTranslation(new Translation2d(-16.0, 0.0))));
             //waypoints.add(ballIntakePose.transformBy(Pose2d.fromTranslation(new Translation2d(96.0, 0.0))));
             //waypoints.add(ballIntakePose);
 
-            return generateTrajectory(true, waypoints, Arrays.asList(), 60.0, kMaxAccel, 24.0, kMaxVoltage, 42.0, 4);
+            return generateTrajectory(true, waypoints, Arrays.asList(), 60.0, kMaxAccel, 24.0, kMaxVoltage, 36.0, 4);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getStartToMidShip(){
