@@ -96,7 +96,7 @@ public class Constants {
 	public static final int kFrontRightEncoderStartingPos = kIsUsingCompBot ? -522 - 1024 : 249 - 1024;
 	public static final int kFrontLeftEncoderStartingPos = kIsUsingCompBot ? -1986 - 1024 : -2895 - 1024;
 	public static final int kRearLeftEncoderStartingPos = kIsUsingCompBot ? -349 - 1024 : -2639 - 1024;
-	public static final int kRearRightEncoderStartingPos = kIsUsingCompBot ? 2684 - 1024 : -1739 - 1024;
+	public static final int kRearRightEncoderStartingPos = kIsUsingCompBot ? 2684 - 1024 : 2841 - 1024;
 	
 	//Swerve Module Positions (relative to the center of the drive base)
 	public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength/2, kWheelbaseWidth/2);

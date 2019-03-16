@@ -48,6 +48,7 @@ public class Jacks extends Subsystem {
             motor.configRemoteFeedbackFilter(Ports.DISK_SCORER, RemoteSensorSource.TalonSRX_SelectedSensor, 0);
             motor.configRemoteFeedbackFilter(Ports.DISK_SCORER, RemoteSensorSource.Off, 1);
             motor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
+            motor.setSensorPhase(false);
         }else{
             motor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
             motor.setSensorPhase(true);
