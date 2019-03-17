@@ -112,7 +112,7 @@ public class DiskIntake extends Subsystem {
 
   private double stateEnteredTimestamp = 0;
   private boolean stateChanged = false;
-  private double bannerSensorBeganTimestamp = Double.POSITIVE_INFINITY;
+  private double currentSpikeTimestamp = Double.POSITIVE_INFINITY;
   private boolean isResucking = false;
   private double holdingOutput = Constants.kDiskIntakeWeakEjectOutput;
   private boolean needsToNotifyDrivers = false;
@@ -179,16 +179,16 @@ public class DiskIntake extends Subsystem {
           if(stateChanged)
             hasDisk = false;
           if(diskMotor.getOutputCurrent() >= 10.0 && (timestamp - stateEnteredTimestamp) >= 0.5) {
-            if(Double.isInfinite(bannerSensorBeganTimestamp)) {
-              bannerSensorBeganTimestamp = timestamp;
+            if(Double.isInfinite(currentSpikeTimestamp)) {
+              currentSpikeTimestamp = timestamp;
             } else {
-              if(timestamp - bannerSensorBeganTimestamp > 0.375) {
+              if(timestamp - currentSpikeTimestamp > 0.375) {
                 hasDisk = true;
                 needsToNotifyDrivers = true;
               }
             }
-          } else if (!Double.isInfinite(bannerSensorBeganTimestamp)) {
-            bannerSensorBeganTimestamp = Double.POSITIVE_INFINITY;
+          } else if (!Double.isInfinite(currentSpikeTimestamp)) {
+            currentSpikeTimestamp = Double.POSITIVE_INFINITY;
           }
           break;
         case EJECTING:
@@ -315,6 +315,7 @@ public class DiskIntake extends Subsystem {
 
   @Override
   public void outputTelemetry() {
+    SmartDashboard.putString("Disk intake state", currentState.toString());
     if(Constants.kDebuggingOutput) {
       SmartDashboard.putNumber("Disk Intake Current", diskMotor.getOutputCurrent());
       SmartDashboard.putNumber("Disk Intake Voltage", diskMotor.getMotorOutputVoltage());

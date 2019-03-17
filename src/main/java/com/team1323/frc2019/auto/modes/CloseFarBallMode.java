@@ -10,7 +10,6 @@ import com.team1323.frc2019.auto.actions.RemainingProgressAction;
 import com.team1323.frc2019.auto.actions.ResetPoseAction;
 import com.team1323.frc2019.auto.actions.SetTrajectoryAction;
 import com.team1323.frc2019.auto.actions.WaitAction;
-import com.team1323.frc2019.auto.actions.WaitForDiskAction;
 import com.team1323.frc2019.auto.actions.WaitForDistanceAction;
 import com.team1323.frc2019.auto.actions.WaitForElevatorAction;
 import com.team1323.frc2019.auto.actions.WaitForHeadingAction;
@@ -23,6 +22,7 @@ import com.team1323.frc2019.loops.LimelightProcessor;
 import com.team1323.frc2019.loops.LimelightProcessor.Pipeline;
 import com.team1323.frc2019.subsystems.DiskScorer;
 import com.team1323.frc2019.subsystems.Superstructure;
+import com.team1323.frc2019.subsystems.Swerve;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
@@ -83,6 +83,7 @@ public class CloseFarBallMode extends AutoModeBase {
         runAction(new WaitForVisionAction(3.0));
         s.humanLoaderTrackingState();
         runAction(new WaitForSuperstructureAction());
+        Swerve.getInstance().setXCoordinate(Constants.kRobotHalfLength);
 
 
         runAction(new SetTrajectoryAction(trajectories.humanLoaderToFarHatch.get(left), 150.0 * directionFactor, 1.0));
@@ -90,7 +91,7 @@ public class CloseFarBallMode extends AutoModeBase {
         runAction(new RemainingProgressAction(3.75));
         s.diskScoringState(Constants.kElevatorMidHatchHeight, false);
         runAction(new RemainingProgressAction(1.25));
-        s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(150.0 * directionFactor));
+        s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(150.0 * directionFactor), 30.0);
         runAction(new WaitForSuperstructureAction());
         //runAction(new WaitAction(0.25));
 

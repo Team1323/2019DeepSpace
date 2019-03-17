@@ -78,7 +78,7 @@ public class Constants {
 	public static final double kDefaultCurveDistance = kRobotHalfLength + 36.0;
 	public static final double kVisionUpdateDistance = kRobotHalfLength + 75.0;
 	public static final double kVisionDistanceStep = kVisionUpdateDistance / 12.0;
-	public static final double kClosestVisionDistance = 25.0;//36.0
+	public static final double kClosestVisionDistance = 26.0;//36.0
 	public static final double kDefaultVisionTrackingSpeed = 42.0;
     
     //Path following constants
@@ -222,7 +222,7 @@ public class Constants {
 	public static final double kJackMaxSpeed = 344.1749 * 4096.0 / 600.0;//2675.0;
 	public static final double kJackTicksPerInch = 13.3733539 * 4096.0 / 30.4444882;//1.219 inches before wrap
 	public static final double kJackHeightTolerance = 1.0; //inches
-	public static final int kJackStartingEncPosition = kIsUsingCompBot ? 970 : 3603;
+	public static final int kJackStartingEncPosition = kIsUsingCompBot ? 970 : 3759;
 	public static final double kJackStartingHeight = 0.0;
 	public static final double kJackShortClimbHeight = -10.0;
 	public static final double kJackMaxPhysicalHeight = 0.2;

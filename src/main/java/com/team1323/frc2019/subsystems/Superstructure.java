@@ -562,6 +562,23 @@ public class Superstructure extends Subsystem {
 		request(state, queue); 
 	}
 
+	public void diskTrackingState(double elevatorHeight, Rotation2d fixedOrientation, double trackingSpeed){
+		RequestList state = new RequestList(Arrays.asList(
+			waitForVisionRequest(),
+			swerve.startTrackRequest(Constants.kDiskTargetHeight, 5.0, true, fixedOrientation, Constants.kClosestVisionDistance, trackingSpeed),
+			wrist.angleRequest(Constants.kWristBallFeedingAngle),
+			ballCarriage.stateRequest(BallCarriage.State.OFF), 
+			ballIntake.stateRequest(BallIntake.State.OFF),
+			diskScorer.stateRequest(DiskScorer.State.HOLDING),
+			diskIntake.stateRequest(DiskIntake.State.OFF),
+			swerve.waitForTrackRequest()), false);
+		RequestList queue = new RequestList(Arrays.asList(
+			//waitRequest(0.25),
+			elevator.heightRequest(elevatorHeight),
+			diskScorer.stateRequest(DiskScorer.State.SCORING)), false);
+		request(state, queue); 
+	}
+
 	public void diskTrackingState(double elevatorHeight, Rotation2d fixedOrientation, double cutoffDistance, double endDistance){
 		RequestList state = new RequestList(Arrays.asList(
 			//elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorDiskVisibleRanges)),

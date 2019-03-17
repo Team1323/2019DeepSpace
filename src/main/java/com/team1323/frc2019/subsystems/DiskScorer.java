@@ -102,6 +102,12 @@ public class DiskScorer extends Subsystem {
     public boolean hasDisk(){ return hasDisk; }
     public void feignDisk(){ hasDisk = true; }
     public void loseDisk(){ hasDisk = false; }
+    public void checkForDisk(){
+        boolean disk = banner.get();
+        if(!disk){
+            loseDisk();
+        }
+    }
 
     private boolean needsToNotifyDrivers = false;
     public boolean needsToNotifyDrivers() {

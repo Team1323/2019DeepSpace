@@ -432,6 +432,7 @@ public class Robot extends TimedRobot {
 				//diskScorer.conformToState(DiskScorer.State.SCORING);
 				s.diskScoringState();
 			} else if (coDriver.aButton.wasActivated()) {
+				diskScorer.checkForDisk();
 				s.ballIntakingState();
 			} else if (coDriver.aButton.wasReleased()) {
 				s.fullBallCycleState();

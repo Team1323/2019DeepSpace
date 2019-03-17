@@ -214,6 +214,7 @@ public class TimingUtil {
                 } else if (Math.abs(v) > kEpsilon) {
                     dt = ds / v;
                 } else {
+                    System.out.println("Path generation error --- i: " + i + " v: " + v + " accel: " + accel + "state list size: " + states.size());
                     throw new RuntimeException();
                 }
             }
