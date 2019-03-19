@@ -226,6 +226,7 @@ public class Robot extends TimedRobot {
 			enabledLooper.start();
 			teleopConfig();
 			SmartDashboard.putBoolean("Auto", false);
+			robotState.enableXTarget(false);
 			leds.conformToState(LEDs.State.ENABLED);
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
@@ -437,7 +438,9 @@ public class Robot extends TimedRobot {
 			} else if (coDriver.aButton.wasReleased()) {
 				s.fullBallCycleState();
 			} else if (coDriver.leftTrigger.wasActivated()) {
-				elevator.setTargetHeight(elevator.nearestVisionHeight(diskScorer.hasDisk() ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges));
+				if(!swerve.isTracking()){
+					elevator.setTargetHeight(elevator.nearestVisionHeight(diskScorer.hasDisk() ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges));
+				}
 			} else if (coDriver.xButton.wasActivated()) {
 				if(coDriver.leftTrigger.isBeingPressed()){
 					if(!swerve.isTracking()){

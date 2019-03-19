@@ -2,6 +2,7 @@ package com.team1323.frc2019.auto;
 
 import com.team1323.frc2019.auto.modes.CloseFarBallMode;
 import com.team1323.frc2019.auto.modes.MidCloseShipMode;
+import com.team1323.frc2019.auto.modes.MidShipFarRocketMode;
 import com.team1323.frc2019.auto.modes.StandStillMode;
 import com.team1323.frc2019.auto.modes.TwoCloseOneBallMode;
 
@@ -21,6 +22,7 @@ public class SmartDashboardInteractions {
         modeChooser.setDefaultOption(DEFAULT_MODE.name, DEFAULT_MODE);
         modeChooser.addOption(AutoOption.CLOSE_FAR_BALL.name, AutoOption.CLOSE_FAR_BALL);
         modeChooser.addOption(AutoOption.MID_CLOSE_SHIP.name, AutoOption.MID_CLOSE_SHIP);
+        modeChooser.addOption(AutoOption.MID_SHIP_FAR_ROCKET.name, AutoOption.MID_SHIP_FAR_ROCKET);
 
 
         sideChooser = new SendableChooser<Side>();
@@ -48,7 +50,8 @@ public class SmartDashboardInteractions {
     enum AutoOption{
         TWO_CLOSE_ONE_BALL("2 Close, 1 Ball"),
         CLOSE_FAR_BALL("1 Close, 1 Far, 1 Ball"),
-        MID_CLOSE_SHIP("Mid and Close Cargo Ship");
+        MID_CLOSE_SHIP("Mid and Close Cargo Ship"),
+        MID_SHIP_FAR_ROCKET("Mid Ship and Far Rocket");
     	
     	public final String name;
     	
@@ -69,6 +72,8 @@ public class SmartDashboardInteractions {
                 return new CloseFarBallMode(left);
             case MID_CLOSE_SHIP:
                 return new MidCloseShipMode(left);
+            case MID_SHIP_FAR_ROCKET:
+                return new MidShipFarRocketMode(left);
             default:
                 System.out.println("ERROR: unexpected auto mode: " + option);
                 return new StandStillMode();

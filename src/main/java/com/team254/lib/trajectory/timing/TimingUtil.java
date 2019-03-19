@@ -205,7 +205,11 @@ public class TimingUtil {
             final ConstrainedState<S> constrained_state = constraint_states.get(i);
             // Advance t.
             final double ds = constrained_state.distance - s;
-            final double accel = (constrained_state.max_velocity * constrained_state.max_velocity - v * v) / (2.0 * ds);
+            double accel = (constrained_state.max_velocity * constrained_state.max_velocity - v * v) / (2.0 * ds);
+            if((Double.isNaN(accel) || Math.abs(accel) <= kEpsilon) && (Double.isNaN(v) || Math.abs(v) <= kEpsilon) && i > 0){
+                System.out.println("PATH GENERATION CORRECTED, WOULD HAVE FAILED OTHERWISE");
+                accel = 0.00001;
+            }
             double dt = 0.0;
             if (i > 0) {
                 timed_states.get(i - 1).set_acceleration(reverse ? -accel : accel);
@@ -214,7 +218,7 @@ public class TimingUtil {
                 } else if (Math.abs(v) > kEpsilon) {
                     dt = ds / v;
                 } else {
-                    System.out.println("Path generation error --- i: " + i + " v: " + v + " accel: " + accel + "state list size: " + states.size());
+                    System.out.println("Path generation error --- i: " + i + " v: " + v + " accel: " + accel + " ds: " + ds + " state list size: " + states.size());
                     throw new RuntimeException();
                 }
             }

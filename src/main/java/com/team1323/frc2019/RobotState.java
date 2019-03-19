@@ -115,6 +115,14 @@ public class RobotState {
     public synchronized Pose2d getFieldToCamera(double timestamp) {
         return getFieldToVehicle(timestamp).transformBy(kVehicleToCamera);
     }
+
+    public void setXTarget(double x, double error){
+        goal_tracker_.setXTarget(x, error);
+    }
+
+    public void enableXTarget(boolean enable){
+        goal_tracker_.enableXTarget(enable);
+    }
     
     public void addVisionUpdate(double timestamp, List<TargetInfo> vision_update) {
         List<Translation2d> field_to_goals = new ArrayList<>();
@@ -272,12 +280,12 @@ public class RobotState {
             SmartDashboard.putNumberArray("Path Pose", new double[]{targetPosition.x(), targetPosition.y(), 0.0, 0.0}); 
         }*/
 
-        Optional<ShooterAimingParameters> aim = /*getCachedAimingParameters();*/getAimingParameters();
+        /*Optional<ShooterAimingParameters> aim = getAimingParameters();
             if (aim.isPresent()) {
                 SmartDashboard.putNumber("goal_range", aim.get().getRange());
             } else {
                 SmartDashboard.putNumber("goal_range", 0.0);
-            }
+            }*/
 
         if(Constants.kDebuggingOutput){
             List<Pose2d> poses = getCaptureTimeFieldToGoal();

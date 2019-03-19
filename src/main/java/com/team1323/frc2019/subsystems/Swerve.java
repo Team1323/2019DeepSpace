@@ -528,6 +528,7 @@ public class Swerve extends Subsystem{
 			if(pose.getTranslation().distance(robotScoringPosition.get().getTranslation()) <= 2.0){
 				System.out.println("Vision update rejected; robot is within 2 inches of scoring position");
 			}else{
+				System.out.println("Generating vision traj, first pos is: " + pose.getTranslation().toString() + ", second pos is: " + robotScoringPosition.get().getTranslation().toString() + ", last traj vector: " + lastTrajectoryVector.toString());
 				List<Pose2d> waypoints = new ArrayList<>();
 				waypoints.add(new Pose2d(pose.getTranslation(), (getState() == ControlState.VISION || getState() == ControlState.TRAJECTORY) ? lastTrajectoryVector.direction() : deltaPositionHeading));	
 				waypoints.add(new Pose2d(robotScoringPosition.get().getTranslation(), closestHeading));
@@ -569,7 +570,7 @@ public class Swerve extends Subsystem{
 					visionUpdatesAllowed = elevator.inVisionRange(robotHasDisk ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges);
 					setCurvedVisionTrajectory(aim.get().getRange() * 0.5, aim, endDistance, override);
 				}
-				System.out.println("Vision attempted");
+				//System.out.println("Vision attempted");
 			}else{
 				System.out.println("Vision target too close");
 			}
@@ -834,7 +835,7 @@ public class Swerve extends Subsystem{
 						setVisionTrajectory(lastVisionEndDistance);
 						visionCriteria.addSuccessfulUpdate(VisionCriteria.Criterion.DISTANCE);
 						attemptedVisionUpdates++;
-						System.out.println("Attempted vision updates: " + attemptedVisionUpdates + ". Vision was acceptable in " + visionVisibleCycles + " cycles.");
+						//System.out.println("Attempted vision updates: " + attemptedVisionUpdates + ". Vision was acceptable in " + visionVisibleCycles + " cycles.");
 					}
 				}
 				Translation2d driveVector = motionPlanner.update(timestamp, pose);

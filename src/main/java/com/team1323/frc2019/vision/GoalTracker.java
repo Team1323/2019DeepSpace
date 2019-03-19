@@ -99,6 +99,18 @@ public class GoalTracker {
         mCurrentTracks.clear();
     }
 
+    double xTarget = 0.0;
+    double acceptableError = 6.0;
+    boolean useXTarget = false;
+    public void setXTarget(double x, double error){
+        xTarget = x;
+        acceptableError = error;
+        useXTarget = true;
+    }
+    public void enableXTarget(boolean enable){
+        useXTarget = enable;
+    }
+
     public void update(double timestamp, List<Translation2d> field_to_goals) {
         // Try to update existing tracks
         /*for (Translation2d target : field_to_goals) {
@@ -114,9 +126,11 @@ public class GoalTracker {
             }
         }*/
         if(field_to_goals.size() >= 3 && mCurrentTracks.size() >= 3){
-            for(int i=0; i<3; i++){
-                //mCurrentTracks.get(i).tryUpdate(timestamp, field_to_goals.get(i));
-                mCurrentTracks.get(i).forceUpdate(timestamp, field_to_goals.get(i));
+            if((Math.abs(field_to_goals.get(2).x() - xTarget) <= acceptableError) || !useXTarget){
+                for(int i=0; i<3; i++){
+                    //mCurrentTracks.get(i).tryUpdate(timestamp, field_to_goals.get(i));
+                    mCurrentTracks.get(i).forceUpdate(timestamp, field_to_goals.get(i));
+                }
             }
         }else{
             for(GoalTrack track : mCurrentTracks){

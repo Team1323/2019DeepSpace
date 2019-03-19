@@ -84,6 +84,7 @@ public class CloseFarBallMode extends AutoModeBase {
         s.humanLoaderTrackingState();
         runAction(new WaitForSuperstructureAction());
         Swerve.getInstance().setXCoordinate(Constants.kRobotHalfLength);
+        //Swerve.getInstance().setYCoordinate(directionFactor * -1.0 * Constants.humanLoaderPosition.getTranslation().y());//TODO test this
 
 
         runAction(new SetTrajectoryAction(trajectories.humanLoaderToFarHatch.get(left), 150.0 * directionFactor, 1.0));
