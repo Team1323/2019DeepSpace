@@ -16,7 +16,7 @@ public class Constants {
 	
 	public static final double kEpsilon = 0.0001;
 	
-	public static final boolean kIsUsingCompBot = false;
+	public static final boolean kIsUsingCompBot = true;
 	public static final boolean kIsUsingTractionWheels = true;
 
 	public static final boolean kDebuggingOutput = false;
@@ -67,7 +67,7 @@ public class Constants {
     public static final double kCameraXOffset = kRobotHalfLength - 15.0;//3.0
     public static final double kCameraZOffset = 16.45;//17.625
     public static final double kCameraYawAngleDegrees = 0.0;//-12.7
-    public static final double kCameraPitchAngleDegrees = kIsUsingCompBot ? 14.0 : 14.95;//15.45 //Old Comp: 19.4
+    public static final double kCameraPitchAngleDegrees = kIsUsingCompBot ? 14.15 : 14.95;//15.45 //Old Comp: 19.4
     
     //Goal tracker constants
     public static double kMaxGoalTrackAge = 0.5;//0.5
