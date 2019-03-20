@@ -426,8 +426,10 @@ public class Robot extends TimedRobot {
 			} else if (coDriver.rightBumper.shortReleased()) {
 				s.diskIntakingState();
 			} else if (driver.rightTrigger.shortReleased()) {
+				diskScorer.conformToState(DiskScorer.State.STOWED);
 				ballCarriage.conformToState(BallCarriage.State.EJECTING);
 			} else if(driver.rightTrigger.longPressed()){
+				diskScorer.conformToState(DiskScorer.State.STOWED);
 				ballCarriage.conformToState(BallCarriage.State.EJECTING, Constants.kBallCarriageWeakEjectOutput);
 			} else if(driver.yButton.shortReleased()){
 				//diskScorer.conformToState(DiskScorer.State.SCORING);
