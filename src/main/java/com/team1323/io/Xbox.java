@@ -125,7 +125,11 @@ public class Xbox extends XboxController{
     	boolean longPressActivated = false;
     	boolean hasBeenPressed = false;
     	boolean longReleased = false;
-    	private double buttonStartTime = 0;
+		private double buttonStartTime = 0;
+		private double longPressDuration = 0.25;
+		public void setLongPressDuration(double seconds){
+			longPressDuration = seconds;
+		}
     	private int buttonNumber;
     	
     	public ButtonCheck(int id){
@@ -161,7 +165,7 @@ public class Xbox extends XboxController{
     		}
     		if(buttonCheck){
 	    		if(buttonActive){
-	    			if(((Timer.getFPGATimestamp() - buttonStartTime) > 0.25) && !longPressActivated){
+	    			if(((Timer.getFPGATimestamp() - buttonStartTime) > longPressDuration) && !longPressActivated){
 	    				longPressActivated = true;
 						longPressed = true;
 						longReleased = false;

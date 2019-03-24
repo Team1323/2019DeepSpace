@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.team1323.frc2019.auto.SmartDashboardInteractions.Alliance;
 import com.team1323.frc2019.subsystems.Swerve;
 import com.team1323.frc2019.vision.GoalTracker;
 import com.team1323.frc2019.vision.GoalTracker.TrackReport;
@@ -16,8 +17,8 @@ import com.team1323.lib.util.InterpolatingTreeMap;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
-import edu.wpi.first.wpilibj.Timer;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RobotState {
@@ -44,6 +45,14 @@ public class RobotState {
 
     public double distanceToTarget(){
         return getLatestFieldToVehicle().getValue().getTranslation().distance(lastKnownTargetPosition);
+    }
+
+    Alliance alliance = Alliance.BLUE;
+    public void setAlliance(Alliance a){
+        alliance = a;
+    }
+    public boolean isRed(){
+        return alliance == Alliance.RED;
     }
 
     private boolean seesTarget = false;

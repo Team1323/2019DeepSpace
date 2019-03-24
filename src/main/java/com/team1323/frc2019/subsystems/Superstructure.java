@@ -234,7 +234,7 @@ public class Superstructure extends Subsystem {
 		
 	};
 	
-	public void sendManualInput(double wristOutput, double elevatorOutput, double jackOutput){
+	public synchronized void sendManualInput(double wristOutput, double elevatorOutput, double jackOutput){
 		RequestList list = RequestList.emptyList();
 		if(wristOutput != 0){
 			list.add(wrist.openLoopRequest(wristOutput));

@@ -120,6 +120,7 @@ public class Robot extends TimedRobot {
 		coDriver = new Xbox(1);
 		driver.setDeadband(0.0);
 		coDriver.setDeadband(0.4);
+		coDriver.rightBumper.setLongPressDuration(1.0);
 
 		Logger.clearLog();
 
@@ -197,6 +198,8 @@ public class Robot extends TimedRobot {
 			enabledLooper.start();
 
 			SmartDashboard.putBoolean("Auto", true);
+
+			robotState.setAlliance(smartDashboardInteractions.getSelectedAlliance());
 
 			autoModeExecuter = new AutoModeExecuter();
 			autoModeExecuter.setAutoMode(smartDashboardInteractions.getSelectedAutoMode());
@@ -407,7 +410,22 @@ public class Robot extends TimedRobot {
 			swerve.setState(Swerve.ControlState.MANUAL);
 		}*/
 
-		s.sendManualInput(-coDriver.getY(Hand.kLeft), -coDriver.getY(Hand.kRight), /*-coDriver.getY(Hand.kLeft)*/0.0);
+		//s.sendManualInput(-coDriver.getY(Hand.kLeft), -coDriver.getY(Hand.kRight), /*-coDriver.getY(Hand.kLeft)*/0.0);
+
+		double leftStick = coDriver.getY(Hand.kLeft);
+		double rightStick = coDriver.getY(Hand.kRight);
+
+		if(Math.abs(leftStick) != 0){
+			wrist.setOpenLoop(-leftStick);
+		}else if(wrist.isOpenLoop()){
+			wrist.lockAngle();
+		}
+
+		if(Math.abs(rightStick) != 0){
+			elevator.setOpenLoop(-rightStick);
+		}else if(elevator.isOpenLoop()){
+			elevator.lockHeight();
+		}
 
 		////// Official Controls //////
 
@@ -500,11 +518,8 @@ public class Robot extends TimedRobot {
 				}
 			} else if (coDriver.bButton.longPressed()) {
 				s.diskScoringState(12.5, false);
-			} else if (coDriver.rightCenterClick.shortReleased()) {
-				s.request(new RequestList(Arrays.asList(
-					ballCarriage.stateRequest(BallCarriage.State.RECEIVING),
-					ballCarriage.waitForBallRequest(),
-					ballCarriage.stateRequest(BallCarriage.State.SUCKING)), false));
+			} else if (coDriver.rightBumper.longPressed()) {
+				diskIntake.conformToState(DiskIntake.State.EJECTING);
 			} else if (coDriver.leftCenterClick.shortReleased()) {
 				ballIntake.conformToState(BallIntake.State.EJECTING);
 			}

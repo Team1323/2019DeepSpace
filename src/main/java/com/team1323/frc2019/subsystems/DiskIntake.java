@@ -193,12 +193,12 @@ public class DiskIntake extends Subsystem {
           break;
         case EJECTING:
           if(stateChanged) {
-            setRampRate(0.0);
+            //setRampRate(0.0);
             hasDisk = false;
           }
           if (timestamp - stateEnteredTimestamp > 2.0) {
             stop();
-            setRampRate(Constants.kDiskIntakeRampRate);
+            //setRampRate(Constants.kDiskIntakeRampRate);
           }
           break;
         case HANDOFF_COMPLETE:

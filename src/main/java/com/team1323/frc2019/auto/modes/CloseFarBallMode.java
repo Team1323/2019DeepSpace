@@ -25,8 +25,10 @@ import com.team1323.frc2019.subsystems.Superstructure;
 import com.team1323.frc2019.subsystems.Swerve;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
+import com.team1323.frc2019.*;
 
 import edu.wpi.first.wpilibj.Timer;
 
@@ -83,7 +85,7 @@ public class CloseFarBallMode extends AutoModeBase {
         runAction(new WaitForVisionAction(3.0));
         s.humanLoaderTrackingState();
         runAction(new WaitForSuperstructureAction());
-        Swerve.getInstance().setXCoordinate(Constants.kRobotHalfLength);
+        Swerve.getInstance().setXCoordinate(RobotState.getInstance().isRed() ? Constants.kRobotHalfLength + 6.0 : Constants.kRobotHalfLength);
         //Swerve.getInstance().setYCoordinate(directionFactor * -1.0 * Constants.humanLoaderPosition.getTranslation().y());//TODO test this
 
 
@@ -97,7 +99,8 @@ public class CloseFarBallMode extends AutoModeBase {
         //runAction(new WaitAction(0.25));
 
 
-        runAction(new SetTrajectoryAction(trajectories.farHatchToBall.get(left), 150.0 * directionFactor, 1.0));
+        //runAction(new SetTrajectoryAction(trajectories.farHatchToBall.get(left), 150.0 * directionFactor, 1.0));
+        Swerve.getInstance().setRobotCentricTrajectory(new Translation2d(-18.0, 0.0), Swerve.getInstance().getPose().getRotation().getUnboundedDegrees(), 36.0);
         runAction(new WaitAction(0.5));
         s.diskScoringState(Constants.kElevatorLowHatchHeight, false);
         runAction(new WaitToFinishPathAction());

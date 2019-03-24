@@ -16,6 +16,8 @@ public class SmartDashboardInteractions {
     
     private SendableChooser<AutoOption> modeChooser;
     private SendableChooser<Side> sideChooser;
+    private SendableChooser<Alliance> allianceChooser;
+
     
     public void initWithDefaults(){
     	modeChooser = new SendableChooser<AutoOption>();
@@ -28,9 +30,14 @@ public class SmartDashboardInteractions {
         sideChooser = new SendableChooser<Side>();
         sideChooser.setDefaultOption("Right", Side.RIGHT);
         sideChooser.addOption("Left", Side.LEFT);
+
+        allianceChooser = new SendableChooser<Alliance>();
+        allianceChooser.setDefaultOption("Blue", Alliance.BLUE);
+        allianceChooser.addOption("Red", Alliance.RED);
     	
         SmartDashboard.putData("Mode Chooser", modeChooser);
         SmartDashboard.putData("Side Chooser", sideChooser);
+        SmartDashboard.putData("Alliance Chooser", allianceChooser);
     	SmartDashboard.putString(SELECTED_AUTO_MODE, DEFAULT_MODE.name);
     }
     
@@ -45,6 +52,11 @@ public class SmartDashboardInteractions {
     public String getSelectedMode(){
     	AutoOption option = (AutoOption) modeChooser.getSelected();
     	return option.name;
+    }
+
+    public Alliance getSelectedAlliance(){
+        Alliance alliance = (Alliance) allianceChooser.getSelected();
+        return alliance;
     }
     
     enum AutoOption{
@@ -62,6 +74,10 @@ public class SmartDashboardInteractions {
 
     enum Side{
         LEFT, RIGHT
+    }
+
+    public enum Alliance{
+        RED, BLUE
     }
     
     private AutoModeBase createAutoMode(AutoOption option, boolean left){

@@ -39,7 +39,7 @@ public class Constants {
 	public static final Pose2d rocketPortPosition = new Pose2d(new Translation2d(229.13, 27.44 - 162.0), Rotation2d.fromDegrees(-90.0));
 
 	public static final Pose2d closeShipPosition = new Pose2d(new Translation2d(260.8, -28.87), Rotation2d.fromDegrees(90.0));
-	public static final Pose2d midShipPosition = new Pose2d(new Translation2d(282.55, -28.87), Rotation2d.fromDegrees(90.0));
+	public static final Pose2d midShipPosition = new Pose2d(new Translation2d(282.55 - 6.0, -28.87), Rotation2d.fromDegrees(90.0));
 	public static final Pose2d farShipPosition = new Pose2d(new Translation2d(304.3, -28.87), Rotation2d.fromDegrees(90.0));
 
 	public static final double kDiskTargetHeight = 28.625;//28.1875
@@ -67,7 +67,7 @@ public class Constants {
     public static final double kCameraXOffset = kRobotHalfLength - 15.0;//3.0
     public static final double kCameraZOffset = 16.45;//17.625
     public static final double kCameraYawAngleDegrees = 0.0;//-12.7
-    public static final double kCameraPitchAngleDegrees = kIsUsingCompBot ? 14.15 : 14.95;//15.45 //Old Comp: 19.4
+    public static final double kCameraPitchAngleDegrees = kIsUsingCompBot ? 13.45 : 14.95;//15.45 //Old Comp: 19.4
     
     //Goal tracker constants
     public static double kMaxGoalTrackAge = 0.5;//0.5
@@ -131,7 +131,7 @@ public class Constants {
 	//Elevator Constants
 	public static final double kElevatorMaxSpeedHighGear = 696.96 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
-	public static final int kElevatorEncoderStartingPosition = kIsUsingCompBot ? 714 : 333;
+	public static final int kElevatorEncoderStartingPosition = kIsUsingCompBot ? 518 : 333;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 0.5; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.6;
@@ -170,7 +170,7 @@ public class Constants {
 	public static final double kWristMaxSpeedLowGear = 31.32 * 4096.0 / 600.0;//200.0;
 	public static final double kWristStartingAngle = 0.0;
 	/** Pulse width position of the wrist encoder when the wrist is upright (at 90 degrees, parallel to the elevator). */
-	public static final int kWristStartingEncoderPosition = kIsUsingCompBot ? 309 : 1502;
+	public static final int kWristStartingEncoderPosition = kIsUsingCompBot ? 1439 : 1502;
 	/** The number of rotations the wrist encoder undergoes for every rotation of the wrist. */
 	public static final double kWristEncoderToOutputRatio = 30.0 / 12.0; // 144 degrees before wrap
 	public static final double kWristAngleTolerance = 10.0; //degrees
@@ -178,7 +178,7 @@ public class Constants {
 	public static final double kWristMaxControlAngle = 85.0; //degrees
 	public static final double kWristMinPhysicalAngle = -35.0;
 	public static final double kWristMaxPhysicalAngle = 95.0;//95.192
-	public static final double kWristIntakingAngle = kIsUsingCompBot ? 5.0 : 5.0;
+	public static final double kWristIntakingAngle = kIsUsingCompBot ? 0.0 : 5.0;
 	public static final double kWristPrimaryStowAngle = 60.5;
 	public static final double kWristShortPlatformAngle = -32.0;
 	public static final double kWristShortHangingAngle = -62.0;
@@ -209,7 +209,7 @@ public class Constants {
 	public static final double kDiskIntakingOutput = 8.0/12.0;
 	public static final double kDiskIntakeRampRate = 0.25;
 	public static final double kDiskIntakeWeakEjectOutput = -0.375;
-	public static final double kDiskIntakeStrongEjectOutput = -0.9;
+	public static final double kDiskIntakeStrongEjectOutput = -8.0/12.0;
 	public static final double kDiskStrongHoldingOutput = 3.0;
 	public static final double kDiskIntakingResuckingOutput = 6.0/12.0;
 
@@ -222,7 +222,7 @@ public class Constants {
 	public static final double kJackMaxSpeed = 344.1749 * 4096.0 / 600.0;//2675.0;
 	public static final double kJackTicksPerInch = 13.3733539 * 4096.0 / 30.4444882;//1.219 inches before wrap
 	public static final double kJackHeightTolerance = 1.0; //inches
-	public static final int kJackStartingEncPosition = kIsUsingCompBot ? 970 : 3942;
+	public static final int kJackStartingEncPosition = kIsUsingCompBot ? 2535 : 3942;
 	public static final double kJackStartingHeight = 0.0;
 	public static final double kJackShortClimbHeight = -10.0;
 	public static final double kJackMaxPhysicalHeight = 0.2;
