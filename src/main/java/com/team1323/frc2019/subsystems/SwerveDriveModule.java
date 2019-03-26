@@ -30,6 +30,10 @@ public class SwerveDriveModule extends Subsystem{
 	private Translation2d position;
 	private Translation2d startingPosition;
 	private Pose2d estimatedRobotPose = new Pose2d();
+	boolean standardCarpetDirection = true;
+	public void setCarpetDirection(boolean standardDirection){
+		standardCarpetDirection = standardDirection;
+	}
 
 	PeriodicIO periodicIO = new PeriodicIO();
 	
@@ -269,8 +273,8 @@ public class SwerveDriveModule extends Subsystem{
 		Rotation2d currentWheelAngle = getFieldCentricAngle(robotHeading);
 		Translation2d deltaPosition = new Translation2d(currentWheelAngle.cos()*deltaEncDistance, 
 				currentWheelAngle.sin()*deltaEncDistance);
-		deltaPosition = new Translation2d(deltaPosition.x() * ((Math.signum(deltaPosition.x()) == 1.0) ? 1.0 : Constants.kXScrubFactor),
-			deltaPosition.y() * ((Math.signum(deltaPosition.y()) == 1.0) ? 1.0 : Constants.kYScrubFactor));
+		deltaPosition = new Translation2d(deltaPosition.x() * (Util.epsilonEquals(Math.signum(deltaPosition.x()), 1.0) ? (standardCarpetDirection ? 1.0 : Constants.kXScrubFactor) : (standardCarpetDirection ? Constants.kXScrubFactor : 1.0)),
+			deltaPosition.y() * (Util.epsilonEquals(Math.signum(deltaPosition.y()), 1.0) ? (standardCarpetDirection ? 1.0 : Constants.kXScrubFactor) : (standardCarpetDirection ? Constants.kYScrubFactor : 1.0)));
 		Translation2d updatedPosition = position.translateBy(deltaPosition);
 		Pose2d staticWheelPose = new Pose2d(updatedPosition, robotHeading);
 		Pose2d robotPose = staticWheelPose.transformBy(Pose2d.fromTranslation(startingPosition).inverse());

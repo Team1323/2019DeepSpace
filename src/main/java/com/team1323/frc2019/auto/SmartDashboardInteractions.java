@@ -13,6 +13,8 @@ public class SmartDashboardInteractions {
     private static final String SELECTED_AUTO_MODE = "selected_auto_mode";
     
     private static final AutoOption DEFAULT_MODE = AutoOption.TWO_CLOSE_ONE_BALL;
+
+    public static final Alliance STANDARD_CARPET_SIDE = Alliance.BLUE;
     
     private SendableChooser<AutoOption> modeChooser;
     private SendableChooser<Side> sideChooser;
@@ -25,7 +27,6 @@ public class SmartDashboardInteractions {
         modeChooser.addOption(AutoOption.CLOSE_FAR_BALL.name, AutoOption.CLOSE_FAR_BALL);
         modeChooser.addOption(AutoOption.MID_CLOSE_SHIP.name, AutoOption.MID_CLOSE_SHIP);
         modeChooser.addOption(AutoOption.MID_SHIP_FAR_ROCKET.name, AutoOption.MID_SHIP_FAR_ROCKET);
-
 
         sideChooser = new SendableChooser<Side>();
         sideChooser.setDefaultOption("Right", Side.RIGHT);

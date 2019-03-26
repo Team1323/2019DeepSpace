@@ -10,6 +10,7 @@ import com.team1323.frc2019.RobotState;
 import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.LimelightProcessor;
 import com.team1323.frc2019.loops.Loop;
+import com.team1323.frc2019.subsystems.Swerve.VisionState;
 import com.team1323.frc2019.subsystems.requests.Request;
 import com.team1323.frc2019.subsystems.requests.RequestList;
 import com.team1323.lib.util.InterpolatingDouble;
@@ -423,7 +424,7 @@ public class Superstructure extends Subsystem {
 		List<RequestList> queue = Arrays.asList(
 			new RequestList(Arrays.asList(
 				elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
-				wrist.angleRequest(Constants.kWristBallFeedingAngle, 0.2, false), 
+				wrist.angleRequest(Constants.kWristBallFeedingAngle, 0.5, false), 
 				ballIntake.stateRequest(BallIntake.State.FEEDING),
 				diskIntake.stateRequest(DiskIntake.State.OFF),
 				ballCarriage.waitForBallRequest()), true),
@@ -449,7 +450,7 @@ public class Superstructure extends Subsystem {
 	public void ballTrackingState(double elevatorHeight){
 		RequestList state = new RequestList(Arrays.asList(
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
-			swerve.startTrackRequest(Constants.kBallTargetHeight, 1.0, false),
+			swerve.startTrackRequest(Constants.kBallTargetHeight, 1.0, false, VisionState.LINEAR),
 			waitRequest(0.5),
 			elevator.heightRequest(elevator.nearestVisionHeight(elevatorHeight, Constants.kElevatorBallVisibleRanges)), 
 			wrist.angleRequest(Constants.kWristBallFeedingAngle),
@@ -524,7 +525,7 @@ public class Superstructure extends Subsystem {
 		RequestList state = new RequestList(Arrays.asList(
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorDiskVisibleRanges)),
 			waitForVisionRequest(),
-			swerve.startTrackRequest(Constants.kDiskTargetHeight, Constants.kRobotProbeExtrusion, true),
+			swerve.startTrackRequest(Constants.kDiskTargetHeight, Constants.kRobotProbeExtrusion, true, VisionState.LINEAR),
 			waitRequest(0.25),
 			elevator.heightRequest(elevator.nearestVisionHeight(elevatorHeight, Constants.kElevatorDiskVisibleRanges)), 
 			wrist.angleRequest(Constants.kWristBallFeedingAngle),

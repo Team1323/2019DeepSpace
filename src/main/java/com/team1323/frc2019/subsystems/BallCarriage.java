@@ -45,7 +45,7 @@ public class BallCarriage extends Subsystem{
         motor.enableVoltageCompensation(true);
         motor.setNeutralMode(NeutralMode.Brake);
         motor.setInverted(true);
-        setCurrentLimit(20);
+        setCurrentLimit(60);//20
         setOpenLoop(0.0);
     }
 

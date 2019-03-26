@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.team1323.frc2019.auto.SmartDashboardInteractions;
 import com.team1323.frc2019.auto.SmartDashboardInteractions.Alliance;
 import com.team1323.frc2019.subsystems.Swerve;
 import com.team1323.frc2019.vision.GoalTracker;
@@ -47,12 +48,12 @@ public class RobotState {
         return getLatestFieldToVehicle().getValue().getTranslation().distance(lastKnownTargetPosition);
     }
 
-    Alliance alliance = Alliance.BLUE;
+    Alliance alliance = SmartDashboardInteractions.STANDARD_CARPET_SIDE;
     public void setAlliance(Alliance a){
         alliance = a;
     }
-    public boolean isRed(){
-        return alliance == Alliance.RED;
+    public boolean onStandardCarpet(){
+        return alliance == SmartDashboardInteractions.STANDARD_CARPET_SIDE;
     }
 
     private boolean seesTarget = false;

@@ -12,7 +12,6 @@ import java.util.Arrays;
 import com.team1323.frc2019.auto.AutoModeBase;
 import com.team1323.frc2019.auto.AutoModeExecuter;
 import com.team1323.frc2019.auto.SmartDashboardInteractions;
-import com.team1323.frc2019.auto.modes.CloseFarBallMode;
 import com.team1323.frc2019.auto.modes.MidCloseShipMode;
 import com.team1323.frc2019.loops.LimelightProcessor;
 import com.team1323.frc2019.loops.LimelightProcessor.Pipeline;
@@ -31,11 +30,9 @@ import com.team1323.frc2019.subsystems.SubsystemManager;
 import com.team1323.frc2019.subsystems.Superstructure;
 import com.team1323.frc2019.subsystems.Swerve;
 import com.team1323.frc2019.subsystems.Wrist;
-import com.team1323.frc2019.subsystems.requests.RequestList;
 import com.team1323.io.SwitchController;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.CrashTracker;
-import com.team1323.lib.util.InputRamp;
 import com.team1323.lib.util.Logger;
 import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Rotation2d;
@@ -45,7 +42,6 @@ import com.team254.lib.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -70,8 +66,6 @@ public class Robot extends TimedRobot {
 
 	private LimelightProcessor limelight;
 
-	private InputRamp elevatorInput = new InputRamp(0.0, 0.05, 0.05);
-
 	private AutoModeExecuter autoModeExecuter = null;
 	private TrajectoryGenerator generator = TrajectoryGenerator.getInstance();
 	private QuinticPathTransmitter qTransmitter = QuinticPathTransmitter.getInstance();
@@ -79,8 +73,6 @@ public class Robot extends TimedRobot {
 
 	private Looper enabledLooper = new Looper();
 	private Looper disabledLooper = new Looper();
-
-	private double timestamp;
 
 	private RobotState robotState = RobotState.getInstance();
 
@@ -200,6 +192,7 @@ public class Robot extends TimedRobot {
 			SmartDashboard.putBoolean("Auto", true);
 
 			robotState.setAlliance(smartDashboardInteractions.getSelectedAlliance());
+			swerve.setCarpetDirection(robotState.onStandardCarpet());
 
 			autoModeExecuter = new AutoModeExecuter();
 			autoModeExecuter.setAutoMode(smartDashboardInteractions.getSelectedAutoMode());
@@ -250,8 +243,6 @@ public class Robot extends TimedRobot {
 			if (useSwitchController) {
 				switchController.update();
 			}
-
-			timestamp = Timer.getFPGATimestamp();
 
 			if (oneControllerMode)
 				oneControllerMode();
