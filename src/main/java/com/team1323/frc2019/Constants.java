@@ -39,7 +39,7 @@ public class Constants {
 	public static final Pose2d rocketPortPosition = new Pose2d(new Translation2d(229.13, 27.44 - 162.0), Rotation2d.fromDegrees(-90.0));
 
 	public static final Pose2d closeShipPosition = new Pose2d(new Translation2d(260.8, -28.87), Rotation2d.fromDegrees(90.0));
-	public static final Pose2d midShipPosition = new Pose2d(new Translation2d(282.55 - 6.0, -28.87), Rotation2d.fromDegrees(90.0));
+	public static final Pose2d midShipPosition = new Pose2d(new Translation2d(282.55 - 4.0, -28.87), Rotation2d.fromDegrees(90.0));
 	public static final Pose2d farShipPosition = new Pose2d(new Translation2d(304.3, -28.87), Rotation2d.fromDegrees(90.0));
 
 	public static final double kDiskTargetHeight = 28.625;//28.1875
@@ -77,7 +77,7 @@ public class Constants {
 	public static double kTrackReportComparatorAgeWeight = 1.0;
 	public static final double kDefaultCurveDistance = kRobotHalfLength + 36.0;
 	public static final double kVisionUpdateDistance = kRobotHalfLength + 75.0;
-	public static final double kVisionDistanceStep = kVisionUpdateDistance / 12.0;
+	public static final double kVisionDistanceStep = 4.0;
 	public static final double kClosestVisionDistance = 26.0;//36.0
 	public static final double kDefaultVisionTrackingSpeed = 42.0;
     
@@ -96,7 +96,7 @@ public class Constants {
 	public static final int kFrontRightEncoderStartingPos = kIsUsingCompBot ? -522 - 1024 : 249 - 1024;
 	public static final int kFrontLeftEncoderStartingPos = kIsUsingCompBot ? -1986 - 1024 : -2895 - 1024;
 	public static final int kRearLeftEncoderStartingPos = kIsUsingCompBot ? -349 - 1024 : -2639 - 1024;
-	public static final int kRearRightEncoderStartingPos = kIsUsingCompBot ? 2684 - 1024 : 2841 - 1024;
+	public static final int kRearRightEncoderStartingPos = kIsUsingCompBot ? 2684 - 1024 : -1208 - 1024;
 	
 	//Swerve Module Positions (relative to the center of the drive base)
 	public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength/2, kWheelbaseWidth/2);
@@ -108,9 +108,10 @@ public class Constants {
 			kVehicleToModuleOne, kVehicleToModuleTwo, kVehicleToModuleThree);
 	
 	//Scrub Factors
+	public static final boolean kSimulateReversedCarpet = false;
 	public static final double[] kWheelScrubFactors = new double[]{1.0, 1.0, 1.0, 1.0};
-	public static final double kXScrubFactor = 1.0 / (1.0 - (9549.0 / 293093.0));
-	public static final double kYScrubFactor = 1.0 / (1.0 - (4.4736 / 119.9336));
+	public static final double kXScrubFactor = kSimulateReversedCarpet ? (1.0 - (9549.0 / 293093.0)) : 1.0 / (1.0 - (9549.0 / 293093.0));
+	public static final double kYScrubFactor = kSimulateReversedCarpet ? (1.0 - (4.4736 / 119.9336)) : 1.0 / (1.0 - (4.4736 / 119.9336));
 
 	//Voltage-Velocity equation constants {m, b, x-intercept}
 	//First set is the positive direction, second set is negative
@@ -131,7 +132,7 @@ public class Constants {
 	//Elevator Constants
 	public static final double kElevatorMaxSpeedHighGear = 696.96 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
-	public static final int kElevatorEncoderStartingPosition = kIsUsingCompBot ? 518 : 333;
+	public static final int kElevatorEncoderStartingPosition = kIsUsingCompBot ? 2700 : 333;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 0.5; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.6;
@@ -166,7 +167,7 @@ public class Constants {
 	}
 	
 	//Wrist Constants
-	public static final double kWristMaxSpeedHighGear = 98.7 * 4096.0 / 600.0;//600.0; //encoder units per 100 ms
+	public static final double kWristMaxSpeedHighGear = 98.7 * 2.0 * 4096.0 / 600.0;//encoder units per 100 ms
 	public static final double kWristMaxSpeedLowGear = 31.32 * 4096.0 / 600.0;//200.0;
 	public static final double kWristStartingAngle = 0.0;
 	/** Pulse width position of the wrist encoder when the wrist is upright (at 90 degrees, parallel to the elevator). */

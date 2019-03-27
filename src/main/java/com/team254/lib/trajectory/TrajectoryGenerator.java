@@ -129,7 +129,10 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory startToMidShip;
         public final MirroredTrajectory midShipToHumanLoader;
         public final MirroredTrajectory humanLoaderToCloseShip;
+
+        public final MirroredTrajectory startToCloseShip;
         public final MirroredTrajectory closeShipToHumanLoader;
+        public final MirroredTrajectory humanLoaderToMidShip;
 
         private TrajectorySet() {
             //Test Paths
@@ -153,7 +156,10 @@ public class TrajectoryGenerator {
             startToMidShip = new MirroredTrajectory(getStartToMidShip());
             midShipToHumanLoader = new MirroredTrajectory(getMidShipToHumanLoader());
             humanLoaderToCloseShip = new MirroredTrajectory(getHumanLoaderToCloseShip());
+
+            startToCloseShip = new MirroredTrajectory(getStartToCloseShip());
             closeShipToHumanLoader = new MirroredTrajectory(getCloseShipToHumanLoader());
+            humanLoaderToMidShip = new MirroredTrajectory(getHumanLoaderToMidShip());
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getStraightPath(){
@@ -295,6 +301,24 @@ public class TrajectoryGenerator {
             waypoints.add(humanLoaderPose);
 
             return generateTrajectory(true, waypoints, Arrays.asList(), 120.0, kMaxAccel, 24.0, kMaxVoltage, 72.0, 20);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getStartToCloseShip(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(new Pose2d(autoStartingPose.getTranslation(), Rotation2d.fromDegrees(0.0)));
+            //waypoints.add(new Pose2d(portScoringPose.transformBy(Pose2d.fromTranslation(new Translation2d(-6.0, 0.0))).getTranslation(), Rotation2d.fromDegrees(0.0)));
+            waypoints.add(closeShipScoringPose);
+
+            return generateTrajectory(false, waypoints, Arrays.asList(), 120.0, kMaxAccel, 24.0, kMaxVoltage, 72.0, 20);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getHumanLoaderToMidShip(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(humanLoaderPose);
+            waypoints.add(new Pose2d(portScoringPose.transformBy(Pose2d.fromTranslation(new Translation2d(-6.0, 0.0))).getTranslation(), Rotation2d.fromDegrees(0.0)));
+            waypoints.add(midShipScoringPose);
+
+            return generateTrajectory(false, waypoints, Arrays.asList(), 120.0, kMaxAccel, 24.0, kMaxVoltage, 72.0, 20);
         }
     }
     

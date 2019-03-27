@@ -273,6 +273,65 @@ public class SwerveDriveModule extends Subsystem{
 		Rotation2d currentWheelAngle = getFieldCentricAngle(robotHeading);
 		Translation2d deltaPosition = new Translation2d(currentWheelAngle.cos()*deltaEncDistance, 
 				currentWheelAngle.sin()*deltaEncDistance);
+
+		double xScrubFactor = Constants.kXScrubFactor;
+		double yScrubFactor = Constants.kYScrubFactor;
+		if(Constants.kSimulateReversedCarpet){
+			if(Util.epsilonEquals(Math.signum(deltaPosition.x()), 1.0)){
+				if(standardCarpetDirection){
+					
+				}else{
+					xScrubFactor = 1.0;
+				}
+			}else{
+				if(standardCarpetDirection){
+					
+				}else{
+					xScrubFactor = 1.0;
+				}
+			}
+			if(Util.epsilonEquals(Math.signum(deltaPosition.y()), 1.0)){
+				if(standardCarpetDirection){
+					yScrubFactor = 1.0;
+				}else{
+					
+				}
+			}else{
+				if(standardCarpetDirection){
+					
+				}else{
+					yScrubFactor = 1.0;
+				}
+			}
+		}else{
+			if(Util.epsilonEquals(Math.signum(deltaPosition.x()), 1.0)){
+				if(standardCarpetDirection){
+					xScrubFactor = 1.0;
+				}else{
+					
+				}
+			}else{
+				if(standardCarpetDirection){
+					
+				}else{
+					xScrubFactor = 1.0;
+				}
+			}
+			if(Util.epsilonEquals(Math.signum(deltaPosition.y()), 1.0)){
+				if(standardCarpetDirection){
+					yScrubFactor = 1.0;
+				}else{
+					
+				}
+			}else{
+				if(standardCarpetDirection){
+					
+				}else{
+					yScrubFactor = 1.0;
+				}
+			}
+		}
+
 		deltaPosition = new Translation2d(deltaPosition.x() * (Util.epsilonEquals(Math.signum(deltaPosition.x()), 1.0) ? (standardCarpetDirection ? 1.0 : Constants.kXScrubFactor) : (standardCarpetDirection ? Constants.kXScrubFactor : 1.0)),
 			deltaPosition.y() * (Util.epsilonEquals(Math.signum(deltaPosition.y()), 1.0) ? (standardCarpetDirection ? 1.0 : Constants.kXScrubFactor) : (standardCarpetDirection ? Constants.kYScrubFactor : 1.0)));
 		Translation2d updatedPosition = position.translateBy(deltaPosition);

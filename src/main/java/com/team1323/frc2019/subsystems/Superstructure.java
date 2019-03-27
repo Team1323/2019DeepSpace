@@ -513,6 +513,7 @@ public class Superstructure extends Subsystem {
 	public void diskScoringState(double elevatorHeight, boolean resuck){
 		RequestList state = new RequestList(Arrays.asList(
 			elevator.heightRequest(elevatorHeight),
+			wrist.angleRequest(Constants.kWristPrimaryStowAngle),
 			diskScorer.stateRequest(resuck ? DiskScorer.State.DETECTED : DiskScorer.State.HOLDING),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
 			ballIntake.stateRequest(BallIntake.State.OFF),

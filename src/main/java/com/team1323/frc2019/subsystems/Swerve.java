@@ -87,6 +87,7 @@ public class Swerve extends Subsystem{
 	VisionState visionState = VisionState.CURVED;
 	double visionCurveDistance = Constants.kDefaultCurveDistance;
 	Translation2d visionTargetPosition = new Translation2d();
+	public Translation2d getVisionTargetPosition(){ return visionTargetPosition; }
 	int visionUpdateCount = 0;
 	VisionCriteria visionCriteria = new VisionCriteria();
 	double initialVisionDistance = 0.0;
