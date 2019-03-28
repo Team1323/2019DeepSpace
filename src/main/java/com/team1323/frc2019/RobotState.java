@@ -52,6 +52,9 @@ public class RobotState {
     public void setAlliance(Alliance a){
         alliance = a;
     }
+    public Alliance getAlliance(){
+        return alliance;
+    }
     public boolean onStandardCarpet(){
         return alliance == SmartDashboardInteractions.STANDARD_CARPET_SIDE;
     }

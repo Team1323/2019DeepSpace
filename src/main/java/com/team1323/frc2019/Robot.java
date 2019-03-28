@@ -503,7 +503,7 @@ public class Robot extends TimedRobot {
 				}else{
 					if(diskScorer.hasDisk() || diskScorer.isExtended()){
 						s.diskScoringState(Constants.kElevatorLowHatchHeight, false);
-					}else if(ballCarriage.getState() != BallCarriage.State.RECEIVING){
+					}else{
 						s.ballScoringState(Constants.kElevatorLowBallHeight);
 					}
 				}
@@ -513,6 +513,8 @@ public class Robot extends TimedRobot {
 				diskIntake.conformToState(DiskIntake.State.EJECTING);
 			} else if (coDriver.leftCenterClick.shortReleased()) {
 				ballIntake.conformToState(BallIntake.State.EJECTING);
+			} else if(driver.leftCenterClick.shortReleased()){
+				s.diskTrackingState(elevator.getHeight());
 			}
 		}else{
 			

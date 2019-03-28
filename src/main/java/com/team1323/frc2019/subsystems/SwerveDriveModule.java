@@ -279,28 +279,28 @@ public class SwerveDriveModule extends Subsystem{
 		if(Constants.kSimulateReversedCarpet){
 			if(Util.epsilonEquals(Math.signum(deltaPosition.x()), 1.0)){
 				if(standardCarpetDirection){
-					
+					xScrubFactor = 1.0 / Constants.kXScrubFactor;
 				}else{
 					xScrubFactor = 1.0;
 				}
 			}else{
 				if(standardCarpetDirection){
-					
+					xScrubFactor = Constants.kXScrubFactor * Constants.kXScrubFactor;
 				}else{
-					xScrubFactor = 1.0;
+					
 				}
 			}
 			if(Util.epsilonEquals(Math.signum(deltaPosition.y()), 1.0)){
 				if(standardCarpetDirection){
-					yScrubFactor = 1.0;
+					yScrubFactor = 1.0 / Constants.kYScrubFactor;
 				}else{
-					
+					yScrubFactor = 1.0;
 				}
 			}else{
 				if(standardCarpetDirection){
-					
+					yScrubFactor = Constants.kYScrubFactor * Constants.kYScrubFactor;
 				}else{
-					yScrubFactor = 1.0;
+					
 				}
 			}
 		}else{
@@ -332,8 +332,8 @@ public class SwerveDriveModule extends Subsystem{
 			}
 		}
 
-		deltaPosition = new Translation2d(deltaPosition.x() * (Util.epsilonEquals(Math.signum(deltaPosition.x()), 1.0) ? (standardCarpetDirection ? 1.0 : Constants.kXScrubFactor) : (standardCarpetDirection ? Constants.kXScrubFactor : 1.0)),
-			deltaPosition.y() * (Util.epsilonEquals(Math.signum(deltaPosition.y()), 1.0) ? (standardCarpetDirection ? 1.0 : Constants.kXScrubFactor) : (standardCarpetDirection ? Constants.kYScrubFactor : 1.0)));
+		deltaPosition = new Translation2d(deltaPosition.x() * xScrubFactor,
+			deltaPosition.y() * yScrubFactor);
 		Translation2d updatedPosition = position.translateBy(deltaPosition);
 		Pose2d staticWheelPose = new Pose2d(updatedPosition, robotHeading);
 		Pose2d robotPose = staticWheelPose.transformBy(Pose2d.fromTranslation(startingPosition).inverse());

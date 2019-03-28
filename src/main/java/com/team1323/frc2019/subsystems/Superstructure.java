@@ -537,10 +537,10 @@ public class Superstructure extends Subsystem {
 			swerve.waitForTrackRequest()), false);
 		RequestList queue = new RequestList(Arrays.asList(
 			elevator.heightRequest(elevatorHeight),
-			swerve.strictWaitForTrackRequest(),
-			diskScorer.stateRequest(DiskScorer.State.SCORING),
-			waitRequest(0.5),
-			swerve.trajectoryRequest(new Translation2d(-24.0, 0.0), swerve.getPose().getRotation().getUnboundedDegrees(), 36.0)), false);
+			swerve.strictWaitForTrackRequest()//,
+			//diskScorer.stateRequest(DiskScorer.State.SCORING),
+			//waitRequest(0.5),
+			/*swerve.trajectoryRequest(new Translation2d(-24.0, 0.0), swerve.getPose().getRotation().getUnboundedDegrees(), 36.0)*/), false);
 		request(state, queue); 
 	}
 

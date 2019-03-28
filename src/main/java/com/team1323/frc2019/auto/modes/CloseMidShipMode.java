@@ -43,6 +43,8 @@ import edu.wpi.first.wpilibj.Timer;
  */
 public class CloseMidShipMode extends AutoModeBase{
     Superstructure s;
+    Swerve swerve;
+    RobotState robotState;
 
     final boolean left;
     final double directionFactor;
@@ -55,6 +57,8 @@ public class CloseMidShipMode extends AutoModeBase{
 
 	public CloseMidShipMode(boolean left) {
         s = Superstructure.getInstance();
+        swerve = Swerve.getInstance();
+        robotState = RobotState.getInstance();
         this.left = left;
         directionFactor = left ? -1.0 : 1.0;
     }
@@ -74,15 +78,17 @@ public class CloseMidShipMode extends AutoModeBase{
         runAction(new WaitForVisionAction(2.0));
         s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor), 42.0, 6.0, 30.0);
         runAction(new WaitForSuperstructureAction());
-        Swerve.getInstance().setXCoordinate(Constants.closeShipPosition.getTranslation().x());
-        if(Swerve.getInstance().getVisionTargetPosition().x() > (Constants.closeShipPosition.getTranslation().x() - 3.0)){
-            //RobotState.getInstance().setAlliance(SmartDashboardInteractions.STANDARD_CARPET_SIDE);
-            //Swerve.getInstance().setCarpetDirection(RobotState.getInstance().onStandardCarpet());
-            System.out.println("Alliance set to: " + SmartDashboardInteractions.STANDARD_CARPET_SIDE);
+        swerve.setXCoordinate(Constants.closeShipPosition.getTranslation().x());
+        if(swerve.getVisionTargetPosition().x() > (Constants.closeShipPosition.getTranslation().x() - 1.0)){
+            System.out.println("Alliance kept at: " + robotState.getAlliance());
         }else{
-            //RobotState.getInstance().setAlliance(SmartDashboardInteractions.NONSTANDARD_CARPET_SIDE);
-            //Swerve.getInstance().setCarpetDirection(RobotState.getInstance().onStandardCarpet());
-            System.out.println("Alliance set to: " + SmartDashboardInteractions.NONSTANDARD_CARPET_SIDE);
+            SmartDashboardInteractions.Alliance newAlliance = SmartDashboardInteractions.NONSTANDARD_CARPET_SIDE;
+            if(robotState.getAlliance() == newAlliance){
+                newAlliance = SmartDashboardInteractions.STANDARD_CARPET_SIDE;
+            }
+            robotState.setAlliance(newAlliance);
+            swerve.setCarpetDirection(robotState.onStandardCarpet());
+            System.out.println("Alliance set to: " + newAlliance);
         }
         runAction(new WaitAction(0.25));
 
@@ -99,27 +105,28 @@ public class CloseMidShipMode extends AutoModeBase{
         runAction(new WaitForVisionAction(3.0));
         s.humanLoaderTrackingState();
         runAction(new WaitForSuperstructureAction());
-        Swerve.getInstance().setYCoordinate(directionFactor * -1.0 * Constants.humanLoaderPosition.getTranslation().y());
-        Swerve.getInstance().setXCoordinate(Constants.kRobotHalfLength);
+        swerve.setYCoordinate(directionFactor * -1.0 * Constants.humanLoaderPosition.getTranslation().y());
+        swerve.setXCoordinate(Constants.kRobotHalfLength);
+        //runAction(new WaitAction(0.25));
 
 
         runAction(new SetTrajectoryAction(trajectories.humanLoaderToMidShip.get(left), -90.0 * directionFactor, 0.75));
         LimelightProcessor.getInstance().setPipeline(left ? Pipeline.LEFTMOST : Pipeline.RIGHTMOST);
         runAction(new WaitToPassXCoordinateAction((96.0 + Constants.kRobotWidth)));
-        RobotState.getInstance().setXTarget(Constants.midShipPosition.getTranslation().x(), 7.0);
+        robotState.setXTarget(Constants.midShipPosition.getTranslation().x(), 7.0);
         s.diskScoringState(20.0, true);
         //runAction(new WaitToPassXCoordinateAction(264.0));//282.55 267
         runAction(new WaitForElevatorAction(19.6, true));
         runAction(new WaitForVisionAction(2.0));
-        runAction(new WaitForVisionPositionAction(Constants.midShipPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 4.0, 6.0))).getTranslation().x()));
+        runAction(new WaitForVisionPositionAction(Constants.midShipPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 4.0, 7.0))).getTranslation().x()));
         s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor), 42.0, 6.0, 30.0);
         runAction(new WaitForSuperstructureAction());
-        Swerve.getInstance().setXCoordinate(Constants.midShipPosition.getTranslation().x());
-        RobotState.getInstance().enableXTarget(false);
+        swerve.setXCoordinate(Constants.midShipPosition.getTranslation().x());
+        robotState.enableXTarget(false);
         runAction(new WaitAction(0.25));
 
         //runAction(new SetTrajectoryAction(trajectories.closeShipToHumanLoader.get(left), -180.0 * directionFactor, 1.0));
-        Swerve.getInstance().setRobotCentricTrajectory(new Translation2d(-36.0, 0.0), -90.0 * directionFactor);
+        swerve.setRobotCentricTrajectory(new Translation2d(-36.0, 0.0), -90.0 * directionFactor);
 
         System.out.println("Auto mode finished in " + currentTime() + " seconds");
 	}
