@@ -526,7 +526,7 @@ public class Superstructure extends Subsystem {
 		RequestList state = new RequestList(Arrays.asList(
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorDiskVisibleRanges)),
 			waitForVisionRequest(),
-			swerve.startTrackRequest(Constants.kDiskTargetHeight, Constants.kRobotProbeExtrusion, true, VisionState.LINEAR),
+			swerve.startTrackRequest(Constants.kDiskTargetHeight, 1.0, true, VisionState.LINEAR),
 			waitRequest(0.25),
 			elevator.heightRequest(elevator.nearestVisionHeight(elevatorHeight, Constants.kElevatorDiskVisibleRanges)), 
 			wrist.angleRequest(Constants.kWristBallFeedingAngle),

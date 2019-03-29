@@ -172,7 +172,7 @@ public class Swerve extends Subsystem{
 				3, Constants.kRearRightEncoderStartingPos, Constants.kVehicleToModuleThree);
 		
 		modules = Arrays.asList(frontRight, frontLeft, rearLeft, rearRight);
-		positionModules = Arrays.asList(frontRight, frontLeft, rearRight);
+		positionModules = Arrays.asList(frontRight, frontLeft, rearLeft, rearRight);
 		
 		//rearLeft.disableDriveEncoder();
 		
@@ -510,7 +510,7 @@ public class Swerve extends Subsystem{
 		visionTargetPosition = robotState.getCaptureTimeFieldToGoal().get(2).getTranslation();
 		Optional<Pose2d> orientedTarget = robotState.getOrientedTargetPosition(aimingParameters);
 		lastVisionEndDistance = endDistance;
-		if((orientedTarget.isPresent() && robotState.seesTarget() && visionUpdatesAllowed) || overrideSafeties){
+		if((orientedTarget.isPresent() && /*robotState.seesTarget() &&*/ visionUpdatesAllowed) || overrideSafeties){
 
 			Rotation2d closestHeading = fixedVisionOrientation;
 			double distance = 2.0 * Math.PI;

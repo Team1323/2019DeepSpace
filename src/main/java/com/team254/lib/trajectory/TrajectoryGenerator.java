@@ -318,7 +318,7 @@ public class TrajectoryGenerator {
             waypoints.add(new Pose2d(portScoringPose.transformBy(Pose2d.fromTranslation(new Translation2d(-6.0, 0.0))).getTranslation(), Rotation2d.fromDegrees(0.0)));
             waypoints.add(midShipScoringPose);
 
-            return generateTrajectory(false, waypoints, Arrays.asList(), 120.0, kMaxAccel, 24.0, kMaxVoltage, 72.0, 20);
+            return generateTrajectory(false, waypoints, Arrays.asList(), 120.0, kMaxAccel, 24.0, kMaxVoltage, 72.0, 60);
         }
     }
     

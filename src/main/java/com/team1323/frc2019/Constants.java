@@ -122,7 +122,7 @@ public class Constants {
 		{{1.84, -4.70, 2.56}, {1.85, 5.34, -2.89}}};
 	
 	//Swerve Odometry Constants
-	public static final double kSwerveWheelDiameter = 4.0901; //inches (actual diamter is closer to 3.87)
+	public static final double kSwerveWheelDiameter = 4.0901; //inches (actual diamter is closer to 3.87, but secondary algorithm prefers 4.0901) 3.76
 	public static final double kSwerveDriveEncoderResolution = 4096.0;
 	/** The number of rotations the swerve drive encoder undergoes for every rotation of the wheel. */
 	public static final double kSwerveEncoderToWheelRatio = 6.0;
