@@ -39,7 +39,7 @@ public class Constants {
 	public static final Pose2d rocketPortPosition = new Pose2d(new Translation2d(229.13, 27.44 - 162.0), Rotation2d.fromDegrees(-90.0));
 
 	public static final Pose2d closeShipPosition = new Pose2d(new Translation2d(260.8, -28.87), Rotation2d.fromDegrees(90.0));
-	public static final Pose2d midShipPosition = new Pose2d(new Translation2d(282.55 - 0.0, -28.87), Rotation2d.fromDegrees(90.0));
+	public static final Pose2d midShipPosition = new Pose2d(new Translation2d(282.55, -28.87), Rotation2d.fromDegrees(90.0));
 	public static final Pose2d farShipPosition = new Pose2d(new Translation2d(304.3, -28.87), Rotation2d.fromDegrees(90.0));
 
 	public static final double kDiskTargetHeight = 28.625;//28.1875

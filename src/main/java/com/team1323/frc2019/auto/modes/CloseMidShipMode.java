@@ -113,12 +113,12 @@ public class CloseMidShipMode extends AutoModeBase{
         runAction(new SetTrajectoryAction(trajectories.humanLoaderToMidShip.get(left), -90.0 * directionFactor, 0.75));
         LimelightProcessor.getInstance().setPipeline(left ? Pipeline.LEFTMOST : Pipeline.RIGHTMOST);
         runAction(new WaitToPassXCoordinateAction((96.0 + Constants.kRobotWidth)));
-        robotState.setXTarget(Constants.midShipPosition.getTranslation().x(), 7.0);
+        robotState.setXTarget(Constants.midShipPosition.getTranslation().x(), 8.0);
         s.diskScoringState(20.0, true);
         //runAction(new WaitToPassXCoordinateAction(264.0));//282.55 267
         runAction(new WaitForElevatorAction(19.6, true));
         runAction(new WaitForVisionAction(2.0));
-        runAction(new WaitForVisionPositionAction(Constants.midShipPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 4.0, 7.0))).getTranslation().x()));
+        runAction(new WaitForVisionPositionAction(Constants.midShipPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 4.0, 8.0))).getTranslation().x()));
         s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor), 42.0, 6.0, 30.0);
         runAction(new WaitForSuperstructureAction());
         swerve.setXCoordinate(Constants.midShipPosition.getTranslation().x());

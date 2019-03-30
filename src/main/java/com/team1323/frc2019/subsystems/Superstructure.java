@@ -521,6 +521,22 @@ public class Superstructure extends Subsystem {
 		request(state); 
 	}
 
+	/** Used for driver tracking */
+	public void diskTrackingState(){
+		RequestList state = new RequestList(Arrays.asList(
+			waitForVisionRequest(),
+			swerve.startTrackRequest(Constants.kDiskTargetHeight, 1.0, true, VisionState.LINEAR),
+			wrist.angleRequest(Constants.kWristBallFeedingAngle),
+			ballCarriage.stateRequest(BallCarriage.State.OFF), 
+			ballIntake.stateRequest(BallIntake.State.OFF),
+			diskScorer.stateRequest(DiskScorer.State.HOLDING),
+			diskIntake.stateRequest(DiskIntake.State.OFF),
+			swerve.waitForTrackRequest()), false);
+		RequestList queue = new RequestList(Arrays.asList(
+			swerve.strictWaitForTrackRequest()), false);
+		request(state, queue); 
+	}
+
 	/** Used for teleop tracking */
 	public void diskTrackingState(double elevatorHeight){
 		RequestList state = new RequestList(Arrays.asList(

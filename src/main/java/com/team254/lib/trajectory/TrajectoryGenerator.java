@@ -84,7 +84,7 @@ public class TrajectoryGenerator {
     static final Pose2d autoStartingPose = new Pose2d(Constants.kRobotLeftStartingPose.getTranslation().translateBy(new Translation2d(/*-0.5*/0.0, 0.0)), Rotation2d.fromDegrees(-90.0));
 
     static final Pose2d closeHatchScoringPose = Constants.closeHatchPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 3.5, 0.0)));
-    static final Pose2d farHatchScoringPose = Constants.farHatchPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 5.0, 8.0)));
+    public static final Pose2d farHatchScoringPose = Constants.farHatchPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 5.0, 8.0)));
     static final Pose2d humanLoaderPose = Constants.humanLoaderPosition.transformBy(Pose2d.fromTranslation(new Translation2d(Constants.kRobotHalfLength - 4.0, 2.0)));
     static final Pose2d ballIntakePose = new Pose2d(Constants.autoBallPosition.transformBy(Pose2d.fromTranslation(new Translation2d(Constants.kRobotHalfLength + 9.0, 0.0))).getTranslation(), Rotation2d.fromDegrees(0.0));
     static final Pose2d portScoringPose = Constants.rocketPortPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - 6.0, 0.0)));
@@ -124,6 +124,7 @@ public class TrajectoryGenerator {
         public final MirroredTrajectory farHatchToHumanLoader;
         public final MirroredTrajectory humanLoaderToFarHatch;
         public final MirroredTrajectory farHatchToBall;
+        public final MirroredTrajectory farHatchToCloseShip;
 
         //Elim Auto Paths
         public final MirroredTrajectory startToMidShip;
@@ -151,6 +152,7 @@ public class TrajectoryGenerator {
             farHatchToHumanLoader = new MirroredTrajectory(getFarHatchToHumanLoader());
             humanLoaderToFarHatch = new MirroredTrajectory(getHumanLoaderToFarHatch());
             farHatchToBall = new MirroredTrajectory(getFarHatchToBall());
+            farHatchToCloseShip = new MirroredTrajectory(getFarHatchToCloseShip());
 
             //Elim Auto Paths
             startToMidShip = new MirroredTrajectory(getStartToMidShip());
@@ -266,6 +268,14 @@ public class TrajectoryGenerator {
             //waypoints.add(ballIntakePose);
 
             return generateTrajectory(true, waypoints, Arrays.asList(), 60.0, kMaxAccel, 24.0, kMaxVoltage, 36.0, 4);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getFarHatchToCloseShip(){
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(farHatchScoringPose);
+            waypoints.add(new Pose2d(closeShipScoringPose.transformBy(Pose2d.fromTranslation(new Translation2d(-12.0, -6.0))).getTranslation(), Rotation2d.fromDegrees(-90.0)));
+
+            return generateTrajectory(true, waypoints, Arrays.asList(), 120.0, kMaxAccel, 24.0, kMaxVoltage, 36.0, 4);
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getStartToMidShip(){

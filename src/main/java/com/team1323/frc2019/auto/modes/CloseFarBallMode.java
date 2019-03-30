@@ -27,6 +27,7 @@ import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.TrajectoryGenerator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team1323.frc2019.*;
 
@@ -41,8 +42,7 @@ public class CloseFarBallMode extends AutoModeBase {
     @Override
     public List<Trajectory<TimedState<Pose2dWithCurvature>>> getPaths() {
         return Arrays.asList(trajectories.startToCloseHatch.get(left), trajectories.closeHatchToHumanLoader.get(left),
-                trajectories.humanLoaderToFarHatch.get(left), trajectories.farHatchToBall.get(left),
-                trajectories.ballToRocketPort.get(left));
+                trajectories.humanLoaderToFarHatch.get(left), trajectories.farHatchToCloseShip.get(left));
     }
 
 	public CloseFarBallMode(boolean left) {
@@ -61,7 +61,7 @@ public class CloseFarBallMode extends AutoModeBase {
         LimelightProcessor.getInstance().setPipeline(left ? Pipeline.LEFTMOST : Pipeline.RIGHTMOST);
         runAction(new WaitToPassYCoordinateAction((46.25 + Constants.kRobotWidth) * directionFactor));
         s.diskScoringState(Constants.kElevatorMidHatchHeight, true);
-        runAction(new WaitForDistanceAction(left ? Constants.closeHatchPosition.getTranslation() : Constants.rightCloseHatchPosition.getTranslation(), 102.0));
+        runAction(new WaitForDistanceAction(left ? Constants.closeHatchPosition.getTranslation() : Constants.rightCloseHatchPosition.getTranslation(), 45.0));//102
         runAction(new WaitForElevatorAction(19.6, true));
         runAction(new WaitForVisionAction(3.0));
         if(left)
@@ -98,9 +98,10 @@ public class CloseFarBallMode extends AutoModeBase {
         runAction(new WaitForSuperstructureAction());
         //runAction(new WaitAction(0.25));
 
-
-        //runAction(new SetTrajectoryAction(trajectories.farHatchToBall.get(left), 150.0 * directionFactor, 1.0));
-        Swerve.getInstance().setRobotCentricTrajectory(new Translation2d(-18.0, 0.0), Swerve.getInstance().getPose().getRotation().getUnboundedDegrees(), 36.0);
+        Swerve.getInstance().setXCoordinate(TrajectoryGenerator.farHatchScoringPose.getTranslation().x());
+        Swerve.getInstance().setYCoordinate(directionFactor * -1.0 * TrajectoryGenerator.farHatchScoringPose.getTranslation().y());
+;       runAction(new SetTrajectoryAction(trajectories.farHatchToCloseShip.get(left), 90.0 * directionFactor, 1.0));
+        //Swerve.getInstance().setRobotCentricTrajectory(new Translation2d(-18.0, 0.0), Swerve.getInstance().getPose().getRotation().getUnboundedDegrees(), 36.0);
         runAction(new WaitAction(0.5));
         s.diskScoringState(Constants.kElevatorLowHatchHeight, false);
         runAction(new WaitToFinishPathAction());
