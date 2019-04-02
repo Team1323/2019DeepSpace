@@ -16,7 +16,7 @@ public class Constants {
 	
 	public static final double kEpsilon = 0.0001;
 	
-	public static final boolean kIsUsingCompBot = false;
+	public static final boolean kIsUsingCompBot = true;
 	public static final boolean kIsUsingTractionWheels = true;
 
 	public static final boolean kDebuggingOutput = false;
@@ -39,7 +39,7 @@ public class Constants {
 	public static final Pose2d rocketPortPosition = new Pose2d(new Translation2d(229.13, 27.44 - 162.0), Rotation2d.fromDegrees(-90.0));
 
 	public static final Pose2d closeShipPosition = new Pose2d(new Translation2d(260.8, -28.87), Rotation2d.fromDegrees(90.0));
-	public static final Pose2d midShipPosition = new Pose2d(new Translation2d(282.55, -28.87), Rotation2d.fromDegrees(90.0));
+	public static final Pose2d midShipPosition = new Pose2d(new Translation2d(282.55 + 1.0, -28.87), Rotation2d.fromDegrees(90.0));
 	public static final Pose2d farShipPosition = new Pose2d(new Translation2d(304.3, -28.87), Rotation2d.fromDegrees(90.0));
 
 	public static final double kDiskTargetHeight = 28.625;//28.1875
@@ -67,7 +67,7 @@ public class Constants {
     public static final double kCameraXOffset = kRobotHalfLength - 15.0;//3.0
     public static final double kCameraZOffset = 16.45;//17.625
     public static final double kCameraYawAngleDegrees = 0.0;//-12.7
-    public static final double kCameraPitchAngleDegrees = kIsUsingCompBot ? 13.45 : 14.95;
+    public static final double kCameraPitchAngleDegrees = kIsUsingCompBot ? 14.65 : 14.95;//13.45
     
     //Goal tracker constants
     public static double kMaxGoalTrackAge = 0.5;//0.5
@@ -80,6 +80,15 @@ public class Constants {
 	public static final double kVisionDistanceStep = 4.0;
 	public static final double kClosestVisionDistance = 26.0;//36.0
 	public static final double kDefaultVisionTrackingSpeed = 42.0;
+
+	//Vision Speed Constraint Treemap
+	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kVisionSpeedTreemap = new InterpolatingTreeMap<>();
+	static{
+		kVisionSpeedTreemap.put(new InterpolatingDouble(-6.0), new InterpolatingDouble(24.0));
+		kVisionSpeedTreemap.put(new InterpolatingDouble(kClosestVisionDistance), new InterpolatingDouble(24.0));
+		kVisionSpeedTreemap.put(new InterpolatingDouble(60.0), new InterpolatingDouble(48.0));
+		kVisionSpeedTreemap.put(new InterpolatingDouble(300.0), new InterpolatingDouble(48.0));
+	}
     
     //Path following constants
     public static final double kPathLookaheadTime = 0.25;  // seconds to look ahead along the path for steering 0.4
@@ -93,10 +102,10 @@ public class Constants {
     public static final double kSwerveRotationSpeedScalar = ((1.0 / 0.125) - 1.0) / kSwerveMaxSpeedInchesPerSecond;
     
     //Swerve Module Wheel Offsets (Rotation encoder values when the wheels are facing 0 degrees)
-	public static final int kFrontRightEncoderStartingPos = kIsUsingCompBot ? -522 - 1024 : 249 - 1024;
-	public static final int kFrontLeftEncoderStartingPos = kIsUsingCompBot ? -1986 - 1024 : -2895 - 1024;
-	public static final int kRearLeftEncoderStartingPos = kIsUsingCompBot ? -349 - 1024 : -2639 - 1024;
-	public static final int kRearRightEncoderStartingPos = kIsUsingCompBot ? 2684 - 1024 : -1208 - 1024;
+	public static final int kFrontRightEncoderStartingPos = kIsUsingCompBot ? -1403 - 1024 : 249 - 1024;
+	public static final int kFrontLeftEncoderStartingPos = kIsUsingCompBot ? -2171 - 1024 : -2895 - 1024;
+	public static final int kRearLeftEncoderStartingPos = kIsUsingCompBot ? -1327 - 1024 : -2639 - 1024;
+	public static final int kRearRightEncoderStartingPos = kIsUsingCompBot ? -5953 - 1024 : -1208 - 1024;
 	
 	//Swerve Module Positions (relative to the center of the drive base)
 	public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength/2, kWheelbaseWidth/2);
@@ -138,7 +147,7 @@ public class Constants {
 	public static final double kElevatorDiskIntakeHeight = 2.6;
 	public static final double kElevatorLowHatchHeight = 8.925;//7.0
 	public static final double kElevatorHumanLoaderHeight = 7.425;//5.5
-	public static final double kElevatorMidHatchHeight = 38.425;//36.5
+	public static final double kElevatorMidHatchHeight = 38.425 - 2.5;//36.5
 	public static final double kElevatorHighHatchHeight = 64.9;//63.7
 	public static final double kElevatorBallIntakeHeight = 0.25;
 	public static final double kElevatorBallCargoShipHeight = 15.0;

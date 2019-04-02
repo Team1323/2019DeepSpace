@@ -11,10 +11,10 @@ import com.team1323.frc2019.Ports;
 import com.team1323.frc2019.RobotState;
 import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.Loop;
-import com.team1323.frc2019.loops.QuinticPathTransmitter;
 import com.team1323.frc2019.subsystems.requests.Request;
 import com.team1323.frc2019.vision.ShooterAimingParameters;
 import com.team1323.lib.math.vectors.VectorField;
+import com.team1323.lib.util.InterpolatingDouble;
 import com.team1323.lib.util.SwerveHeadingController;
 import com.team1323.lib.util.SwerveInverseKinematics;
 import com.team1323.lib.util.Util;
@@ -597,7 +597,7 @@ public class Swerve extends Subsystem{
 				motionPlanner.reset();
 				motionPlanner.setTrajectory(new TrajectoryIterator<>(new TimedView<>(trajectory)));
 				setPathHeading(aim.get().getRobotToGoal().getDegrees());
-				rotationScalar = 0.75;
+				rotationScalar = 1.0;
 				visionTargetHeading = aim.get().getRobotToGoal();
 				visionUpdateCount++;
 				if(currentState != ControlState.VISION){
@@ -1028,9 +1028,13 @@ public class Swerve extends Subsystem{
 				visionTrackingSpeed = /*Constants.kDefaultVisionTrackingSpeed*/ 48.0;
 				Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
 				if(aim.isPresent()){
+					if(vState == VisionState.LINEAR){
+						visionTrackingSpeed = Constants.kVisionSpeedTreemap.getInterpolated(new InterpolatingDouble(aim.get().getRange())).value;
+						System.out.println("Vision tracking speed set to: " + visionTrackingSpeed);
+					}
 					if(aim.get().getRange() < 54.0){
 						//visionTrackingSpeed = 30.0;
-						System.out.println("Vision tracking speed set low");
+						//System.out.println("Vision tracking speed set low");
 					}
 				}
 				resetVisionUpdates();

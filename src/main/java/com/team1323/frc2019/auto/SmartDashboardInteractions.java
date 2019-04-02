@@ -26,7 +26,7 @@ public class SmartDashboardInteractions {
     	modeChooser = new SendableChooser<AutoOption>();
         modeChooser.setDefaultOption(DEFAULT_MODE.name, DEFAULT_MODE);
         modeChooser.addOption(AutoOption.CLOSE_FAR_BALL.name, AutoOption.CLOSE_FAR_BALL);
-        modeChooser.addOption(AutoOption.MID_CLOSE_SHIP.name, AutoOption.MID_CLOSE_SHIP);
+        //modeChooser.addOption(AutoOption.MID_CLOSE_SHIP.name, AutoOption.MID_CLOSE_SHIP);
         modeChooser.addOption(AutoOption.CLOSE_MID_SHIP.name, AutoOption.CLOSE_MID_SHIP);
 
         sideChooser = new SendableChooser<Side>();
