@@ -564,6 +564,7 @@ public class Swerve extends Subsystem{
 
 	public synchronized void setLinearVisionTrajectory(Optional<ShooterAimingParameters> aim, double endDistance){
 		visionTargetPosition = robotState.getCaptureTimeFieldToGoal().get(2).getTranslation();
+		lastVisionEndDistance = endDistance;
 		Optional<Pose2d> orientedTarget = robotState.getOrientedTargetPosition(aim);
 		if((orientedTarget.isPresent() && robotState.seesTarget() && visionUpdatesAllowed)){
 
@@ -597,7 +598,7 @@ public class Swerve extends Subsystem{
 				motionPlanner.reset();
 				motionPlanner.setTrajectory(new TrajectoryIterator<>(new TimedView<>(trajectory)));
 				setPathHeading(aim.get().getRobotToGoal().getDegrees());
-				rotationScalar = 1.0;
+				rotationScalar = 0.75;
 				visionTargetHeading = aim.get().getRobotToGoal();
 				visionUpdateCount++;
 				if(currentState != ControlState.VISION){

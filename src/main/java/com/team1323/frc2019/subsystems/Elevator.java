@@ -34,6 +34,9 @@ public class Elevator extends Subsystem {
 	LazyTalonSRX master, motor2;
 	List<LazyTalonSRX> motors, slaves;
 	private double targetHeight = 0.0;
+	public double getTargetHeight(){
+		return targetHeight;
+	}
 	private boolean configuredForAscent = true;
 	private boolean limitsEnabled = false;
 	public boolean limitsEnabled(){

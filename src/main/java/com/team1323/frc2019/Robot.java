@@ -451,7 +451,11 @@ public class Robot extends TimedRobot {
 				s.fullBallCycleState();
 			} else if (coDriver.leftTrigger.wasActivated()) {
 				if(!swerve.isTracking()){
-					elevator.setTargetHeight(elevator.nearestVisionHeight(diskScorer.hasDisk() ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges));
+					if(elevator.hasReachedTargetHeight()){
+						elevator.setTargetHeight(elevator.nearestVisionHeight(diskScorer.hasDisk() ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges));
+					}else{
+						elevator.setTargetHeight(elevator.nearestVisionHeight(elevator.getTargetHeight(), diskScorer.hasDisk() ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges));
+					}
 				}
 			} else if (coDriver.xButton.wasActivated()) {
 				if(coDriver.leftTrigger.isBeingPressed()){
@@ -514,6 +518,7 @@ public class Robot extends TimedRobot {
 			} else if (coDriver.leftCenterClick.shortReleased()) {
 				ballIntake.conformToState(BallIntake.State.EJECTING);
 			} else if(driver.leftCenterClick.shortReleased()){
+				limelight.setPipeline(Pipeline.LOWEST);
 				s.diskTrackingState();
 			}
 		}else{

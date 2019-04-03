@@ -100,7 +100,7 @@ public class CloseFarBallMode extends AutoModeBase {
 
         Swerve.getInstance().setXCoordinate(TrajectoryGenerator.farHatchScoringPose.getTranslation().x());
         Swerve.getInstance().setYCoordinate(directionFactor * -1.0 * TrajectoryGenerator.farHatchScoringPose.getTranslation().y());
-;       runAction(new SetTrajectoryAction(trajectories.farHatchToCloseShip.get(left), 90.0 * directionFactor, 1.0));
+        runAction(new SetTrajectoryAction(trajectories.farHatchToCloseShip.get(left), 90.0 * directionFactor, 1.0));
         //Swerve.getInstance().setRobotCentricTrajectory(new Translation2d(-18.0, 0.0), Swerve.getInstance().getPose().getRotation().getUnboundedDegrees(), 36.0);
         runAction(new WaitAction(0.5));
         s.diskScoringState(Constants.kElevatorLowHatchHeight, false);

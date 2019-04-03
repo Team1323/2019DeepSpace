@@ -525,7 +525,7 @@ public class Superstructure extends Subsystem {
 	public void diskTrackingState(){
 		RequestList state = new RequestList(Arrays.asList(
 			waitForVisionRequest(),
-			swerve.startTrackRequest(Constants.kDiskTargetHeight, -1.0, true, VisionState.LINEAR),
+			swerve.startTrackRequest(Constants.kDiskTargetHeight, 1.0, true, VisionState.LINEAR),
 			wrist.angleRequest(Constants.kWristBallFeedingAngle),
 			ballCarriage.stateRequest(BallCarriage.State.OFF), 
 			ballIntake.stateRequest(BallIntake.State.OFF),

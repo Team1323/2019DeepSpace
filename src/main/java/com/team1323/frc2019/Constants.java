@@ -16,7 +16,7 @@ public class Constants {
 	
 	public static final double kEpsilon = 0.0001;
 	
-	public static final boolean kIsUsingCompBot = true;
+	public static final boolean kIsUsingCompBot = false;
 	public static final boolean kIsUsingTractionWheels = true;
 
 	public static final boolean kDebuggingOutput = false;
@@ -63,9 +63,9 @@ public class Constants {
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
     
     //Camera Constants
-    public static final double kCameraYOffset = 1.0;//14.5
-    public static final double kCameraXOffset = kRobotHalfLength - 15.0;//3.0
-    public static final double kCameraZOffset = 16.45;//17.625
+    public static final double kCameraYOffset = 0.0;
+    public static final double kCameraXOffset = kRobotHalfLength - 15.0;
+    public static final double kCameraZOffset = 16.45;
     public static final double kCameraYawAngleDegrees = 0.0;//-12.7
     public static final double kCameraPitchAngleDegrees = kIsUsingCompBot ? 14.65 : 14.95;//13.45
     
@@ -84,9 +84,9 @@ public class Constants {
 	//Vision Speed Constraint Treemap
 	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kVisionSpeedTreemap = new InterpolatingTreeMap<>();
 	static{
-		kVisionSpeedTreemap.put(new InterpolatingDouble(-6.0), new InterpolatingDouble(24.0));
-		kVisionSpeedTreemap.put(new InterpolatingDouble(kClosestVisionDistance), new InterpolatingDouble(24.0));
-		kVisionSpeedTreemap.put(new InterpolatingDouble(60.0), new InterpolatingDouble(48.0));
+		kVisionSpeedTreemap.put(new InterpolatingDouble(-6.0), new InterpolatingDouble(18.0));
+		kVisionSpeedTreemap.put(new InterpolatingDouble(kClosestVisionDistance), new InterpolatingDouble(18.0));
+		kVisionSpeedTreemap.put(new InterpolatingDouble(84.0), new InterpolatingDouble(48.0));
 		kVisionSpeedTreemap.put(new InterpolatingDouble(300.0), new InterpolatingDouble(48.0));
 	}
     
