@@ -188,6 +188,10 @@ public class Jacks extends Subsystem {
         return Math.abs(targetHeight - getHeight()) <= Constants.kJackHeightTolerance;
     }
 
+    public boolean isAtHeight(double height){
+        return Math.abs(height - getHeight()) <= Constants.kJackHeightTolerance;
+    }
+
     private double encUnitsToInches(double encUnits){
         return encUnits / Constants.kJackTicksPerInch;
     }

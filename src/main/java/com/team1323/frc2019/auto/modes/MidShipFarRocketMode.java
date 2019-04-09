@@ -31,6 +31,7 @@ import com.team1323.frc2019.subsystems.Swerve;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 
@@ -70,7 +71,7 @@ public class MidShipFarRocketMode extends AutoModeBase{
         runAction(new WaitToPassXCoordinateAction(264.0));//282.55
         runAction(new WaitForElevatorAction(19.6, true));
         runAction(new WaitForVisionAction(2.0));
-        s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor), 42.0, 6.0, Constants.kDefaultVisionTrackingSpeed);
+        s.diskTrackingState(Constants.kElevatorLowHatchHeight, Rotation2d.fromDegrees(-90.0 * directionFactor), 42.0, new Translation2d(-6.0, Constants.kCurvedVisionYOffset), Constants.kDefaultVisionTrackingSpeed);
         runAction(new WaitForSuperstructureAction());
         Swerve.getInstance().setXCoordinate(Constants.midShipPosition.getTranslation().x());
         runAction(new WaitAction(0.25));

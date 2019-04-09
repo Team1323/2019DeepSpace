@@ -129,7 +129,7 @@ public class Robot extends TimedRobot {
 		// swerve.zeroSensors(new Pose2d());
 
 		robotState.feignVisionTargets();
-		swerve.startTracking(Constants.kDiskTargetHeight, 6.0, true, new Rotation2d());
+		swerve.startTracking(Constants.kDiskTargetHeight, new Translation2d(-6.0, 0.0), true, new Rotation2d());
 		swerve.stop();
 
 		smartDashboardInteractions.initWithDefaults();
@@ -532,7 +532,12 @@ public class Robot extends TimedRobot {
 		} else if (coDriver.POV180.shortReleased()) {
 			s.postClimbingState();
 		} else if (coDriver.POV270.shortReleased()) {
-			s.lockedJackState();
+			//s.lockedJackState();
+			if(jacks.isAtHeight(-6.0)){
+				s.jackState(Constants.kJackMaxControlHeight);
+			}else{
+				s.jackState(-6.0);
+			}
 		}
 
 		if (diskScorer.needsToNotifyDrivers() || ballCarriage.needsToNotifyDrivers() || swerve.needsToNotifyDrivers()) {

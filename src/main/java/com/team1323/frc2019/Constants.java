@@ -63,7 +63,7 @@ public class Constants {
     public static final double kSwerveDiagonal = Math.hypot(kWheelbaseLength, kWheelbaseWidth);
     
     //Camera Constants
-    public static final double kCameraYOffset = 0.0;
+    public static final double kCameraYOffset = 0.25;
     public static final double kCameraXOffset = kRobotHalfLength - 15.0;
     public static final double kCameraZOffset = 16.45;
     public static final double kCameraYawAngleDegrees = 0.0;//-12.7
@@ -80,13 +80,14 @@ public class Constants {
 	public static final double kVisionDistanceStep = 4.0;
 	public static final double kClosestVisionDistance = 26.0;//36.0
 	public static final double kDefaultVisionTrackingSpeed = 42.0;
+	public static final double kCurvedVisionYOffset = 1.25;
 
 	//Vision Speed Constraint Treemap
 	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kVisionSpeedTreemap = new InterpolatingTreeMap<>();
 	static{
-		kVisionSpeedTreemap.put(new InterpolatingDouble(-6.0), new InterpolatingDouble(18.0));
-		kVisionSpeedTreemap.put(new InterpolatingDouble(kClosestVisionDistance), new InterpolatingDouble(18.0));
-		kVisionSpeedTreemap.put(new InterpolatingDouble(84.0), new InterpolatingDouble(48.0));
+		kVisionSpeedTreemap.put(new InterpolatingDouble(-6.0), new InterpolatingDouble(24.0));
+		kVisionSpeedTreemap.put(new InterpolatingDouble(kClosestVisionDistance), new InterpolatingDouble(24.0));
+		kVisionSpeedTreemap.put(new InterpolatingDouble(60.0), new InterpolatingDouble(48.0));
 		kVisionSpeedTreemap.put(new InterpolatingDouble(300.0), new InterpolatingDouble(48.0));
 	}
     
@@ -141,11 +142,12 @@ public class Constants {
 	//Elevator Constants
 	public static final double kElevatorMaxSpeedHighGear = 696.96 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
-	public static final int kElevatorEncoderStartingPosition = kIsUsingCompBot ? 2700 : 333;
+	public static final int kElevatorEncoderStartingPosition = kIsUsingCompBot ? 2794 : 333;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 0.5; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.6;
-	public static final double kElevatorLowHatchHeight = 8.925;//7.0
+	public static final double kElevatorLowHatchHeight = 5.75;//8.925
+	public static final double kElevatorDiskHandoffHeight = 8.925;
 	public static final double kElevatorHumanLoaderHeight = 7.425;//5.5
 	public static final double kElevatorMidHatchHeight = 38.425 - 2.5;//36.5
 	public static final double kElevatorHighHatchHeight = 64.9;//63.7
@@ -210,7 +212,7 @@ public class Constants {
 	public static final double kIntakePullOutput = 12.0/12.0;
 
 	//Ball Carriage Constants
-	public static final double kBallCarriageEjectOutput = -1.0;
+	public static final double kBallCarriageEjectOutput = -0.8;
 	public static final double kBallCarriageWeakEjectOutput = -0.5;
 	public static final double kBallCarriageReceiveOutput = -0.55;
 	public static final double kBallCarriageSuckOutput = 0.35;
@@ -232,7 +234,7 @@ public class Constants {
 	public static final double kJackMaxSpeed = 344.1749 * 4096.0 / 600.0;//2675.0;
 	public static final double kJackTicksPerInch = 13.3733539 * 4096.0 / 30.4444882;//1.219 inches before wrap
 	public static final double kJackHeightTolerance = 1.0; //inches
-	public static final int kJackStartingEncPosition = kIsUsingCompBot ? 2535 : 3942;
+	public static final int kJackStartingEncPosition = kIsUsingCompBot ? 2813 : 3942;
 	public static final double kJackStartingHeight = 0.0;
 	public static final double kJackShortClimbHeight = -10.0;
 	public static final double kJackMaxPhysicalHeight = 0.2;

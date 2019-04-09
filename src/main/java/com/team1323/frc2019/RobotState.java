@@ -214,13 +214,13 @@ public class RobotState {
         return targetOrientation;
     }
 
-    public synchronized Optional<Pose2d> getRobotScoringPosition(Optional<ShooterAimingParameters> aimingParameters, Rotation2d orientation, double endDistance){
+    public synchronized Optional<Pose2d> getRobotScoringPosition(Optional<ShooterAimingParameters> aimingParameters, Rotation2d orientation, Translation2d endTranslation){
         List<Pose2d> targetPositions = getCaptureTimeFieldToGoal();
 		if(targetPositions.size() >= minimumTargetQuantity && aimingParameters.isPresent()){
             Translation2d targetPosition = targetPositions.get(primaryTargetIndex).getTranslation();
             SmartDashboard.putNumberArray("Path Pose", new double[]{targetPosition.x(), targetPosition.y(), aimingParameters.get().getTargetOrientation().getDegrees(), 0.0}); 
-			Pose2d orientedTargetPosition = new Pose2d(targetPosition, orientation);
-            Pose2d robotScoringPosition = orientedTargetPosition.transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength - endDistance, 0.0)));
+			Pose2d orientedTargetPosition = new Pose2d(targetPosition, orientation).transformBy(Pose2d.fromTranslation(new Translation2d(-Constants.kRobotHalfLength, 0.0)));
+            Pose2d robotScoringPosition = orientedTargetPosition.transformBy(Pose2d.fromTranslation(endTranslation));
             
             return Optional.of(robotScoringPosition);
         }
