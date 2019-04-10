@@ -103,7 +103,7 @@ public class Constants {
     public static final double kSwerveRotationSpeedScalar = ((1.0 / 0.125) - 1.0) / kSwerveMaxSpeedInchesPerSecond;
     
     //Swerve Module Wheel Offsets (Rotation encoder values when the wheels are facing 0 degrees)
-	public static final int kFrontRightEncoderStartingPos = kIsUsingCompBot ? -1403 - 1024 : 249 - 1024;
+	public static final int kFrontRightEncoderStartingPos = kIsUsingCompBot ? -1403 - 1024 : 1740 - 1024;
 	public static final int kFrontLeftEncoderStartingPos = kIsUsingCompBot ? -2171 - 1024 : -2895 - 1024;
 	public static final int kRearLeftEncoderStartingPos = kIsUsingCompBot ? -1327 - 1024 : -2639 - 1024;
 	public static final int kRearRightEncoderStartingPos = kIsUsingCompBot ? -5953 - 1024 : -1208 - 1024;

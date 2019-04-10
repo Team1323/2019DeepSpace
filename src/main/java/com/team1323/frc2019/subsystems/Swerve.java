@@ -205,6 +205,10 @@ public class Swerve extends Subsystem{
 	private double rotationalInput = 0;
 	private Translation2d lastDriveVector = new Translation2d();
 	private final Translation2d rotationalVector = Translation2d.identity();
+	private double lowPowerScalar = 0.6;
+	public void setLowPowerScalar(double scalar){
+		lowPowerScalar = scalar;
+	}
 	private double maxSpeedFactor = 1.0;
 	public void setMaxSpeed(double max){
 		maxSpeedFactor = max;
@@ -272,8 +276,8 @@ public class Swerve extends Subsystem{
 		translationalVector = translationalInput;
 		
 		if(lowPower){
-			translationalVector = translationalVector.scale(0.6);
-			rotate *= 0.6;
+			translationalVector = translationalVector.scale(lowPowerScalar);
+			rotate *= lowPowerScalar;
 		}else{
 			rotate *= 0.8;
 		}

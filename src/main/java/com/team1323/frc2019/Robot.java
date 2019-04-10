@@ -378,19 +378,13 @@ public class Robot extends TimedRobot {
 			swerve.rotate(24);
 		else if(driver.rightBumper.longPressed())
 			swerve.rotate(151.0);
+		else if(driver.POV0.isBeingPressed())
+			swerve.rotate(0.0);
 
 		if (driver.backButton.shortReleased() || driver.backButton.longPressed()) {
 			swerve.temporarilyDisableHeadingController();
 			swerve.zeroSensors(Constants.kRobotLeftStartingPose);
 			swerve.resetAveragedDirection();
-		} else if (driver.POV0.shortReleased()) {
-			/*swerve.temporarilyDisableHeadingController();
-			swerve.zeroSensors(Constants.kRobotLeftStartingPose);
-			swerve.requireModuleConfiguration();
-			// swerve.setTrajectory(generator.getTrajectorySet().startToCloseHatch.get(true),
-			// -30.0, 1.0);
-			swerve.setTrajectory(generator.getTrajectorySet().straightPath, 0.0, 1.0);*/
-			//swerve.setVelocity(new Rotation2d(), 72.0);
 		} else if (driver.startButton.shortReleased()) {
 			diskScorer.loseDisk();
 			limelight.setPipeline(Pipeline.CLOSEST);

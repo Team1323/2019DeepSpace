@@ -40,13 +40,13 @@ public class Superstructure extends Subsystem {
 
 	private boolean isClimbing = false;
 	public boolean isClimbing(){ return isClimbing; }
-	public void startClimbing(){ 
-		jacks.shiftPower(true);
-		isClimbing = true;
+	public void enableInterpolator(boolean enable){ 
+		isClimbing = enable;
+		swerve.setLowPowerScalar(0.25);
 	}
 	public void stopClimbing(){ 
 		isClimbing = false; 
-		jacks.shiftPower(false);
+		swerve.setLowPowerScalar(0.6);
 	}
 	
 	public Superstructure(){
@@ -344,7 +344,7 @@ public class Superstructure extends Subsystem {
 		
 			@Override
 			public void act() {
-				isClimbing = on;
+				enableInterpolator(on);
 			}
 		};
 	}
@@ -718,7 +718,7 @@ public class Superstructure extends Subsystem {
 			swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 48.0)), true);
 
 		request(state, queue);
-		isClimbing = true;
+		enableInterpolator(true);
 	}
 
 	public void postClimbingState(){

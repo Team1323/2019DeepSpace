@@ -41,7 +41,7 @@ public class LimelightProcessor implements Loop{
 		pipeline = table.getEntry("pipeline");
 		camMode = table.getEntry("camMode");
 		stream = table.getEntry("stream");
-		setStreamMode(0);//2
+		setStreamMode(2);//0
 		target1 = Arrays.asList(table.getEntry("tx0"), table.getEntry("ty0"),
 			table.getEntry("ta0"));
 		target2 = Arrays.asList(table.getEntry("tx1"), table.getEntry("ty1"),

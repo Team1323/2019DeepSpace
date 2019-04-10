@@ -179,6 +179,7 @@ public class Elevator extends Subsystem {
 			}
 			targetHeight = heightFeet;
 			periodicIO.demand = elevatorHeightToEncUnits(heightFeet);
+			System.out.println("Set elevator height to: " + heightFeet);
 			onTarget = false;
 			startTime = Timer.getFPGATimestamp();
 		}else{
@@ -261,7 +262,7 @@ public class Elevator extends Subsystem {
 		if(master.getControlMode() == ControlMode.MotionMagic){
 			if((Math.abs(targetHeight - getHeight()) <= Constants.kElevatorHeightTolerance)){
 				if(!onTarget){
-					System.out.println("Elevator done in: " + (Timer.getFPGATimestamp() - startTime));
+					//System.out.println("Elevator done in: " + (Timer.getFPGATimestamp() - startTime)); //TODO uncomment this if desired
 					onTarget = true;
 				}
 				return true;
@@ -315,6 +316,8 @@ public class Elevator extends Subsystem {
 				}
 			}
 		}
+		if(Util.epsilonEquals(nearestHeight, Constants.kElevatorMaxHeight))
+			return height;
 		return nearestHeight;
 	}
 	
