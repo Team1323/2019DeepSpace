@@ -148,10 +148,6 @@ public class Robot extends TimedRobot {
 		enabledLooper.outputToSmartDashboard();
 		SmartDashboard.putBoolean("Enabled", ds.isEnabled());
 		SmartDashboard.putNumber("Match time", ds.getMatchTime());
-		for (Subsystem s : subsystems.getSubsystems()) {
-			if (s.hasEmergency)
-				leds.conformToState(LEDs.State.EMERGENCY);
-		}
 	}
 
 	public void autoConfig() {
@@ -249,8 +245,9 @@ public class Robot extends TimedRobot {
 			else
 				twoControllerMode();
 
-
-			if(s.isClimbing()) {
+			if(subsystems.haveEmergency()){
+				leds.conformToState(LEDs.State.EMERGENCY);
+			} else if (s.isClimbing()) {
 				leds.conformToState(LEDs.State.CLIMBING);
 			} else if (swerve.getState() == Swerve.ControlState.VISION){
 				leds.conformToState(LEDs.State.TARGET_TRACKING);
@@ -295,6 +292,8 @@ public class Robot extends TimedRobot {
 		try {
 			allPeriodic();
 			smartDashboardInteractions.output();
+			if(subsystems.haveEmergency())
+				leds.conformToState(LEDs.State.EMERGENCY);
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;

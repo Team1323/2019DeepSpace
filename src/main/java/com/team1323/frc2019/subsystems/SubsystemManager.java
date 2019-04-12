@@ -33,6 +33,14 @@ public class SubsystemManager implements ILooper {
         mAllSubsystems.forEach((s) -> s.stop());
     }
 
+    public boolean haveEmergency(){
+        boolean emergency = false;
+        for(Subsystem s : mAllSubsystems){
+            emergency |= s.hasEmergency;
+        }
+        return emergency;
+    }
+
     private class EnabledLoop implements Loop {
 
         @Override
