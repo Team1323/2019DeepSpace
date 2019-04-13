@@ -81,7 +81,7 @@ public class CloseMidShipMode extends AutoModeBase{
         swerve.setXCoordinate(Constants.closeShipPosition.getTranslation().x());
         if(swerve.getVisionTargetPosition().x() > (Constants.closeShipPosition.getTranslation().x() - 1.0)){
             System.out.println("Alliance kept at: " + robotState.getAlliance());
-        }else{
+        }else if(robotState.onStandardCarpet()){
             SmartDashboardInteractions.Alliance newAlliance = SmartDashboardInteractions.NONSTANDARD_CARPET_SIDE;
             if(robotState.getAlliance() == newAlliance){
                 newAlliance = SmartDashboardInteractions.STANDARD_CARPET_SIDE;
@@ -89,6 +89,8 @@ public class CloseMidShipMode extends AutoModeBase{
             robotState.setAlliance(newAlliance);
             swerve.setCarpetDirection(robotState.onStandardCarpet());
             System.out.println("Alliance set to: " + newAlliance);
+        }else{
+            System.out.println("Robot traveled too far, AND its on the nonstandard side");
         }
         runAction(new WaitAction(0.25));
 

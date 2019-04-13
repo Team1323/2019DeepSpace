@@ -530,6 +530,7 @@ public class Robot extends TimedRobot {
 				s.jackState(Constants.kJackMaxControlHeight);
 			}else{
 				s.jackState(-6.0);
+				wrist.setAngle(Constants.kWristMaxControlAngle);
 			}
 		}
 
