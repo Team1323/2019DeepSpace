@@ -25,7 +25,7 @@ import com.team1323.frc2019.subsystems.DiskScorer;
 import com.team1323.frc2019.subsystems.Elevator;
 import com.team1323.frc2019.subsystems.Jacks;
 import com.team1323.frc2019.subsystems.LEDs;
-import com.team1323.frc2019.subsystems.Subsystem;
+import com.team1323.frc2019.subsystems.Pigeon;
 import com.team1323.frc2019.subsystems.SubsystemManager;
 import com.team1323.frc2019.subsystems.Superstructure;
 import com.team1323.frc2019.subsystems.Swerve;
@@ -83,6 +83,7 @@ public class Robot extends TimedRobot {
 	private final boolean useSwitchController = false;
 	private final boolean oneControllerMode = false;
 	private boolean flickRotation = false;
+	private boolean robotCentric = false;
 
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -146,6 +147,7 @@ public class Robot extends TimedRobot {
 		subsystems.outputToSmartDashboard();
 		robotState.outputToSmartDashboard();
 		enabledLooper.outputToSmartDashboard();
+		//Pigeon.getInstance().outputToSmartDashboard();
 		SmartDashboard.putBoolean("Enabled", ds.isEnabled());
 		SmartDashboard.putNumber("Match time", ds.getMatchTime());
 	}
@@ -342,7 +344,7 @@ public class Robot extends TimedRobot {
 				swerve.rotate(270);
 		}
 
-		swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, false, driver.leftTrigger.isBeingPressed());
+		swerve.sendInput(swerveXInput, swerveYInput, swerveRotationInput, robotCentric, driver.leftTrigger.isBeingPressed());
 
 		if (driver.rightCenterClick.shortReleased()) {
 			/*if (flickRotation) {
@@ -437,6 +439,7 @@ public class Robot extends TimedRobot {
 			} else if(driver.yButton.shortReleased()){
 				//diskScorer.conformToState(DiskScorer.State.SCORING);
 				s.diskScoringState();
+				robotCentric = false;
 			} else if (coDriver.aButton.wasActivated()) {
 				diskScorer.checkForDisk();
 				s.ballIntakingState();
@@ -513,6 +516,14 @@ public class Robot extends TimedRobot {
 			} else if(driver.leftCenterClick.shortReleased()){
 				limelight.setPipeline(Pipeline.LOWEST);
 				s.diskTrackingState();
+			} else if(driver.POV180.wasActivated()){
+				swerve.setState(Swerve.ControlState.MANUAL);
+				robotCentric = false;
+			} else if (driver.POV270.wasActivated()) {
+				robotCentric = !robotCentric;
+				if(robotCentric){
+					driver.rumble(1.0, 1.0);
+				}
 			}
 		}else{
 			

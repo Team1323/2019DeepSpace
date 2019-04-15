@@ -622,28 +622,32 @@ public class Swerve extends Subsystem{
 		Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
 		visionState = vState;
 		if(aim.isPresent()){
-			if(aim.get().getRange() >= Constants.kClosestVisionDistance){
-				if(getState() != ControlState.VISION){
-					initialVisionDistance = aim.get().getRange();
-					latestAim = aim.get();
-				}
-				double previousHeight = robotState.getVisionTargetHeight();
-				robotState.setVisionTargetHeight(visionTargetHeight);
-				if(!Util.epsilonEquals(previousHeight, visionTargetHeight)){
-					robotState.clearVisionTargets();
-					lastVisionEndTranslation = endTranslation;
-					visionUpdateRequested = true;
-					System.out.println("Vision delayed until next cycle");
+			if(pigeon.isGood()){
+				if(aim.get().getRange() >= Constants.kClosestVisionDistance){
+					if(getState() != ControlState.VISION){
+						initialVisionDistance = aim.get().getRange();
+						latestAim = aim.get();
+					}
+					double previousHeight = robotState.getVisionTargetHeight();
+					robotState.setVisionTargetHeight(visionTargetHeight);
+					if(!Util.epsilonEquals(previousHeight, visionTargetHeight)){
+						robotState.clearVisionTargets();
+						lastVisionEndTranslation = endTranslation;
+						visionUpdateRequested = true;
+						System.out.println("Vision delayed until next cycle");
+					}else{
+						visionUpdatesAllowed = elevator.inVisionRange(robotHasDisk ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges);
+						if(vState == VisionState.CURVED)
+							setCurvedVisionTrajectory(aim.get().getRange() * 0.5, aim, endTranslation, override);
+						else
+							setLinearVisionTrajectory(aim, endTranslation);
+					}
+					//System.out.println("Vision attempted");
 				}else{
-					visionUpdatesAllowed = elevator.inVisionRange(robotHasDisk ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges);
-					if(vState == VisionState.CURVED)
-						setCurvedVisionTrajectory(aim.get().getRange() * 0.5, aim, endTranslation, override);
-					else
-						setLinearVisionTrajectory(aim, endTranslation);
+					System.out.println("Vision target too close");
 				}
-				//System.out.println("Vision attempted");
 			}else{
-				System.out.println("Vision target too close");
+				System.out.println("Pigeon unresponsive");
 			}
 		}else{
 			visionUpdateRequested = true;
@@ -655,18 +659,22 @@ public class Swerve extends Subsystem{
 		Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
 		visionState = vState;
 		if(aim.isPresent()){
-			if(aim.get().getRange() >= Constants.kClosestVisionDistance){
-				if(getState() != ControlState.VISION){
-					initialVisionDistance = aim.get().getRange();
-					latestAim = aim.get();
+			if(pigeon.isGood()){
+				if(aim.get().getRange() >= Constants.kClosestVisionDistance){
+					if(getState() != ControlState.VISION){
+						initialVisionDistance = aim.get().getRange();
+						latestAim = aim.get();
+					}
+					visionUpdatesAllowed = elevator.inVisionRange(robotHasDisk ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges);
+					if(vState == VisionState.CURVED)
+						setCurvedVisionTrajectory(aim.get().getRange() * 0.5, aim, endTranslation, false);
+					else
+						setLinearVisionTrajectory(aim, endTranslation);
+				}else{
+					System.out.println("Vision target too close");
 				}
-				visionUpdatesAllowed = elevator.inVisionRange(robotHasDisk ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges);
-				if(vState == VisionState.CURVED)
-					setCurvedVisionTrajectory(aim.get().getRange() * 0.5, aim, endTranslation, false);
-				else
-					setLinearVisionTrajectory(aim, endTranslation);
 			}else{
-				System.out.println("Vision target too close");
+				System.out.println("Pigeon unresponsive");
 			}
 		}
 	}

@@ -106,7 +106,7 @@ public class Constants {
 	public static final int kFrontRightEncoderStartingPos = kIsUsingCompBot ? -1403 - 1024 : 1740 - 1024;
 	public static final int kFrontLeftEncoderStartingPos = kIsUsingCompBot ? -2171 - 1024 : -2895 - 1024;
 	public static final int kRearLeftEncoderStartingPos = kIsUsingCompBot ? -1327 - 1024 : -2639 - 1024;
-	public static final int kRearRightEncoderStartingPos = kIsUsingCompBot ? -5953 - 1024 : -3078 - 1024;
+	public static final int kRearRightEncoderStartingPos = kIsUsingCompBot ? -5953 - 1024 : 975 - 1024;
 	
 	//Swerve Module Positions (relative to the center of the drive base)
 	public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength/2, kWheelbaseWidth/2);
@@ -227,7 +227,7 @@ public class Constants {
 
 	//Disk Scorer Constants
 	public static final double kDiskScorerIntakingOutput = 0.75;
-	public static final double kDiskScorerHoldingOutput = 2.0/12.0;
+	public static final double kDiskScorerHoldingOutput = 2.5/12.0;
 	public static final double kDiskScorerEjectOutput = -0.5;
 
 	//Jack Constants

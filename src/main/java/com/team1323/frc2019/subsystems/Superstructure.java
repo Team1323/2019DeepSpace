@@ -623,7 +623,7 @@ public class Superstructure extends Subsystem {
 			diskScorer.stateRequest(DiskScorer.State.HOLDING),
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
 			waitForVisionRequest(),
-			swerve.trackRequest(Constants.kDiskTargetHeight, new Translation2d(7.0, 0.0), false, Rotation2d.fromDegrees(180.0), 48.0, 54.0)), false);
+			swerve.trackRequest(Constants.kDiskTargetHeight, new Translation2d(/*7.0*/4.0, 0.0), false, Rotation2d.fromDegrees(180.0), 48.0, 54.0)), false);
 
 		List<RequestList> queue = Arrays.asList(
 			new RequestList(Arrays.asList(
@@ -646,7 +646,7 @@ public class Superstructure extends Subsystem {
 			diskScorer.stateRequest(DiskScorer.State.NEUTRAL_EXTENDED),
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
 			waitForVisionRequest(),
-			swerve.trackRequest(Constants.kDiskTargetHeight, new Translation2d(4.0, 0.0), false, Rotation2d.fromDegrees(180.0), 60.0, 60.0)), false);
+			swerve.trackRequest(Constants.kDiskTargetHeight, new Translation2d(4.0, 0.0), false, Rotation2d.fromDegrees(180.0), 66.0, 60.0)), false);
 
 		List<RequestList> queue = Arrays.asList(
 			new RequestList(Arrays.asList(

@@ -61,7 +61,7 @@ public class CloseFarBallMode extends AutoModeBase {
         LimelightProcessor.getInstance().setPipeline(left ? Pipeline.LEFTMOST : Pipeline.RIGHTMOST);
         runAction(new WaitToPassYCoordinateAction((46.25 + Constants.kRobotWidth) * directionFactor));
         s.diskScoringState(Constants.kElevatorMidHatchHeight, true);
-        runAction(new WaitForDistanceAction(left ? Constants.closeHatchPosition.getTranslation() : Constants.rightCloseHatchPosition.getTranslation(), 56.0));//102
+        runAction(new WaitForDistanceAction(left ? Constants.closeHatchPosition.getTranslation() : Constants.rightCloseHatchPosition.getTranslation(), /*56.0*/62.0));//102
         runAction(new WaitForElevatorAction(19.6, true));
         runAction(new WaitForVisionAction(3.0));
         if(left)

@@ -62,8 +62,6 @@ public class Pigeon {
 	}
 	
 	public void outputToSmartDashboard(){
-		SmartDashboard.putBoolean("Pigeon Good", isGood());
-		SmartDashboard.putNumber("Pigeon Temp", pigeon.getTemp());
-		SmartDashboard.putNumber("Pigeon Compass", pigeon.getAbsoluteCompassHeading());
+		SmartDashboard.putString("Pigeon Good", pigeon.getState().toString());
 	}
 }

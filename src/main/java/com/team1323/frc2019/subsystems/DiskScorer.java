@@ -190,7 +190,7 @@ public class DiskScorer extends Subsystem {
                 case STOWED:
                     break;
                 case DETECTED:
-                    if((timestamp - stateEnteredTimestamp) >= 0.5){
+                    if((timestamp - stateEnteredTimestamp) >= 1.0/*0.5*/){
                         conformToState(State.HOLDING);
                     }
                     break;
