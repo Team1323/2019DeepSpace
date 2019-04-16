@@ -639,6 +639,7 @@ public class Superstructure extends Subsystem {
 	}
 
 	public void humanLoaderRetrievingState(){
+		robotState.clearVisionTargets(); //TODO test this addition to the sequence
 		RequestList state = new RequestList(Arrays.asList(
 			diskIntake.stateRequest(DiskIntake.State.OFF),
 			ballIntake.stateRequest(BallIntake.State.OFF),

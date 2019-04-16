@@ -116,7 +116,7 @@ public class CloseMidShipMode extends AutoModeBase{
         LimelightProcessor.getInstance().setPipeline(left ? Pipeline.LEFTMOST : Pipeline.RIGHTMOST);
         runAction(new WaitToPassXCoordinateAction((96.0 + Constants.kRobotWidth)));
         robotState.setXTarget(Constants.midShipPosition.getTranslation().x(), 8.0);
-        s.diskScoringState(20.0, true);
+        s.diskScoringState(20.0, false);
         //runAction(new WaitToPassXCoordinateAction(264.0));//282.55 267
         runAction(new WaitForElevatorAction(19.6, true));
         runAction(new WaitForVisionAction(2.0));
