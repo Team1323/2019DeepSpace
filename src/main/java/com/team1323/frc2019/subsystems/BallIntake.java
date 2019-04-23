@@ -77,7 +77,7 @@ public class BallIntake extends Subsystem {
     feeder.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20, 10);
     feeder.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20, 10);
 
-    setCurrentLimit(25);
+    setCurrentLimit(30);
   }
 
   public void setCurrentLimit(int amps) {

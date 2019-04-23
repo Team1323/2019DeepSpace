@@ -79,6 +79,7 @@ public class Swerve extends Subsystem{
 		visionUpdateCount = 0;
 		attemptedVisionUpdates = 0;
 		visionVisibleCycles = 0;
+		firstVisionCyclePassed = false;
 		visionCriteria.reset();
 	}
 	public enum VisionState{
@@ -89,6 +90,9 @@ public class Swerve extends Subsystem{
 	Translation2d visionTargetPosition = new Translation2d();
 	public Translation2d getVisionTargetPosition(){ return visionTargetPosition; }
 	int visionUpdateCount = 0;
+	int attemptedVisionUpdates = 0;
+	int visionVisibleCycles = 0;
+	boolean firstVisionCyclePassed = false;
 	VisionCriteria visionCriteria = new VisionCriteria();
 	double initialVisionDistance = 0.0;
 	ShooterAimingParameters latestAim = new ShooterAimingParameters(100.0, new Rotation2d(), 0.0, 0.0, new Rotation2d());
@@ -540,26 +544,28 @@ public class Swerve extends Subsystem{
 				deltaPositionHeading = oppositeHeading;
 			}
 			System.out.println("Closest target heading: " + closestHeading.getDegrees() + ". DeltaPosHeading: " + deltaPositionHeading.getDegrees() + ". Target orientation: " + orientedTarget.get().getRotation().getDegrees());
-			if(pose.getTranslation().distance(robotScoringPosition.get().getTranslation()) <= 2.0){
-				System.out.println("Vision update rejected; robot is within 2 inches of scoring position");
-			}else{
-				System.out.println("Generating vision traj, first pos is: " + pose.getTranslation().toString() + ", second pos is: " + robotScoringPosition.get().getTranslation().toString() + ", last traj vector: " + lastTrajectoryVector.toString());
-				List<Pose2d> waypoints = new ArrayList<>();
-				waypoints.add(new Pose2d(pose.getTranslation(), (getState() == ControlState.VISION || getState() == ControlState.TRAJECTORY) ? lastTrajectoryVector.direction() : deltaPositionHeading));	
-				waypoints.add(new Pose2d(robotScoringPosition.get().getTranslation(), closestHeading));
-				Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 104.0, 66.0, 66.0, 9.0, (visionUpdateCount > 1) ? lastTrajectoryVector.norm()*Constants.kSwerveMaxSpeedInchesPerSecond : visionTrackingSpeed, 1);
-				motionPlanner.reset();
-				motionPlanner.setTrajectory(new TrajectoryIterator<>(new TimedView<>(trajectory)));
-				setPathHeading(closestHeading.getDegrees());
-				rotationScalar = 0.25;
-				visionTargetHeading = robotScoringPosition.get().getRotation();
-				visionUpdateCount++;
-				if(currentState != ControlState.VISION){
-					needsToNotifyDrivers = true;
+			if(!robotScoringPosition.isEmpty()){
+				if(pose.getTranslation().distance(robotScoringPosition.get().getTranslation()) <= 2.0){
+					System.out.println("Vision update rejected; robot is within 2 inches of scoring position");
+				}else{
+					System.out.println("Generating vision traj, first pos is: " + pose.getTranslation().toString() + ", second pos is: " + robotScoringPosition.get().getTranslation().toString() + ", last traj vector: " + lastTrajectoryVector.toString());
+					List<Pose2d> waypoints = new ArrayList<>();
+					waypoints.add(new Pose2d(pose.getTranslation(), (getState() == ControlState.VISION || getState() == ControlState.TRAJECTORY) ? lastTrajectoryVector.direction() : deltaPositionHeading));	
+					waypoints.add(new Pose2d(robotScoringPosition.get().getTranslation(), closestHeading));
+					Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 104.0, 66.0, 66.0, 9.0, (visionUpdateCount > 1) ? lastTrajectoryVector.norm()*Constants.kSwerveMaxSpeedInchesPerSecond : visionTrackingSpeed, 1);
+					motionPlanner.reset();
+					motionPlanner.setTrajectory(new TrajectoryIterator<>(new TimedView<>(trajectory)));
+					setPathHeading(closestHeading.getDegrees());
+					rotationScalar = 0.25;
+					visionTargetHeading = robotScoringPosition.get().getRotation();
+					visionUpdateCount++;
+					if(currentState != ControlState.VISION){
+						needsToNotifyDrivers = true;
+					}
+					visionState = VisionState.CURVED;
+					setState(ControlState.VISION);
+					System.out.println("Vision trajectory updated " + visionUpdateCount + " times. Distance: " + aimingParameters.get().getRange());
 				}
-				visionState = VisionState.CURVED;
-				setState(ControlState.VISION);
-				System.out.println("Vision trajectory updated " + visionUpdateCount + " times. Distance: " + aimingParameters.get().getRange());
 			}
 		}else{
 			DriverStation.reportError("Vision update refused! " + orientedTarget.isPresent() + " " + robotState.seesTarget() + " " + visionUpdatesAllowed, false);
@@ -801,8 +807,6 @@ public class Swerve extends Subsystem{
 		modules.forEach((m) -> m.resetPose(pose));
 	}
 
-	int attemptedVisionUpdates = 0;
-	int visionVisibleCycles = 0;
 	/** Called every cycle to update the swerve based on its control state */
 	public synchronized void updateControlCycle(double timestamp){
 		double rotationCorrection = headingController.updateRotationCorrection(pose.getRotation().getUnboundedDegrees(), timestamp);
@@ -910,7 +914,7 @@ public class Swerve extends Subsystem{
 			if(!motionPlanner.isDone()){
 				visionUpdatesAllowed = elevator.inVisionRange(robotHasDisk ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges);
 				Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
-				if(aim.isPresent() && visionUpdatesAllowed){
+				if(aim.isPresent() && visionUpdatesAllowed && firstVisionCyclePassed){
 					visionVisibleCycles++;
 					latestAim = aim.get();
 					if(aim.get().getRange() < (initialVisionDistance - (Constants.kVisionDistanceStep * (visionCriteria.successfulUpdates(VisionCriteria.Criterion.DISTANCE) + 1))) 
@@ -933,6 +937,7 @@ public class Swerve extends Subsystem{
 						rotationCorrection*rotationScalar, pose, false));
 				}
 				lastTrajectoryVector = driveVector;
+				firstVisionCyclePassed = true;
 			}
 			break;
 		case VELOCITY:

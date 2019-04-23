@@ -9,17 +9,18 @@ package com.team1323.frc2019.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.team1323.frc2019.Constants;
 import com.team1323.frc2019.Ports;
 import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.requests.Request;
+import com.team1323.lib.util.InterpolatingDouble;
 import com.team254.drivers.LazyTalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.team1323.frc2019.Constants;
 
 /**
  * 
@@ -28,7 +29,7 @@ public class DiskScorer extends Subsystem {
     private static DiskScorer instance = null;
 
     public static DiskScorer getInstance() {
-        if(instance == null)
+        if (instance == null)
             instance = new DiskScorer();
         return instance;
     }
@@ -143,12 +144,12 @@ public class DiskScorer extends Subsystem {
         };
     }
 
-    public Request ejectRequest(double output){
+    public Request ejectRequest(double elevatorHeight){
         return new Request(){
         
             @Override
             public void act() {
-                conformToState(State.SCORING, output);
+                conformToState(State.SCORING, Constants.kDiskEjectTreemap.getInterpolated(new InterpolatingDouble(elevatorHeight)).value);
             }
 
         };

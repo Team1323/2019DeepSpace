@@ -179,8 +179,8 @@ public class Superstructure extends Subsystem {
 				swerve.setMaxSpeed(Constants.kSwerveSpeedTreeMap.getInterpolated(new InterpolatingDouble(elevatorHeight)).value);
 
 				if(isClimbing())
-					wrist.setAngle(Constants.kWristAngleTreemap.getInterpolated(new InterpolatingDouble(jacks.getHeight())).value);
-					//jacks.setHeight(Constants.kJackHeightTreeMap.getInterpolated(new InterpolatingDouble(wrist.getAngle())).value);
+					jacks.setHeight(Constants.kJackHeightTreeMap.getInterpolated(new InterpolatingDouble(wrist.getAngle())).value);
+					//wrist.setAngle(Constants.kWristAngleTreemap.getInterpolated(new InterpolatingDouble(jacks.getHeight())).value);
 				
 				if(!activeRequestsCompleted){
 					if(newRequests){
@@ -507,7 +507,7 @@ public class Superstructure extends Subsystem {
 		RequestList state = new RequestList(Arrays.asList(
 			//swerve.startTrajectoryRequest(new Translation2d(6.0, 0.0), swerve.getPose().getRotation().getUnboundedDegrees(), 24.0),
 			//waitRequest(0.75),
-			diskScorer.stateRequest(DiskScorer.State.SCORING),
+			diskScorer.ejectRequest(elevator.getHeight()),
 			swerve.trajectoryRequest(new Translation2d(-24.0, 0.0), swerve.getPose().getRotation().getUnboundedDegrees(), 36.0)), false);
 		request(state); 
 	}
@@ -686,7 +686,7 @@ public class Superstructure extends Subsystem {
 	}
 
 	public void climbingState(){
-		/*RequestList state = new RequestList(Arrays.asList(
+		RequestList state = new RequestList(Arrays.asList(
 			wrist.angleRequest(37.0)), true);
 		List<RequestList> queue = Arrays.asList(
 			new RequestList(Arrays.asList(
@@ -697,29 +697,29 @@ public class Superstructure extends Subsystem {
 				diskScorer.stateRequest(DiskScorer.State.STOWED),
 				ballIntake.stateRequest(BallIntake.State.CLIMBING),
 				ballCarriage.stateRequest(BallCarriage.State.OFF),
-				jacks.heightRequest(Constants.kJackMinControlHeight)), true),
+				wrist.angleRequest(Constants.kWristHangingAngle)
+				/*jacks.heightRequest(Constants.kJackMinControlHeight)*/), true),
 			new RequestList(Arrays.asList(
 				ballIntake.stateRequest(BallIntake.State.PULLING),
 				swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 48.0)), true)
 		);
 		request(state);
-		replaceQueue(queue);*/
+		replaceQueue(queue);
 
-		RequestList state = new RequestList(Arrays.asList(
+		/*RequestList state = new RequestList(Arrays.asList(
 			wrist.gearShiftRequest(false),
 			jacks.shiftPowerRequest(true),
 			elevator.heightRequest(Constants.kElevatorLowBallHeight),
 			diskScorer.stateRequest(DiskScorer.State.STOWED),
 			ballIntake.stateRequest(BallIntake.State.CLIMBING),
 			ballCarriage.stateRequest(BallCarriage.State.OFF),
-			jacks.heightRequest(Constants.kJackMinControlHeight)
-			/*wrist.angleRequest(Constants.kWristHangingAngle)*/), true);
+			jacks.heightRequest(Constants.kJackMinControlHeight)), true);
 		RequestList queue = new RequestList(Arrays.asList(
 			ballIntake.stateRequest(BallIntake.State.PULLING),
 			swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 48.0)), true);
 
 		request(state, queue);
-		enableInterpolator(true);
+		enableInterpolator(true);*/
 	}
 
 	public void postClimbingState(){

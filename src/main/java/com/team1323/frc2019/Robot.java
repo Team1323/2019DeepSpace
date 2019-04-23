@@ -25,7 +25,6 @@ import com.team1323.frc2019.subsystems.DiskScorer;
 import com.team1323.frc2019.subsystems.Elevator;
 import com.team1323.frc2019.subsystems.Jacks;
 import com.team1323.frc2019.subsystems.LEDs;
-import com.team1323.frc2019.subsystems.Pigeon;
 import com.team1323.frc2019.subsystems.SubsystemManager;
 import com.team1323.frc2019.subsystems.Superstructure;
 import com.team1323.frc2019.subsystems.Swerve;
@@ -33,6 +32,7 @@ import com.team1323.frc2019.subsystems.Wrist;
 import com.team1323.io.SwitchController;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.CrashTracker;
+import com.team1323.lib.util.InterpolatingDouble;
 import com.team1323.lib.util.Logger;
 import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Rotation2d;
@@ -439,7 +439,7 @@ public class Robot extends TimedRobot {
 				diskScorer.conformToState(DiskScorer.State.STOWED);
 				ballCarriage.conformToState(BallCarriage.State.EJECTING, Constants.kBallCarriageWeakEjectOutput);
 			} else if(driver.yButton.shortReleased()){
-				//diskScorer.conformToState(DiskScorer.State.SCORING);
+				//diskScorer.conformToState(DiskScorer.State.SCORING, Constants.kDiskEjectTreemap.getInterpolated(new InterpolatingDouble(elevator.getHeight())).value);
 				s.diskScoringState();
 				robotCentric = false;
 			} else if (coDriver.aButton.wasActivated()) {
@@ -531,9 +531,9 @@ public class Robot extends TimedRobot {
 			
 		}
 
-		if (coDriver.POV0.shortReleased()) {
+		if (coDriver.POV0.shortReleased() && !jacks.isAtHeight(-6.0)) {
 			s.climbingState();
-		} else if (coDriver.POV90.shortReleased()) {
+		} else if (coDriver.POV90.shortReleased() && !jacks.isAtHeight(-6.0)) {
 			s.shortClimbingState();
 		} else if (coDriver.POV180.shortReleased()) {
 			s.postClimbingState();

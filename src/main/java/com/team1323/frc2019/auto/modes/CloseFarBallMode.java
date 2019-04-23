@@ -68,7 +68,7 @@ public class CloseFarBallMode extends AutoModeBase {
             runAction(new WaitForHeadingAction(-40.0, -25.0));
         else
             runAction(new WaitForHeadingAction(25.0, 40.0));
-        s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(30.0 * directionFactor), Constants.kClosestVisionDistance, new Translation2d(-5.0, Constants.kCurvedVisionYOffset), Constants.kDefaultVisionTrackingSpeed);
+        s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(30.0 * directionFactor), Constants.kClosestVisionDistance, new Translation2d(-5.0, /*Constants.kCurvedVisionYOffset*/0.0), Constants.kDefaultVisionTrackingSpeed);
         runAction(new WaitForSuperstructureAction());
         runAction(new WaitAction(0.25));
 
