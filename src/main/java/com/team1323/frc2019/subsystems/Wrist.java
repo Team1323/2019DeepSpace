@@ -167,50 +167,30 @@ public class Wrist extends Subsystem{
 	}
 	
 	public Request angleRequest(double angle){
-		return new Request(){
-
-			@Override
-			public void act() {
-				wrist.configMotionCruiseVelocity((int)((isHighGear ? Constants.kWristMaxSpeedHighGear : Constants.kWristMaxSpeedLowGear) * 1.0));
-				setAngle(angle);
-			}
-
-			@Override
-			public boolean isFinished() {
-				return hasReachedTargetAngle();
-			}
-			
-		};
+		return angleRequest(angle, 1.0, true);
 	}
 
 	public Request angleRequest(double angle, double speedScalar){
-		return new Request(){
-
-			@Override
-			public void act() {
-				wrist.configMotionCruiseVelocity((int)((isHighGear ? Constants.kWristMaxSpeedHighGear : Constants.kWristMaxSpeedLowGear) * speedScalar));
-				setAngle(angle);
-			}
-
-			@Override
-			public boolean isFinished() {
-				return hasReachedTargetAngle();
-			}
-			
-		};
+		return angleRequest(angle, speedScalar, true);
 	}
 
 	public Request angleRequest(double angle, double speedScalar, boolean wait){
 		return new Request(){
 
+			double startTime;
+
 			@Override
 			public void act() {
 				wrist.configMotionCruiseVelocity((int)((isHighGear ? Constants.kWristMaxSpeedHighGear : Constants.kWristMaxSpeedLowGear) * speedScalar));
 				setAngle(angle);
+				if(Constants.kSimulate) startTime = Timer.getFPGATimestamp();
 			}
 
 			@Override
 			public boolean isFinished() {
+				if(Constants.kSimulate){
+					return (Timer.getFPGATimestamp() - startTime) * 50.0 > Math.abs(angle);
+				}
 				if(wait)
 					return hasReachedTargetAngle();
 				else
@@ -289,11 +269,14 @@ public class Wrist extends Subsystem{
 	}
 	
 	public boolean isSensorConnected(){
-		int pulseWidthPeriod = wrist.getSensorCollection().getPulseWidthRiseToRiseUs();
-		boolean connected = pulseWidthPeriod != 0;
-		if(!connected)
-			hasEmergency = true;
-		return connected;
+		if(!Constants.kSimulate){
+			int pulseWidthPeriod = wrist.getSensorCollection().getPulseWidthRiseToRiseUs();
+			boolean connected = pulseWidthPeriod != 0;
+			if(!connected)
+				hasEmergency = true;
+			return connected;
+		}
+		return true;
 	}
 	
 	public void resetToAbsolutePosition(){

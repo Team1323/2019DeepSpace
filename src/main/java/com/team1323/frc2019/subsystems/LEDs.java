@@ -124,10 +124,12 @@ public class LEDs extends Subsystem{
     public void setLEDs(double r, double g, double b){
 		//A: Green
 		//B: Red
-		//C: Blue
-		canifier.setLEDOutput(r, LEDChannel.LEDChannelB);
-		canifier.setLEDOutput(g, LEDChannel.LEDChannelA);
-		canifier.setLEDOutput(b, LEDChannel.LEDChannelC);
+        //C: Blue
+        if(!Constants.kSimulate){
+            canifier.setLEDOutput(r, LEDChannel.LEDChannelB);
+            canifier.setLEDOutput(g, LEDChannel.LEDChannelA);
+            canifier.setLEDOutput(b, LEDChannel.LEDChannelC);
+        }
     }
 
     public void conformToState(State state){

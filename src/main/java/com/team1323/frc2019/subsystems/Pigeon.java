@@ -2,6 +2,7 @@ package com.team1323.frc2019.subsystems;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU.PigeonState;
+import com.team1323.frc2019.Constants;
 import com.team254.lib.geometry.Rotation2d;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,11 +31,14 @@ public class Pigeon {
 	}
 	
 	public Rotation2d getYaw(){
-		double [] ypr = new double[3];
-		pigeon.getYawPitchRoll(ypr);
-		PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
-		SmartDashboard.putNumber("Pigeon Heading", -pigeon.getFusedHeading(fusionStatus));
-		return Rotation2d.fromDegrees(-pigeon.getFusedHeading(fusionStatus)/*-ypr[0]*/);
+		if(!Constants.kSimulate){
+			double [] ypr = new double[3];
+			pigeon.getYawPitchRoll(ypr);
+			PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
+			SmartDashboard.putNumber("Pigeon Heading", -pigeon.getFusedHeading(fusionStatus));
+			return Rotation2d.fromDegrees(-pigeon.getFusedHeading(fusionStatus)/*-ypr[0]*/);
+		}
+		return new Rotation2d();
 	}
 
 	public double getPitch(){

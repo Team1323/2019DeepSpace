@@ -20,6 +20,10 @@ public class Constants {
 	public static final boolean kIsUsingTractionWheels = true;
 
 	public static final boolean kDebuggingOutput = false;
+
+	public static final boolean kResetTalons = false;
+
+	public static final boolean kSimulate = true;
 	
 	//Physical Robot Dimensions (including bumpers)
 	public static final double kRobotWidth = 36.5;

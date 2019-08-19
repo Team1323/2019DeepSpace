@@ -213,13 +213,19 @@ public class Elevator extends Subsystem {
 	public Request heightRequest(double height){
 		return new Request(){
 			
+			double startTime;
+
 			@Override
 			public void act() {
 				setTargetHeight(height);
+				if(Constants.kSimulate) startTime = Timer.getFPGATimestamp();
 			}
 
 			@Override
 			public boolean isFinished() {
+				if(Constants.kSimulate){
+					return (Timer.getFPGATimestamp() - startTime) * 12.0 > height;
+				}
 				return hasReachedTargetHeight() || isOpenLoop();
 			}
 			
@@ -348,11 +354,14 @@ public class Elevator extends Subsystem {
 	};
 	
 	public boolean isSensorConnected(){
-		int pulseWidthPeriod = master.getSensorCollection().getPulseWidthRiseToRiseUs();
-		boolean connected = pulseWidthPeriod != 0;
-		if(!connected)
-			hasEmergency = true;
-		return connected;
+		if(!Constants.kSimulate){
+			int pulseWidthPeriod = master.getSensorCollection().getPulseWidthRiseToRiseUs();
+			boolean connected = pulseWidthPeriod != 0;
+			if(!connected)
+				hasEmergency = true;
+			return connected;
+		}
+		return true;
 	}
 
 	public void resetToAbsolutePosition(){

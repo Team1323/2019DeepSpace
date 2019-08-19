@@ -144,13 +144,19 @@ public class SwerveDriveModule extends Subsystem{
 	}
 
 	private boolean isRotationSensorConnected(){
-		int pulseWidthPeriod = rotationMotor.getSensorCollection().getPulseWidthRiseToRiseUs();
-		return pulseWidthPeriod != 0;
+		if(!Constants.kSimulate){
+			int pulseWidthPeriod = rotationMotor.getSensorCollection().getPulseWidthRiseToRiseUs();
+			return pulseWidthPeriod != 0;
+		}
+		return true;
 	}
 
 	private boolean isDriveSensorConnected(){
-		int pulseWidthPeriod = driveMotor.getSensorCollection().getPulseWidthRiseToRiseUs();
-		return pulseWidthPeriod != 0;
+		if(!Constants.kSimulate){
+			int pulseWidthPeriod = driveMotor.getSensorCollection().getPulseWidthRiseToRiseUs();
+			return pulseWidthPeriod != 0;
+		}
+		return true;
 	}
 	
 	private double getRawAngle(){
