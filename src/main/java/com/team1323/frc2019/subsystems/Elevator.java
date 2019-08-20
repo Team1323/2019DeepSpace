@@ -224,7 +224,7 @@ public class Elevator extends Subsystem {
 			@Override
 			public boolean isFinished() {
 				if(Constants.kSimulate){
-					return (Timer.getFPGATimestamp() - startTime) * 12.0 > height;
+					return (Timer.getFPGATimestamp() - startTime) * 48.0 > height;
 				}
 				return hasReachedTargetHeight() || isOpenLoop();
 			}

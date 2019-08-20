@@ -2,7 +2,6 @@ package com.team1323.frc2019.subsystems;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import com.team1323.frc2019.Constants;
@@ -11,14 +10,17 @@ import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.LimelightProcessor;
 import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.Swerve.VisionState;
+import com.team1323.frc2019.subsystems.requests.LambdaRequest;
+import com.team1323.frc2019.subsystems.requests.ParallelRequest;
 import com.team1323.frc2019.subsystems.requests.Request;
-import com.team1323.frc2019.subsystems.requests.RequestList;
+import com.team1323.frc2019.subsystems.requests.SequentialRequest;
 import com.team1323.lib.util.InterpolatingDouble;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Superstructure extends Subsystem {
 
@@ -32,7 +34,7 @@ public class Superstructure extends Subsystem {
 
 	private Compressor compressor;
 	
-	private Swerve swerve;
+	public Swerve swerve;
 
 	private LimelightProcessor limelight;
 
@@ -74,89 +76,51 @@ public class Superstructure extends Subsystem {
 			instance = new Superstructure();
 		return instance;
 	}
+
+	private Request activeRequest = null;
+	private List<Request> queuedRequests = new ArrayList<>();
 	
-	private RequestList activeRequests;
-	private ArrayList<RequestList> queuedRequests;
-	private Request currentRequest;
-	
-	private boolean newRequests = false;
-	private boolean activeRequestsCompleted = false;
+	private boolean newRequest = false;
 	private boolean allRequestsCompleted = false;
 	public boolean requestsCompleted(){ return allRequestsCompleted; }
 	
-	private void setActiveRequests(RequestList requests){
-		activeRequests = requests;
-		newRequests = true;
-		activeRequestsCompleted = false;
+	private void setActiveRequest(Request request){
+		activeRequest = request;
+		newRequest = true;
 		allRequestsCompleted = false;
 	}
 	
-	private void setQueuedRequests(RequestList requests){
-		queuedRequests.clear();
-		queuedRequests.add(requests);
-	}
-	
-	private void setQueuedRequests(List<RequestList> requests){
-		queuedRequests.clear();
-		queuedRequests = new ArrayList<>(requests.size());
-		for(RequestList list : requests){
-			queuedRequests.add(list);
+	private void setQueue(List<Request> requests){
+		clearQueue();
+		for(Request request : requests) {
+			queuedRequests.add(request);
 		}
+	}
+
+	private void setQueue(Request request) {
+		setQueue(Arrays.asList(request));
+	}
+
+	private void clearQueue() {
+		queuedRequests.clear();
 	}
 	
 	public void request(Request r){
-		setActiveRequests(new RequestList(Arrays.asList(r), false));
-		setQueuedRequests(new RequestList());
+		setActiveRequest(r);
+		clearQueue();
 	}
 	
 	public void request(Request active, Request queue){
-		setActiveRequests(new RequestList(Arrays.asList(active), false));
-		setQueuedRequests(new RequestList(Arrays.asList(queue), false));
-	}
-	
-	public void request(RequestList list){
-		setActiveRequests(list);
-		setQueuedRequests(new RequestList());
-	}
-	
-	public void request(RequestList activeList, RequestList queuedList){
-		setActiveRequests(activeList);
-		setQueuedRequests(queuedList);
-	}
-	
-	public void addActiveRequest(Request request){
-		activeRequests.add(request);
-		newRequests = true;
-		activeRequestsCompleted = false;
-		allRequestsCompleted = false;
-	}
-	
-	/** Ill-advised */
-	public void addForemostActiveRequest(Request request){
-		activeRequests.addToForefront(request);
-		newRequests = true;
-		activeRequestsCompleted = false;
-		allRequestsCompleted = false;
+		setActiveRequest(active);
+		setQueue(queue);
 	}
 	
 	public void queue(Request request){
-		queuedRequests.add(new RequestList(Arrays.asList(request), false));
-	}
-	
-	public void queue(RequestList list){
-		queuedRequests.add(list);
+		queuedRequests.add(request);
 	}
 	
 	public void replaceQueue(Request request){
-		setQueuedRequests(new RequestList(Arrays.asList(request), false));
-	}
-	
-	public void replaceQueue(RequestList list){
-		setQueuedRequests(list);
-	}
-	
-	public void replaceQueue(List<RequestList> lists){
-		setQueuedRequests(lists);
+		setQueue(request);
 	}
 	
 	private final Loop loop = new Loop(){
@@ -181,48 +145,20 @@ public class Superstructure extends Subsystem {
 				if(isClimbing())
 					jacks.setHeight(Constants.kJackHeightTreeMap.getInterpolated(new InterpolatingDouble(wrist.getAngle())).value);
 					//wrist.setAngle(Constants.kWristAngleTreemap.getInterpolated(new InterpolatingDouble(jacks.getHeight())).value);
-				
-				if(!activeRequestsCompleted){
-					if(newRequests){
-						if(activeRequests.isParallel()){
-							boolean allActivated = true;
-							for(Iterator<Request> iterator = activeRequests.getRequests().iterator(); iterator.hasNext();){
-								Request request = iterator.next();
-								boolean allowed = request.allowed();
-								allActivated &= allowed;
-								if(allowed) request.act();
-							}
-							newRequests = !allActivated;
-						}else{
-							if(activeRequests.isEmpty()){
-								activeRequestsCompleted = true;
-								return;
-							}
-							currentRequest = activeRequests.remove();
-							currentRequest.act();
-							newRequests = false;
-						}
-					}
-					if(activeRequests.isParallel()){
-						boolean done = true;
-						for(Request request : activeRequests.getRequests()){
-							done &= request.isFinished();
-						}
-						activeRequestsCompleted = done;
-					}else if(currentRequest.isFinished()){
-							if(activeRequests.isEmpty()){
-								activeRequestsCompleted = true;
-							}else if(activeRequests.getRequests().get(0).allowed()){
-								newRequests = true;
-								activeRequestsCompleted = false;
-							}
-					}
-				}else{
-					if(!queuedRequests.isEmpty()){
-						setActiveRequests(queuedRequests.remove(0));
-					}else{
+
+				if(newRequest) {
+					activeRequest.act();
+					newRequest = false;
+				} 
+
+				if(activeRequest == null) {
+					if(queuedRequests.isEmpty()) {
 						allRequestsCompleted = true;
+					} else {
+						setActiveRequest(queuedRequests.remove(0));
 					}
+				} else if(activeRequest.isFinished()) {
+					activeRequest = null;
 				}
 			
 			}
@@ -236,7 +172,7 @@ public class Superstructure extends Subsystem {
 	};
 	
 	public synchronized void sendManualInput(double wristOutput, double elevatorOutput, double jackOutput){
-		RequestList list = RequestList.emptyList();
+		List<Request> list = new ArrayList<>();
 		if(wristOutput != 0){
 			list.add(wrist.openLoopRequest(wristOutput));
 		}else if(wrist.isOpenLoop()){
@@ -254,12 +190,12 @@ public class Superstructure extends Subsystem {
 		}*/
 		
 		if(!list.isEmpty()){
-			request(list);
+			request(new ParallelRequest(list));
 		}
 	}
 
 	public void sendJackInput(double input){
-		RequestList list = RequestList.emptyList();
+		List<Request> list = new ArrayList<>();
 		/*if(input != 0){
 			list.add(jacks.openLoopRequest(input));
 		}else if(jacks.isOpenLoop()){
@@ -268,27 +204,16 @@ public class Superstructure extends Subsystem {
 		//list.add(jacks.openLoopRequest(input));
 
 		if(!list.isEmpty()){
-			request(list);
+			request(new ParallelRequest(list));
 		}
 	}
 	
 	public void enableCompressor(boolean enable){
 		compressor.setClosedLoopControl(enable);
 	}
-	
-	public RequestList elevatorWristConfig(double elevatorHeight, double wristAngle){
-		return new RequestList(Arrays.asList(elevator.heightRequest(elevatorHeight),
-				wrist.angleRequest(wristAngle)), true);
-	}
-	
-	public RequestList idleRequest(){
-		return new RequestList(Arrays.asList(wrist.openLoopRequest(0.0),
-				elevator.openLoopRequest(0.0)), true);
-	}
 
 	@Override
 	public void stop() {
-		setActiveRequests(idleRequest());
 	}
 
 	@Override
@@ -303,6 +228,8 @@ public class Superstructure extends Subsystem {
 
 	@Override
 	public void outputTelemetry() {
+		SmartDashboard.putBoolean("Superstructure Done", allRequestsCompleted);
+		SmartDashboard.putString("Active Request", (activeRequest == null) ? "null" : activeRequest.toString());
 	}
 
 	public Request waitRequest(double seconds){
@@ -339,116 +266,104 @@ public class Superstructure extends Subsystem {
 		};
 	}
 
-	public Request interpolatorRequest(boolean on){
-		return new Request(){
-		
-			@Override
-			public void act() {
-				enableInterpolator(on);
-			}
-		};
-	}
-
 	/////States/////
 
 	public void disabledState(){
-		RequestList state = new RequestList(Arrays.asList(
+		request(new ParallelRequest(
 			ballCarriage.stateRequest(BallCarriage.State.OFF), 
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			wrist.angleRequest(Constants.kWristPrimaryStowAngle),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
-			diskScorer.stateRequest(DiskScorer.State.STOWED)), true);
-		request(state);
+			diskScorer.stateRequest(DiskScorer.State.STOWED)
+		));
 	}
 
 	public void neutralState(){
-		RequestList state = new RequestList(Arrays.asList(
-			//ballCarriage.stateRequest(BallCarriage.State.OFF), 
+		request(new ParallelRequest(
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
-			diskScorer.stateRequest(diskScorer.isExtended() ? DiskScorer.State.NEUTRAL_EXTENDED : DiskScorer.State.STOWED)), true);
-		request(state);
+			diskScorer.stateRequest(diskScorer.isExtended() ? DiskScorer.State.NEUTRAL_EXTENDED : DiskScorer.State.STOWED)
+		));
 	}
 
 	public void ballIntakingState(){
-		RequestList state = new RequestList(Arrays.asList(
+		request(new ParallelRequest(
 			elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
 			wrist.angleRequest(Constants.kWristIntakingAngle),
 			ballCarriage.stateRequest(BallCarriage.State.OFF), 
 			ballIntake.stateRequest(BallIntake.State.INTAKING),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
 			diskScorer.stateRequest(DiskScorer.State.STOWED),
-			ballIntake.waitForBallRequest()), true);
-		/*RequestList queue = new RequestList(Arrays.asList(
-			elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
-			wrist.angleRequest(Constants.kWristBallHoldingAngle),
-			ballCarriage.stateRequest(BallCarriage.State.OFF), 
-			ballIntake.stateRequest(BallIntake.State.HOLDING)), true);*/
-		request(state);
+			ballIntake.waitForBallRequest()
+		));
 	}
 
 	public void ballHoldingState(){
-		RequestList state = new RequestList(Arrays.asList(
+		request(new ParallelRequest(
 			elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
 			wrist.angleRequest(Constants.kWristBallHoldingAngle),
 			ballCarriage.stateRequest(BallCarriage.State.RECEIVING), 
 			ballIntake.stateRequest(BallIntake.State.HOLDING),
 			diskScorer.stateRequest(DiskScorer.State.STOWED),
-			diskIntake.stateRequest(DiskIntake.State.OFF)), true);
-		request(state); 
+			diskIntake.stateRequest(DiskIntake.State.OFF)
+		)); 
 	}
 
 	public void ballFeedingState(){
-		RequestList state = new RequestList(Arrays.asList(
-			elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
-			wrist.angleRequest(Constants.kWristBallFeedingAngle, 0.1),
-			ballCarriage.stateRequest(BallCarriage.State.RECEIVING), 
-			ballIntake.stateRequest(BallIntake.State.FEEDING),
-			diskScorer.stateRequest(DiskScorer.State.STOWED),
-			diskIntake.stateRequest(DiskIntake.State.OFF),
-			ballCarriage.waitForBallRequest()), true);
-		RequestList queue = new RequestList(Arrays.asList(
-			ballIntake.stateRequest(BallIntake.State.POST_FEEDING),
-			ballCarriage.stateRequest(BallCarriage.State.OFF)), true);
-		request(state, queue);
+		request(new SequentialRequest(
+			new ParallelRequest(
+				elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
+				wrist.angleRequest(Constants.kWristBallFeedingAngle, 0.1),
+				ballCarriage.stateRequest(BallCarriage.State.RECEIVING), 
+				ballIntake.stateRequest(BallIntake.State.FEEDING),
+				diskScorer.stateRequest(DiskScorer.State.STOWED),
+				diskIntake.stateRequest(DiskIntake.State.OFF),
+				ballCarriage.waitForBallRequest()
+			),
+			new ParallelRequest(
+				ballIntake.stateRequest(BallIntake.State.POST_FEEDING),
+				ballCarriage.stateRequest(BallCarriage.State.OFF)
+			)
+		));
 	}
 
 	public void fullBallCycleState(){
-		RequestList state = new RequestList(Arrays.asList(
-			elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
-			wrist.angleRequest(Constants.kWristBallHoldingAngle),
-			ballCarriage.stateRequest(BallCarriage.State.RECEIVING),
-			ballIntake.stateRequest(BallIntake.State.HOLDING),
-			diskScorer.stateRequest(DiskScorer.State.STOWED),
-			diskIntake.stateRequest(DiskIntake.State.OFF)), true);
-		List<RequestList> queue = Arrays.asList(
-			new RequestList(Arrays.asList(
+		request(new SequentialRequest(
+			new ParallelRequest(
+				elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
+				wrist.angleRequest(Constants.kWristBallHoldingAngle),
+				ballCarriage.stateRequest(BallCarriage.State.RECEIVING),
+				ballIntake.stateRequest(BallIntake.State.HOLDING),
+				diskScorer.stateRequest(DiskScorer.State.STOWED),
+				diskIntake.stateRequest(DiskIntake.State.OFF)
+			),
+			new ParallelRequest(
 				elevator.heightRequest(Constants.kElevatorBallIntakeHeight), 
 				wrist.angleRequest(Constants.kWristBallFeedingAngle, 0.5, false), 
 				ballIntake.stateRequest(BallIntake.State.FEEDING),
 				diskIntake.stateRequest(DiskIntake.State.OFF),
-				ballCarriage.waitForBallRequest()), true),
-			new RequestList(Arrays.asList(
+				ballCarriage.waitForBallRequest()
+			),
+			new ParallelRequest(
 				ballIntake.stateRequest(BallIntake.State.POST_FEEDING),
-				elevator.heightRequest(Constants.kElevatorLowBallHeight)), true)
-		);
-		request(state);
-		replaceQueue(queue);
+				elevator.heightRequest(Constants.kElevatorLowBallHeight)
+			)
+		));
 	}
 
 	public void ballScoringState(double elevatorHeight){
-		RequestList state = new RequestList(Arrays.asList(
+		request(new ParallelRequest(
 			elevator.heightRequest(elevatorHeight), 
 			wrist.angleRequest(Constants.kWristBallFeedingAngle),
 			ballCarriage.stateRequest(BallCarriage.State.OFF), 
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			diskScorer.stateRequest(DiskScorer.State.STOWED),
-			diskIntake.stateRequest(DiskIntake.State.OFF)), true);
-		request(state); 
+			diskIntake.stateRequest(DiskIntake.State.OFF)
+		)); 
 	}
 
 	public void ballTrackingState(double elevatorHeight){
-		RequestList state = new RequestList(Arrays.asList(
+		request(new SequentialRequest(
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
 			swerve.startTrackRequest(Constants.kBallTargetHeight, new Translation2d(-1.0, 0.0), false, VisionState.LINEAR),
 			waitRequest(0.5),
@@ -458,23 +373,23 @@ public class Superstructure extends Subsystem {
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			diskScorer.stateRequest(DiskScorer.State.STOWED),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
-			swerve.waitForTrackRequest()), false);
-		RequestList queue = new RequestList(Arrays.asList(
+			swerve.waitForTrackRequest(),
 			elevator.heightRequest(elevatorHeight),
-			ballCarriage.stateRequest(BallCarriage.State.EJECTING)), false);
-		request(state, queue); 
+			ballCarriage.stateRequest(BallCarriage.State.EJECTING)
+		)); 
 	}
 
 	public void diskIntakingState(){
-		RequestList state = new RequestList(Arrays.asList(
-			elevator.heightRequest(Constants.kElevatorDiskIntakeHeight),
-			diskScorer.stateRequest(DiskScorer.State.STOWED),
-			diskIntake.stateRequest(DiskIntake.State.INTAKING),
-			ballIntake.stateRequest(BallIntake.State.OFF),
-			ballCarriage.stateRequest(BallCarriage.State.OFF),
-			wrist.angleRequest(Constants.kWristPrimaryStowAngle),
-			diskIntake.waitForDiskRequest()), true);
-		RequestList queue = new RequestList(Arrays.asList(
+		request(new SequentialRequest(
+			new ParallelRequest(
+				elevator.heightRequest(Constants.kElevatorDiskIntakeHeight),
+				diskScorer.stateRequest(DiskScorer.State.STOWED),
+				diskIntake.stateRequest(DiskIntake.State.INTAKING),
+				ballIntake.stateRequest(BallIntake.State.OFF),
+				ballCarriage.stateRequest(BallCarriage.State.OFF),
+				wrist.angleRequest(Constants.kWristPrimaryStowAngle),
+				diskIntake.waitForDiskRequest()
+			),
 			diskIntake.stateRequest(DiskIntake.State.DELIVERING),
 			diskScorer.stateRequest(DiskScorer.State.GROUND_INTAKING),
 			diskScorer.waitForDiskRequest(),
@@ -484,48 +399,49 @@ public class Superstructure extends Subsystem {
 			diskIntake.stateRequest(DiskIntake.State.HANDOFF_COMPLETE),
 			diskScorer.stateRequest(DiskScorer.State.HOLDING),
 			waitRequest(0.5),
-			elevator.heightRequest(Constants.kElevatorLowHatchHeight)), false);
-		request(state, queue); 
+			elevator.heightRequest(Constants.kElevatorLowHatchHeight)
+		)); 
 	}
 
 	public void diskReceivingState(){
-		RequestList state = new RequestList(Arrays.asList(
-			elevator.heightRequest(Constants.kElevatorHumanLoaderHeight),
-			diskScorer.stateRequest(DiskScorer.State.AUTO_RECEIVING),
-			wrist.angleRequest(Constants.kWristPrimaryStowAngle),
-			diskIntake.stateRequest(DiskIntake.State.OFF),
-			ballIntake.stateRequest(BallIntake.State.OFF),
-			ballCarriage.stateRequest(BallCarriage.State.OFF),
-			diskScorer.waitForDiskRequest()), true);
-		RequestList queue = new RequestList(Arrays.asList(
-			diskScorer.stateRequest(DiskScorer.State.DETECTED),
-			diskIntake.stateRequest(DiskIntake.State.HANDOFF_COMPLETE)), true);
-		request(state, queue);
+		request(new SequentialRequest(
+			new ParallelRequest(
+				elevator.heightRequest(Constants.kElevatorHumanLoaderHeight),
+				diskScorer.stateRequest(DiskScorer.State.AUTO_RECEIVING),
+				wrist.angleRequest(Constants.kWristPrimaryStowAngle),
+				diskIntake.stateRequest(DiskIntake.State.OFF),
+				ballIntake.stateRequest(BallIntake.State.OFF),
+				ballCarriage.stateRequest(BallCarriage.State.OFF),
+				diskScorer.waitForDiskRequest()
+			),
+			new ParallelRequest(
+				diskScorer.stateRequest(DiskScorer.State.DETECTED),
+				diskIntake.stateRequest(DiskIntake.State.HANDOFF_COMPLETE)
+			)
+		));
 	}
 
 	public void diskScoringState(){
-		RequestList state = new RequestList(Arrays.asList(
-			//swerve.startTrajectoryRequest(new Translation2d(6.0, 0.0), swerve.getPose().getRotation().getUnboundedDegrees(), 24.0),
-			//waitRequest(0.75),
+		request(new SequentialRequest(
 			diskScorer.ejectRequest(elevator.getHeight()),
-			swerve.trajectoryRequest(new Translation2d(-24.0, 0.0), swerve.getPose().getRotation().getUnboundedDegrees(), 36.0)), false);
-		request(state); 
+			swerve.trajectoryRequest(new Translation2d(-24.0, 0.0), swerve.getPose().getRotation().getUnboundedDegrees(), 36.0)
+		)); 
 	}
 
 	public void diskScoringState(double elevatorHeight, boolean resuck){
-		RequestList state = new RequestList(Arrays.asList(
+		request(new ParallelRequest(
 			elevator.heightRequest(elevatorHeight),
 			wrist.angleRequest(Constants.kWristPrimaryStowAngle),
 			diskScorer.stateRequest(resuck ? DiskScorer.State.DETECTED : DiskScorer.State.HOLDING),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
 			ballIntake.stateRequest(BallIntake.State.OFF),
-			ballCarriage.stateRequest(BallCarriage.State.OFF)), true);
-		request(state); 
+			ballCarriage.stateRequest(BallCarriage.State.OFF)
+		)); 
 	}
 
 	/** Used for driver tracking */
 	public void diskTrackingState(){
-		RequestList state = new RequestList(Arrays.asList(
+		request(new SequentialRequest(
 			waitForVisionRequest(),
 			swerve.startTrackRequest(Constants.kDiskTargetHeight, new Translation2d(-1.0, 0.0), true, VisionState.LINEAR),
 			wrist.angleRequest(Constants.kWristBallFeedingAngle),
@@ -533,15 +449,14 @@ public class Superstructure extends Subsystem {
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			diskScorer.stateRequest(DiskScorer.State.HOLDING),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
-			swerve.waitForTrackRequest()), false);
-		RequestList queue = new RequestList(Arrays.asList(
-			swerve.strictWaitForTrackRequest()), false);
-		request(state, queue); 
+			swerve.waitForTrackRequest(),
+			swerve.strictWaitForTrackRequest()
+		)); 
 	}
 
-	/** Used for teleop tracking */
+	/** Used for codriver tracking */
 	public void diskTrackingState(double elevatorHeight){
-		RequestList state = new RequestList(Arrays.asList(
+		request(new SequentialRequest(
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorDiskVisibleRanges)),
 			waitForVisionRequest(),
 			swerve.startTrackRequest(Constants.kDiskTargetHeight, new Translation2d(-1.0, 0.0), true, VisionState.LINEAR),
@@ -552,38 +467,29 @@ public class Superstructure extends Subsystem {
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			diskScorer.stateRequest(DiskScorer.State.HOLDING),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
-			swerve.waitForTrackRequest()), false);
-		RequestList queue = new RequestList(Arrays.asList(
+			swerve.waitForTrackRequest(),
 			elevator.heightRequest(elevatorHeight),
-			swerve.strictWaitForTrackRequest()//,
-			//diskScorer.stateRequest(DiskScorer.State.SCORING),
-			//waitRequest(0.5),
-			/*swerve.trajectoryRequest(new Translation2d(-24.0, 0.0), swerve.getPose().getRotation().getUnboundedDegrees(), 36.0)*/), false);
-		request(state, queue); 
+			swerve.strictWaitForTrackRequest()
+		)); 
 	}
 
 	public void diskTrackingState(double elevatorHeight, Rotation2d fixedOrientation){
-		RequestList state = new RequestList(Arrays.asList(
-			//elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorDiskVisibleRanges)),
+		request(new SequentialRequest(
 			waitForVisionRequest(),
 			swerve.startTrackRequest(Constants.kDiskTargetHeight, new Translation2d(-5.0, 0.0), true, fixedOrientation),
-			//waitRequest(0.5),
-			//elevator.heightRequest(elevator.nearestVisionHeight(elevatorHeight, Constants.kElevatorDiskVisibleRanges)), 
 			wrist.angleRequest(Constants.kWristBallFeedingAngle),
 			ballCarriage.stateRequest(BallCarriage.State.OFF), 
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			diskScorer.stateRequest(DiskScorer.State.HOLDING),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
-			swerve.waitForTrackRequest()), false);
-		RequestList queue = new RequestList(Arrays.asList(
-			//waitRequest(0.25),
+			swerve.waitForTrackRequest(),
 			elevator.heightRequest(elevatorHeight),
-			diskScorer.stateRequest(DiskScorer.State.SCORING)), false);
-		request(state, queue); 
+			diskScorer.stateRequest(DiskScorer.State.SCORING)
+		)); 
 	}
 
 	public void diskTrackingState(double elevatorHeight, Rotation2d fixedOrientation, double trackingSpeed){
-		RequestList state = new RequestList(Arrays.asList(
+		request(new SequentialRequest(
 			waitForVisionRequest(),
 			swerve.startTrackRequest(Constants.kDiskTargetHeight, new Translation2d(-5.0, 0.0), true, fixedOrientation, Constants.kClosestVisionDistance, trackingSpeed),
 			wrist.angleRequest(Constants.kWristBallFeedingAngle),
@@ -591,84 +497,68 @@ public class Superstructure extends Subsystem {
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			diskScorer.stateRequest(DiskScorer.State.HOLDING),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
-			swerve.waitForTrackRequest()), false);
-		RequestList queue = new RequestList(Arrays.asList(
-			//waitRequest(0.25),
+			swerve.waitForTrackRequest(),
 			elevator.heightRequest(elevatorHeight),
-			diskScorer.stateRequest(DiskScorer.State.SCORING)), false);
-		request(state, queue); 
+			diskScorer.stateRequest(DiskScorer.State.SCORING)
+		)); 
 	}
 
 	public void diskTrackingState(double elevatorHeight, Rotation2d fixedOrientation, double cutoffDistance, Translation2d endTranslation, double trackingSpeed){
-		RequestList state = new RequestList(Arrays.asList(
-			//elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorDiskVisibleRanges)),
+		request(new SequentialRequest(
 			waitForVisionRequest(),
 			swerve.startTrackRequest(Constants.kDiskTargetHeight, endTranslation, true, fixedOrientation, cutoffDistance, trackingSpeed),
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			diskScorer.stateRequest(DiskScorer.State.HOLDING),
 			diskIntake.stateRequest(DiskIntake.State.OFF),
-			swerve.waitForTrackRequest()), false);
-		RequestList queue = new RequestList(Arrays.asList(
-			//waitRequest(0.25),
+			swerve.waitForTrackRequest(),
 			elevator.heightRequest(elevatorHeight),
-			diskScorer.stateRequest(DiskScorer.State.SCORING)), false);
-		request(state, queue); 
+			diskScorer.stateRequest(DiskScorer.State.SCORING)
+		)); 
 	}
 
 	public void humanLoaderTrackingState(){
-		RequestList state = new RequestList(Arrays.asList(
+		request(new SequentialRequest(
 			diskIntake.stateRequest(DiskIntake.State.OFF),
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			ballCarriage.stateRequest(BallCarriage.State.OFF),
 			diskScorer.stateRequest(DiskScorer.State.HOLDING),
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
 			waitForVisionRequest(),
-			swerve.trackRequest(Constants.kDiskTargetHeight, new Translation2d(/*7.0*/4.0, 0.0), false, Rotation2d.fromDegrees(180.0), 48.0, 54.0)), false);
-
-		List<RequestList> queue = Arrays.asList(
-			new RequestList(Arrays.asList(
+			swerve.trackRequest(Constants.kDiskTargetHeight, new Translation2d(/*7.0*/4.0, 0.0), false, Rotation2d.fromDegrees(180.0), 48.0, 54.0),
+			new ParallelRequest(
 				elevator.heightRequest(Constants.kElevatorHumanLoaderHeight),
 				diskScorer.stateRequest(DiskScorer.State.AUTO_RECEIVING),
-				diskScorer.waitForDiskRequest()), true),
-			new RequestList(Arrays.asList(
-				//swerve.waitForTrackRequest(),
-				diskScorer.stateRequest(DiskScorer.State.DETECTED)), false)
-		);
-		request(state); 
-		replaceQueue(queue);
+				diskScorer.waitForDiskRequest()
+			),
+			diskScorer.stateRequest(DiskScorer.State.DETECTED)
+		));
 	}
 
 	public void humanLoaderRetrievingState(){
 		robotState.clearVisionTargets(); //TODO test this addition to the sequence
-		RequestList state = new RequestList(Arrays.asList(
+		request(new SequentialRequest(
 			diskIntake.stateRequest(DiskIntake.State.OFF),
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			ballCarriage.stateRequest(BallCarriage.State.OFF),
 			diskScorer.stateRequest(DiskScorer.State.NEUTRAL_EXTENDED),
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
 			waitForVisionRequest(),
-			swerve.trackRequest(Constants.kDiskTargetHeight, new Translation2d(4.0, 0.0), false, Rotation2d.fromDegrees(180.0), 66.0, 60.0)), false);
-
-		List<RequestList> queue = Arrays.asList(
-			new RequestList(Arrays.asList(
+			swerve.trackRequest(Constants.kDiskTargetHeight, new Translation2d(4.0, 0.0), false, Rotation2d.fromDegrees(180.0), 66.0, 60.0),
+			new ParallelRequest(
 				elevator.heightRequest(Constants.kElevatorHumanLoaderHeight),
 				diskScorer.stateRequest(DiskScorer.State.RECEIVING),
-				diskScorer.waitForDiskRequest()), true),
-			new RequestList(Arrays.asList(
-				//swerve.waitForTrackRequest(),
-				diskScorer.stateRequest(DiskScorer.State.DETECTED),
-				swerve.trajectoryRequest(new Translation2d(-60.0, 0.0), 180.0, 60.0),
-				swerve.openLoopRequest(new Translation2d(), 0.0)), false)
-		);
-		request(state); 
-		replaceQueue(queue);
+				diskScorer.waitForDiskRequest()
+			),
+			diskScorer.stateRequest(DiskScorer.State.DETECTED),
+			swerve.trajectoryRequest(new Translation2d(-60.0, 0.0), 180.0, 60.0),
+			swerve.openLoopRequest(new Translation2d(), 0.0)
+		));
 	}
 
 	public void shortClimbingState(){
-		RequestList state = new RequestList(Arrays.asList(
-			wrist.angleRequest(Constants.kWristShortPlatformAngle)), true);
-		List<RequestList> queue = Arrays.asList(
-			new RequestList(Arrays.asList(
+		request(new SequentialRequest(
+			wrist.angleRequest(Constants.kWristShortPlatformAngle),
+			new ParallelRequest(
 				wrist.gearShiftRequest(false),
 				jacks.shiftPowerRequest(true),
 				elevator.heightRequest(Constants.kElevatorLowBallHeight),
@@ -676,81 +566,67 @@ public class Superstructure extends Subsystem {
 				ballIntake.stateRequest(BallIntake.State.CLIMBING),
 				ballCarriage.stateRequest(BallCarriage.State.OFF),
 				jacks.heightRequest(Constants.kJackShortClimbHeight),
-				wrist.angleRequest(Constants.kWristShortHangingAngle)), true),
-			new RequestList(Arrays.asList(
+				wrist.angleRequest(Constants.kWristShortHangingAngle)
+			),
+			new ParallelRequest(
 				ballIntake.stateRequest(BallIntake.State.PULLING),
-				swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 48.0)), true)
-		);
-		request(state);
-		replaceQueue(queue);
+				swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 48.0)
+			)
+		));
 	}
 
 	public void climbingState(){
-		RequestList state = new RequestList(Arrays.asList(
-			wrist.angleRequest(37.0)), true);
-		List<RequestList> queue = Arrays.asList(
-			new RequestList(Arrays.asList(
+		request(new SequentialRequest(
+			wrist.angleRequest(37.0),
+			new ParallelRequest(
 				wrist.gearShiftRequest(false),
 				jacks.shiftPowerRequest(true),
-				interpolatorRequest(true),
+				new LambdaRequest(() -> enableInterpolator(true)),
 				elevator.heightRequest(Constants.kElevatorLowBallHeight),
 				diskScorer.stateRequest(DiskScorer.State.STOWED),
 				ballIntake.stateRequest(BallIntake.State.CLIMBING),
 				ballCarriage.stateRequest(BallCarriage.State.OFF),
 				wrist.angleRequest(Constants.kWristHangingAngle)
-				/*jacks.heightRequest(Constants.kJackMinControlHeight)*/), true),
-			new RequestList(Arrays.asList(
+			),
+			new ParallelRequest(
 				ballIntake.stateRequest(BallIntake.State.PULLING),
-				swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 48.0)), true)
-		);
-		request(state);
-		replaceQueue(queue);
-
-		/*RequestList state = new RequestList(Arrays.asList(
-			wrist.gearShiftRequest(false),
-			jacks.shiftPowerRequest(true),
-			elevator.heightRequest(Constants.kElevatorLowBallHeight),
-			diskScorer.stateRequest(DiskScorer.State.STOWED),
-			ballIntake.stateRequest(BallIntake.State.CLIMBING),
-			ballCarriage.stateRequest(BallCarriage.State.OFF),
-			jacks.heightRequest(Constants.kJackMinControlHeight)), true);
-		RequestList queue = new RequestList(Arrays.asList(
-			ballIntake.stateRequest(BallIntake.State.PULLING),
-			swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 48.0)), true);
-
-		request(state, queue);
-		enableInterpolator(true);*/
+				swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 48.0)
+			)
+		));
 	}
 
 	public void postClimbingState(){
 		isClimbing = false;
-		RequestList state = new RequestList(Arrays.asList(
-			wrist.gearShiftRequest(false),
-			elevator.heightRequest(Constants.kElevatorLowBallHeight),
-			diskScorer.stateRequest(DiskScorer.State.STOWED),
-			ballIntake.stateRequest(BallIntake.State.OFF),
-			ballCarriage.stateRequest(BallCarriage.State.OFF),
-			swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 18.0),
-			wrist.angleRequest(Constants.kWristBallFeedingAngle),
-			jacks.heightRequest(Constants.kJackStartingHeight)), true);
-		RequestList queue = new RequestList(Arrays.asList(
-			jacks.shiftPowerRequest(false),
-			wrist.gearShiftRequest(true)), true);
-		request(state, queue);
+		request(new SequentialRequest(
+			new ParallelRequest(
+				wrist.gearShiftRequest(false),
+				elevator.heightRequest(Constants.kElevatorLowBallHeight),
+				diskScorer.stateRequest(DiskScorer.State.STOWED),
+				ballIntake.stateRequest(BallIntake.State.OFF),
+				ballCarriage.stateRequest(BallCarriage.State.OFF),
+				swerve.velocityRequest(Rotation2d.fromDegrees(180.0), 18.0),
+				wrist.angleRequest(Constants.kWristBallFeedingAngle),
+				jacks.heightRequest(Constants.kJackStartingHeight)
+			),
+			new ParallelRequest(
+				jacks.shiftPowerRequest(false),
+				wrist.gearShiftRequest(true)
+			)
+		));
 	}
 
 	public void lockedJackState(){
-		RequestList state = new RequestList(Arrays.asList(
+		request(new SequentialRequest(
 			jacks.shiftPowerRequest(true),
-			jacks.heightRequest(Constants.kJackMaxControlHeight)), false);
-		request(state);
+			jacks.heightRequest(Constants.kJackMaxControlHeight)
+		));
 	}
 
 	public void jackState(double jackHeight){
-		RequestList state = new RequestList(Arrays.asList(
+		request(new SequentialRequest(
 			jacks.shiftPowerRequest(true),
-			jacks.heightRequest(jackHeight)), false);
-		request(state);
+			jacks.heightRequest(jackHeight)
+		));
 	}
 
 }
