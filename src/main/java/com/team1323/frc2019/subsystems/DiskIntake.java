@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.team1323.frc2019.Ports;
+import com.team1323.frc2019.Settings;
 import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.Subsystem;
@@ -316,7 +317,7 @@ public class DiskIntake extends Subsystem {
   @Override
   public void outputTelemetry() {
     SmartDashboard.putString("Disk intake state", currentState.toString());
-    if(Constants.kDebuggingOutput) {
+    if(Settings.kDebugIntakes) {
       SmartDashboard.putNumber("Disk Intake Current", diskMotor.getOutputCurrent());
       SmartDashboard.putNumber("Disk Intake Voltage", diskMotor.getMotorOutputVoltage());
       SmartDashboard.putBoolean("Disk Intake Has Disk", hasDisk);

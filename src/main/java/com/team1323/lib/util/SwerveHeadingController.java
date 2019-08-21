@@ -1,6 +1,6 @@
 package com.team1323.lib.util;
 
-import com.team1323.frc2019.Constants;
+import com.team1323.frc2019.Settings;
 
 import edu.wpi.first.wpilibj.Timer;
 
@@ -25,7 +25,7 @@ public class SwerveHeadingController {
 	}
 	
 	public SwerveHeadingController(){
-		if(Constants.kIsUsingTractionWheels){
+		if(Settings.kIsUsingTractionWheels){
 			stabilizationPID = new SynchronousPIDF(0.005, 0.0, 0.0005, 0.0);
 			snapPID = new SynchronousPIDF(0.015, 0.0, 0.0, 0.0);
 			stationaryPID = new SynchronousPIDF(0.01, 0.0, 0.002, 0.0);

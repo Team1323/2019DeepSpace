@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.team1323.frc2019.Constants;
 import com.team1323.frc2019.Ports;
+import com.team1323.frc2019.Settings;
 import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.requests.Request;
@@ -284,7 +285,7 @@ public class DiskScorer extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        if(Constants.kDebuggingOutput){
+        if(Settings.kDebugIntakes){
             SmartDashboard.putBoolean("Disk Scorer Has Disk", hasDisk());
             SmartDashboard.putBoolean("Disk Scorer Banner", getBanner());
             SmartDashboard.putNumber("Disk Scorer Current", motor.getOutputCurrent());

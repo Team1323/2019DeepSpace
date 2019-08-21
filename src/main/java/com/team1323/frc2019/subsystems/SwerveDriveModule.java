@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.team1323.frc2019.Constants;
+import com.team1323.frc2019.Settings;
 import com.team1323.frc2019.loops.ILooper;
 import com.team1323.lib.util.Util;
 import com.team254.drivers.LazyTalonSRX;
@@ -144,7 +145,7 @@ public class SwerveDriveModule extends Subsystem{
 	}
 
 	private boolean isRotationSensorConnected(){
-		if(!Constants.kSimulate){
+		if(!Settings.kSimulate){
 			int pulseWidthPeriod = rotationMotor.getSensorCollection().getPulseWidthRiseToRiseUs();
 			return pulseWidthPeriod != 0;
 		}
@@ -152,7 +153,7 @@ public class SwerveDriveModule extends Subsystem{
 	}
 
 	private boolean isDriveSensorConnected(){
-		if(!Constants.kSimulate){
+		if(!Settings.kSimulate){
 			int pulseWidthPeriod = driveMotor.getSensorCollection().getPulseWidthRiseToRiseUs();
 			return pulseWidthPeriod != 0;
 		}
@@ -366,7 +367,7 @@ public class SwerveDriveModule extends Subsystem{
 		periodicIO.rotationPosition = rotationMotor.getSelectedSensorPosition(0);
 		if(useDriveEncoder) periodicIO.drivePosition = driveMotor.getSelectedSensorPosition(0);
 		//periodicIO.velocity = driveMotor.getSelectedSensorVelocity();
-		if(Constants.kDebuggingOutput){
+		if(Settings.kDebugSwerve){
 			periodicIO.velocity = driveMotor.getSelectedSensorVelocity();
 		}
 		/*if(moduleID == 3){
@@ -420,7 +421,7 @@ public class SwerveDriveModule extends Subsystem{
 		SmartDashboard.putNumber(name + "Angle", getModuleAngle().getDegrees());
 		SmartDashboard.putNumber(name + "Inches Driven", getDriveDistanceInches());
 		//SmartDashboard.putNumber(name + "Velocity", encVelocityToInchesPerSecond(periodicIO.velocity));
-		if(Constants.kDebuggingOutput){
+		if(Settings.kDebugSwerve){
 			SmartDashboard.putNumber(name + "Pulse Width", rotationMotor.getSelectedSensorPosition(0));
 			SmartDashboard.putNumber(name + "Drive Voltage", periodicIO.driveVoltage);
 			SmartDashboard.putNumber(name + "Rotation Voltage", rotationMotor.getMotorOutputVoltage());

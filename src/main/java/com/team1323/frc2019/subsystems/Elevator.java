@@ -9,14 +9,13 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1323.frc2019.Constants;
 import com.team1323.frc2019.Ports;
+import com.team1323.frc2019.Settings;
 import com.team1323.frc2019.loops.ILooper;
-import com.team1323.frc2019.loops.LimelightProcessor;
 import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.requests.Prerequisite;
 import com.team1323.frc2019.subsystems.requests.Request;
 import com.team1323.lib.util.Util;
 import com.team254.drivers.LazyTalonSRX;
-import com.team1323.frc2019.RobotState;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -26,11 +25,11 @@ public class Elevator extends Subsystem {
 	private static Elevator instance = null;
 
 	public static Elevator getInstance() {
-		if(instance == null)
+		if (instance == null)
 			instance = new Elevator();
 		return instance;
 	}
-	
+
 	LazyTalonSRX master, motor2;
 	List<LazyTalonSRX> motors, slaves;
 	private double targetHeight = 0.0;
@@ -81,7 +80,7 @@ public class Elevator extends Subsystem {
 			motor.setNeutralMode(NeutralMode.Brake);
 		}
 		
-		if(Constants.kIsUsingCompBot){
+		if(Settings.kIsUsingCompBot){
 			master.setInverted(true);
 			motor2.setInverted(true);
 		}else{
@@ -90,7 +89,7 @@ public class Elevator extends Subsystem {
 		}
 		
 		master.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
-		master.setSensorPhase(Constants.kIsUsingCompBot ? true : false);
+		master.setSensorPhase(Settings.kIsUsingCompBot ? true : false);
 		//zeroSensors();
 		master.configReverseSoftLimitThreshold(Constants.kElevatorEncoderStartingPosition, 10);
 		master.configForwardSoftLimitThreshold(Constants.kElevatorEncoderStartingPosition + inchesToEncUnits(Constants.kElevatorMaxHeight), 10);
@@ -218,12 +217,12 @@ public class Elevator extends Subsystem {
 			@Override
 			public void act() {
 				setTargetHeight(height);
-				if(Constants.kSimulate) startTime = Timer.getFPGATimestamp();
+				if(Settings.kSimulate) startTime = Timer.getFPGATimestamp();
 			}
 
 			@Override
 			public boolean isFinished() {
-				if(Constants.kSimulate){
+				if(Settings.kSimulate){
 					return (Timer.getFPGATimestamp() - startTime) * 48.0 > height;
 				}
 				return hasReachedTargetHeight() || isOpenLoop();
@@ -354,7 +353,7 @@ public class Elevator extends Subsystem {
 	};
 	
 	public boolean isSensorConnected(){
-		if(!Constants.kSimulate){
+		if(!Settings.kSimulate){
 			int pulseWidthPeriod = master.getSensorCollection().getPulseWidthRiseToRiseUs();
 			boolean connected = pulseWidthPeriod != 0;
 			if(!connected)
@@ -383,7 +382,7 @@ public class Elevator extends Subsystem {
 	public synchronized void readPeriodicInputs(){
 		periodicIO.position = master.getSelectedSensorPosition(0);
 
-		if(Constants.kDebuggingOutput){
+		if(Settings.kDebugElevator){
 			periodicIO.velocity = master.getSelectedSensorVelocity(0);
 			periodicIO.voltage = master.getMotorOutputVoltage();
 			periodicIO.current = master.getOutputCurrent();
@@ -417,7 +416,7 @@ public class Elevator extends Subsystem {
 	@Override
 	public void outputTelemetry() {
 		SmartDashboard.putNumber("Elevator Height", getHeight());
-		if(Constants.kDebuggingOutput){
+		if(Settings.kDebugElevator){
 			SmartDashboard.putNumber("Elevator 1 Current", periodicIO.current);
 			SmartDashboard.putNumber("Elevator 2 Current", motor2.getOutputCurrent());
 			SmartDashboard.putNumber("Elevator Voltage", periodicIO.voltage);

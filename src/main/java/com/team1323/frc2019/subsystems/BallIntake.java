@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.team1323.frc2019.Ports;
+import com.team1323.frc2019.Settings;
 import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.Subsystem;
@@ -311,7 +312,7 @@ public class BallIntake extends Subsystem {
 
   @Override
   public void outputTelemetry() {
-    if (Constants.kDebuggingOutput) {
+    if (Settings.kDebugIntakes) {
       SmartDashboard.putNumber("Intake Grabber Current", grabber.getOutputCurrent());
       SmartDashboard.putNumber("Intake Grabber Voltage", grabber.getMotorOutputVoltage());
       SmartDashboard.putNumber("Intake Feeder Current", feeder.getOutputCurrent());

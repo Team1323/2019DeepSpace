@@ -9,6 +9,7 @@ import com.team1323.frc2019.Constants;
 import com.team1323.frc2019.DriveMotionPlanner;
 import com.team1323.frc2019.Ports;
 import com.team1323.frc2019.RobotState;
+import com.team1323.frc2019.Settings;
 import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.requests.Request;
@@ -1262,8 +1263,7 @@ public class Swerve extends Subsystem{
 	public void outputTelemetry() {
 		modules.forEach((m) -> m.outputTelemetry());
 		SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getUnboundedDegrees()});
-		SmartDashboard.putString("Swerve State", currentState.toString());
-		if(Constants.kDebuggingOutput){
+		if(Settings.kDebugSwerve){
 			SmartDashboard.putNumber("Robot X", pose.getTranslation().x());
 			SmartDashboard.putNumber("Robot Y", pose.getTranslation().y());
 			SmartDashboard.putNumber("Robot Heading", pose.getRotation().getUnboundedDegrees());

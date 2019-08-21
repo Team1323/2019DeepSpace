@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.team1323.frc2019.Constants;
 import com.team1323.frc2019.Ports;
+import com.team1323.frc2019.Settings;
 import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.requests.Request;
@@ -191,7 +192,7 @@ public class BallCarriage extends Subsystem{
 
     @Override
     public void outputTelemetry() {
-        if(Constants.kDebuggingOutput){
+        if(Settings.kDebugIntakes){
             SmartDashboard.putNumber("Ball Carriage Voltage", motor.getMotorOutputVoltage());
             SmartDashboard.putNumber("Ball Carriage Current", motor.getOutputCurrent());
             SmartDashboard.putBoolean("Ball Carriage Banner", getBanner());

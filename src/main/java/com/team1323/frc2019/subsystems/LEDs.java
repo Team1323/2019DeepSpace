@@ -13,10 +13,10 @@ import java.util.List;
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifier.LEDChannel;
 import com.team1323.frc2019.Ports;
+import com.team1323.frc2019.Settings;
 import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.requests.Request;
-import com.team1323.frc2019.Constants;
 import com.team1323.lib.util.HSVtoRGB;
 import com.team1323.lib.util.MovingAverage;
 
@@ -125,7 +125,7 @@ public class LEDs extends Subsystem{
 		//A: Green
 		//B: Red
         //C: Blue
-        if(!Constants.kSimulate){
+        if(!Settings.kSimulate){
             canifier.setLEDOutput(r, LEDChannel.LEDChannelB);
             canifier.setLEDOutput(g, LEDChannel.LEDChannelA);
             canifier.setLEDOutput(b, LEDChannel.LEDChannelC);

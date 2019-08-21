@@ -8,6 +8,7 @@
 package com.team1323.frc2019.subsystems;
 
 import com.team1323.frc2019.Ports;
+import com.team1323.frc2019.Settings;
 import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.requests.Request;
@@ -191,7 +192,7 @@ public class Probe extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        if(Constants.kDebuggingOutput){
+        if(Settings.kDebugIntakes){
             SmartDashboard.putBoolean("Probe Has Disk", hasDisk());
             SmartDashboard.putBoolean("Probe Banner", getBanner());
         }
