@@ -62,7 +62,7 @@ public class Constants {
     public static final double kCameraXOffset = kRobotHalfLength - 15.0;
     public static final double kCameraZOffset = 16.45;
     public static final double kCameraYawAngleDegrees = 0.0;//-12.7
-    public static final double kCameraPitchAngleDegrees = kIsUsingCompBot ? 14.65 : 14.95;//13.45
+    public static final double kCameraPitchAngleDegrees = Settings.kIsUsingCompBot ? 14.65 : 14.95;//13.45
     
     //Goal tracker constants
     public static double kMaxGoalTrackAge = 0.5;//0.5
@@ -98,10 +98,10 @@ public class Constants {
     public static final double kSwerveRotationSpeedScalar = ((1.0 / 0.125) - 1.0) / kSwerveMaxSpeedInchesPerSecond;
     
     //Swerve Module Wheel Offsets (Rotation encoder values when the wheels are facing 0 degrees)
-	public static final int kFrontRightEncoderStartingPos = kIsUsingCompBot ? -1403 - 1024 : 1740 - 1024;
-	public static final int kFrontLeftEncoderStartingPos = kIsUsingCompBot ? -2171 - 1024 : -2895 - 1024;
-	public static final int kRearLeftEncoderStartingPos = kIsUsingCompBot ? -1327 - 1024 : -2639 - 1024;
-	public static final int kRearRightEncoderStartingPos = kIsUsingCompBot ? -5953 - 1024 : 975 - 1024;
+	public static final int kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? -1403 - 1024 : 1740 - 1024;
+	public static final int kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? -2171 - 1024 : -2895 - 1024;
+	public static final int kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? -1327 - 1024 : -2639 - 1024;
+	public static final int kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? -5953 - 1024 : 975 - 1024;
 	
 	//Swerve Module Positions (relative to the center of the drive base)
 	public static final Translation2d kVehicleToModuleZero = new Translation2d(kWheelbaseLength/2, kWheelbaseWidth/2);
@@ -137,7 +137,7 @@ public class Constants {
 	//Elevator Constants
 	public static final double kElevatorMaxSpeedHighGear = 696.96 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
-	public static final int kElevatorEncoderStartingPosition = kIsUsingCompBot ? 3146 : 333;
+	public static final int kElevatorEncoderStartingPosition = Settings.kIsUsingCompBot ? 3146 : 333;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 0.5; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.6;
@@ -177,7 +177,7 @@ public class Constants {
 	public static final double kWristMaxSpeedLowGear = 31.32 * 4096.0 / 600.0;//200.0;
 	public static final double kWristStartingAngle = 0.0;
 	/** Pulse width position of the wrist encoder when the wrist is upright (at 90 degrees, parallel to the elevator). */
-	public static final int kWristStartingEncoderPosition = kIsUsingCompBot ? 1239 : 1502;
+	public static final int kWristStartingEncoderPosition = Settings.kIsUsingCompBot ? 1239 : 1502;
 	/** The number of rotations the wrist encoder undergoes for every rotation of the wrist. */
 	public static final double kWristEncoderToOutputRatio = 30.0 / 12.0; // 144 degrees before wrap
 	public static final double kWristAngleTolerance = 10.0; //degrees
@@ -185,7 +185,7 @@ public class Constants {
 	public static final double kWristMaxControlAngle = 85.0; //degrees
 	public static final double kWristMinPhysicalAngle = -35.0;
 	public static final double kWristMaxPhysicalAngle = 95.0;//95.192
-	public static final double kWristIntakingAngle = kIsUsingCompBot ? 0.0 : 5.0;
+	public static final double kWristIntakingAngle = Settings.kIsUsingCompBot ? 0.0 : 5.0;
 	public static final double kWristPrimaryStowAngle = 60.5;
 	public static final double kWristShortPlatformAngle = -32.0;
 	public static final double kWristShortHangingAngle = -63.5;
@@ -196,7 +196,7 @@ public class Constants {
 	
 	//Ball Intake Constants
 	public static final double kIntakeWeakEjectOutput = -0.75;
-	public static final double kIntakeEjectOutput = kIsUsingCompBot ? -0.6 : -0.9;
+	public static final double kIntakeEjectOutput = Settings.kIsUsingCompBot ? -0.6 : -0.9;
 	public static final double kIntakeStrongEjectOutput = -1.0;
 	public static final double kIntakingOutput = 1.0;
 	public static final double kIntakeWeakHoldingOutput = 2.0/12.0;
@@ -237,7 +237,7 @@ public class Constants {
 	public static final double kJackMaxSpeed = 344.1749 * 4096.0 / 600.0;//2675.0;
 	public static final double kJackTicksPerInch = 13.3733539 * 4096.0 / 30.4444882;//1.219 inches before wrap
 	public static final double kJackHeightTolerance = 1.0; //inches
-	public static final int kJackStartingEncPosition = kIsUsingCompBot ? 2813 : 3942;
+	public static final int kJackStartingEncPosition = Settings.kIsUsingCompBot ? 2813 : 3942;
 	public static final double kJackStartingHeight = 0.0;
 	public static final double kJackShortClimbHeight = -10.0;
 	public static final double kJackMaxPhysicalHeight = 0.2;

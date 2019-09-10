@@ -3,6 +3,7 @@ package com.team254.drivers;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team1323.frc2019.Constants;
+import com.team1323.frc2019.Settings;
 
 /**
  * This class is a thin wrapper around the CANTalon that reduces CAN bus / CPU overhead by skipping duplicate set
@@ -12,7 +13,7 @@ public class LazyTalonSRX extends TalonSRX {
     protected double mLastSet = Double.NaN;
     protected ControlMode mLastControlMode = null;
     
-    boolean kSimulated = Constants.kSimulate;
+    boolean kSimulated = Settings.kSimulate;
 
     //Simulation variables
     double simPercentOutput = 0.0;
@@ -24,7 +25,7 @@ public class LazyTalonSRX extends TalonSRX {
 
     public LazyTalonSRX(int deviceNumber) {
         super(deviceNumber);
-        if(Constants.kResetTalons) super.configFactoryDefault();
+        if(Settings.kResetTalons) super.configFactoryDefault();
     }
 
     public void simulate(boolean simulate){

@@ -1074,20 +1074,7 @@ public class Swerve extends Subsystem{
 	}
 
 	public Request startTrackRequest(double visionTargetHeight, Translation2d endTranslation, boolean hasDisk, Rotation2d fixedOrientation){
-		return new Request(){
-		
-			@Override
-			public void act() {
-				robotHasDisk = hasDisk;
-				fixedVisionOrientation = fixedOrientation;
-				useFixedVisionOrientation = true;
-				visionCutoffDistance = Constants.kClosestVisionDistance;
-				visionTrackingSpeed = Constants.kDefaultVisionTrackingSpeed;
-				resetVisionUpdates();
-				setVisionTrajectory(visionTargetHeight, endTranslation, false, VisionState.CURVED);
-			}
-
-		};
+		return startTrackRequest(visionTargetHeight, endTranslation, hasDisk, fixedOrientation, Constants.kClosestVisionDistance, Constants.kDefaultVisionTrackingSpeed);
 	}
 
 	public Request startTrackRequest(double visionTargetHeight, Translation2d endTranslation, boolean hasDisk, Rotation2d fixedOrientation, double cutoffDistance, double trackingSpeed){

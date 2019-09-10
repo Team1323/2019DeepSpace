@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.team1323.frc2019.Constants;
 import com.team1323.frc2019.Ports;
+import com.team1323.frc2019.Settings;
 import com.team1323.frc2019.loops.ILooper;
 import com.team1323.frc2019.loops.Loop;
 import com.team1323.frc2019.subsystems.requests.Prerequisite;
@@ -183,12 +184,12 @@ public class Wrist extends Subsystem{
 			public void act() {
 				wrist.configMotionCruiseVelocity((int)((isHighGear ? Constants.kWristMaxSpeedHighGear : Constants.kWristMaxSpeedLowGear) * speedScalar));
 				setAngle(angle);
-				if(Constants.kSimulate) startTime = Timer.getFPGATimestamp();
+				if(Settings.kSimulate) startTime = Timer.getFPGATimestamp();
 			}
 
 			@Override
 			public boolean isFinished() {
-				if(Constants.kSimulate){
+				if(Settings.kSimulate){
 					return (Timer.getFPGATimestamp() - startTime) * 50.0 > Math.abs(angle);
 				}
 				if(wait)
@@ -269,7 +270,7 @@ public class Wrist extends Subsystem{
 	}
 	
 	public boolean isSensorConnected(){
-		if(!Constants.kSimulate){
+		if(!Settings.kSimulate){
 			int pulseWidthPeriod = wrist.getSensorCollection().getPulseWidthRiseToRiseUs();
 			boolean connected = pulseWidthPeriod != 0;
 			if(!connected)
@@ -319,7 +320,7 @@ public class Wrist extends Subsystem{
 	@Override
 	public synchronized void readPeriodicInputs() {
 		periodicIO.position = wrist.getSelectedSensorPosition(0);
-		if(Constants.kDebuggingOutput){
+		if(Settings.kDebugWrist){
 			periodicIO.velocity = wrist.getSelectedSensorVelocity(0);
 			periodicIO.voltage = wrist.getMotorOutputVoltage();
 			periodicIO.current = wrist.getOutputCurrent();
@@ -352,7 +353,7 @@ public class Wrist extends Subsystem{
 	@Override
 	public void outputTelemetry() {
 		SmartDashboard.putNumber("Wrist Angle", getAngle());
-		if(Constants.kDebuggingOutput){
+		if(Settings.kDebugWrist){
 			SmartDashboard.putNumber("Wrist Current", periodicIO.current);
 			SmartDashboard.putNumber("Wrist Voltage", periodicIO.voltage);
 			SmartDashboard.putNumber("Wrist Encoder", periodicIO.position);

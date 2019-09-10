@@ -15,6 +15,7 @@ import com.team1323.frc2019.Ports;
 import com.team1323.frc2019.subsystems.requests.Request;
 import com.team254.drivers.LazyTalonSRX;
 import com.team1323.lib.util.Util;
+import com.team1323.frc2019.Settings;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -44,7 +45,7 @@ public class Jacks extends Subsystem {
         motor = diskIntake.getTalon();
         motor.setInverted(false);
 
-        if(!Constants.kIsUsingCompBot){
+        if(!Settings.kIsUsingCompBot){
             motor.configRemoteFeedbackFilter(Ports.DISK_SCORER, RemoteSensorSource.TalonSRX_SelectedSensor, 0);
             motor.configRemoteFeedbackFilter(Ports.DISK_SCORER, RemoteSensorSource.Off, 1);
             motor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
@@ -209,7 +210,7 @@ public class Jacks extends Subsystem {
     }
 
     public boolean isSensorConnected(){
-        if(!Constants.kIsUsingCompBot){
+        if(!Settings.kIsUsingCompBot){
             return DiskScorer.getInstance().isSensorConnected();
         }else{
             int pulseWidthPeriod = motor.getSensorCollection().getPulseWidthRiseToRiseUs();
@@ -221,7 +222,7 @@ public class Jacks extends Subsystem {
 	}
 
     public void resetToAbsolutePosition(){
-        if(!Constants.kIsUsingCompBot){
+        if(!Settings.kIsUsingCompBot){
             int absolutePosition = (int) Util.boundToScope(0, 4096, DiskScorer.getInstance().getTalon().getSensorCollection().getPulseWidthPosition());
             System.out.println("Pulse width position: " + DiskScorer.getInstance().getTalon().getSensorCollection().getPulseWidthPosition());
             if(encUnitsToJackHeight(absolutePosition) > Constants.kJackMaxPhysicalHeight){
@@ -255,7 +256,7 @@ public class Jacks extends Subsystem {
     @Override
     public void readPeriodicInputs() {
         periodicIO.position = motor.getSelectedSensorPosition();
-        if(Constants.kDebuggingOutput){
+        if(Settings.kDebugJacks){
             periodicIO.velocity = motor.getSelectedSensorVelocity();
             periodicIO.voltage = motor.getMotorOutputVoltage();
             periodicIO.current = motor.getOutputCurrent();
@@ -273,7 +274,7 @@ public class Jacks extends Subsystem {
     public void outputTelemetry() {
         SmartDashboard.putNumber("Jack Height", getHeight());
         SmartDashboard.putBoolean("Jacks Have Power", hasPower);
-        if(Constants.kDebuggingOutput){
+        if(Settings.kDebugJacks){
             SmartDashboard.putNumber("Jack Velocity", periodicIO.velocity);
             SmartDashboard.putNumber("Jack Voltage", periodicIO.voltage);
             SmartDashboard.putNumber("Jack Current", periodicIO.current);
