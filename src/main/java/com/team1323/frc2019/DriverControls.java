@@ -67,7 +67,7 @@ public class DriverControls implements Loop {
     private boolean robotCentric = false;
     
     private boolean inAuto = true;
-    public void setMode(boolean auto) {
+    public void setAutoMode(boolean auto) {
         inAuto = auto;
     }
 
@@ -329,7 +329,8 @@ public class DriverControls implements Loop {
 				ballIntake.conformToState(BallIntake.State.EJECTING);
 			} else if(driver.leftCenterClick.shortReleased()){
 				limelight.setPipeline(Pipeline.LOWEST);
-				s.diskTrackingState();
+				//s.diskTrackingState();
+				s.visionPIDState();//TODO test new vision system
 			} else if(driver.POV180.wasActivated()){
 				swerve.setState(Swerve.ControlState.MANUAL);
 				robotCentric = false;

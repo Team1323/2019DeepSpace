@@ -113,7 +113,7 @@ public class Robot extends TimedRobot {
 			if (autoModeExecuter != null)
 				autoModeExecuter.stop();
 
-			driverControls.setMode(true);
+			driverControls.setAutoMode(true);
 
 			disabledLooper.stop();
 			enabledLooper.start();
@@ -135,7 +135,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopInit() {
 		try {
-			driverControls.setMode(false);
+			driverControls.setAutoMode(false);
 			disabledLooper.stop();
 			enabledLooper.start();
 			SmartDashboard.putBoolean("Auto", false);

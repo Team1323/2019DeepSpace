@@ -555,6 +555,14 @@ public class Superstructure extends Subsystem {
 		));
 	}
 
+	//Testing new vision system
+	public void visionPIDState() {
+		request(new SequentialRequest(
+			waitForVisionRequest(),
+			new LambdaRequest(() -> swerve.startVisionPID(new Translation2d()))
+		));
+	}
+
 	public void shortClimbingState(){
 		request(new SequentialRequest(
 			wrist.angleRequest(Constants.kWristShortPlatformAngle),
