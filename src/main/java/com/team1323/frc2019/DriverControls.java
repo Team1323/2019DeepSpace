@@ -128,7 +128,7 @@ public class DriverControls implements Loop {
     @Override
     public void onLoop(double timestamp) {
         if(inAuto) {
-            if(s.swerve.getState() == Swerve.ControlState.VISION){
+            if(s.swerve.getState() == Swerve.ControlState.VISION_TRAJECTORY){
                 leds.conformToState(LEDs.State.TARGET_VISIBLE);
             }else{
                 leds.conformToState(LEDs.State.ENABLED);
@@ -379,7 +379,7 @@ public class DriverControls implements Loop {
             leds.conformToState(LEDs.State.EMERGENCY);
         } else if (s.isClimbing()) {
             leds.conformToState(LEDs.State.CLIMBING);
-        } else if (swerve.getState() == Swerve.ControlState.VISION){
+        } else if (swerve.getState() == Swerve.ControlState.VISION_TRAJECTORY){
             leds.conformToState(LEDs.State.TARGET_TRACKING);
         } else if(robotState.seesTarget()) {
             leds.conformToState(LEDs.State.TARGET_VISIBLE);

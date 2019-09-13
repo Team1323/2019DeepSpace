@@ -18,6 +18,7 @@ import com.team1323.lib.math.vectors.VectorField;
 import com.team1323.lib.util.InterpolatingDouble;
 import com.team1323.lib.util.SwerveHeadingController;
 import com.team1323.lib.util.SwerveInverseKinematics;
+import com.team1323.lib.util.SynchronousPIDF;
 import com.team1323.lib.util.Util;
 import com.team1323.lib.util.VisionCriteria;
 import com.team254.lib.geometry.Pose2d;
@@ -106,8 +107,11 @@ public class Swerve extends Subsystem{
 	double visionCutoffDistance = Constants.kClosestVisionDistance;
 	double visionTrackingSpeed = Constants.kDefaultVisionTrackingSpeed;
 	public boolean isTracking(){
-		return currentState == ControlState.VISION;
+		return currentState == ControlState.VISION_TRAJECTORY;
 	}
+	Pose2d visionPIDTarget;
+	SynchronousPIDF lateralPID = new SynchronousPIDF(0.05, 0.0, 0.0);
+	SynchronousPIDF forwardPID = new SynchronousPIDF(0.01, 0.0, 0.0);
 
 	boolean needsToNotifyDrivers = false;
 	public boolean needsToNotifyDrivers(){
@@ -229,7 +233,7 @@ public class Swerve extends Subsystem{
 	//The swerve's various control states
 	public enum ControlState{
 		NEUTRAL, MANUAL, POSITION, ROTATION, DISABLED, VECTORIZED,
-		TRAJECTORY, VELOCITY, VISION
+		TRAJECTORY, VELOCITY, VISION_TRAJECTORY, VISION_PID
 	}
 	private ControlState currentState = ControlState.NEUTRAL;
 	public ControlState getState(){
@@ -296,7 +300,7 @@ public class Swerve extends Subsystem{
 		rotationalInput = rotate;
 
 		if(translationalInput.norm() != 0){
-			if(currentState == ControlState.VISION){
+			if(currentState == ControlState.VISION_TRAJECTORY){
 				if(Math.abs(translationalInput.direction().distance(visionTargetHeading)) > Math.toRadians(150.0)){
 					setState(ControlState.MANUAL);
 				}
@@ -304,7 +308,7 @@ public class Swerve extends Subsystem{
 				setState(ControlState.MANUAL);
 			}
 		}else if(rotationalInput != 0){
-			if(currentState != ControlState.MANUAL && currentState != ControlState.VISION && currentState != ControlState.TRAJECTORY){
+			if(currentState != ControlState.MANUAL && currentState != ControlState.VISION_TRAJECTORY && currentState != ControlState.TRAJECTORY){
 				setState(ControlState.MANUAL);
 			}
 		}
@@ -551,7 +555,7 @@ public class Swerve extends Subsystem{
 				}else{
 					System.out.println("Generating vision traj, first pos is: " + pose.getTranslation().toString() + ", second pos is: " + robotScoringPosition.get().getTranslation().toString() + ", last traj vector: " + lastTrajectoryVector.toString());
 					List<Pose2d> waypoints = new ArrayList<>();
-					waypoints.add(new Pose2d(pose.getTranslation(), (getState() == ControlState.VISION || getState() == ControlState.TRAJECTORY) ? lastTrajectoryVector.direction() : deltaPositionHeading));	
+					waypoints.add(new Pose2d(pose.getTranslation(), (getState() == ControlState.VISION_TRAJECTORY || getState() == ControlState.TRAJECTORY) ? lastTrajectoryVector.direction() : deltaPositionHeading));	
 					waypoints.add(new Pose2d(robotScoringPosition.get().getTranslation(), closestHeading));
 					Trajectory<TimedState<Pose2dWithCurvature>> trajectory = generator.generateTrajectory(false, waypoints, Arrays.asList(), 104.0, 66.0, 66.0, 9.0, (visionUpdateCount > 1) ? lastTrajectoryVector.norm()*Constants.kSwerveMaxSpeedInchesPerSecond : visionTrackingSpeed, 1);
 					motionPlanner.reset();
@@ -560,11 +564,11 @@ public class Swerve extends Subsystem{
 					rotationScalar = 0.25;
 					visionTargetHeading = robotScoringPosition.get().getRotation();
 					visionUpdateCount++;
-					if(currentState != ControlState.VISION){
+					if(currentState != ControlState.VISION_TRAJECTORY){
 						needsToNotifyDrivers = true;
 					}
 					visionState = VisionState.CURVED;
-					setState(ControlState.VISION);
+					setState(ControlState.VISION_TRAJECTORY);
 					System.out.println("Vision trajectory updated " + visionUpdateCount + " times. Distance: " + aimingParameters.get().getRange());
 				}
 			}
@@ -612,11 +616,11 @@ public class Swerve extends Subsystem{
 				rotationScalar = 0.75;
 				visionTargetHeading = aim.get().getRobotToGoal();
 				visionUpdateCount++;
-				if(currentState != ControlState.VISION){
+				if(currentState != ControlState.VISION_TRAJECTORY){
 					needsToNotifyDrivers = true;
 				}
 				visionState = VisionState.LINEAR;
-				setState(ControlState.VISION);
+				setState(ControlState.VISION_TRAJECTORY);
 				System.out.println("Vision trajectory updated " + visionUpdateCount + " times. Distance: " + aim.get().getRange());
 			}
 		}else{
@@ -631,7 +635,7 @@ public class Swerve extends Subsystem{
 		if(aim.isPresent()){
 			if(pigeon.isGood()){
 				if(aim.get().getRange() >= Constants.kClosestVisionDistance){
-					if(getState() != ControlState.VISION){
+					if(getState() != ControlState.VISION_TRAJECTORY){
 						initialVisionDistance = aim.get().getRange();
 						latestAim = aim.get();
 					}
@@ -668,7 +672,7 @@ public class Swerve extends Subsystem{
 		if(aim.isPresent()){
 			if(pigeon.isGood()){
 				if(aim.get().getRange() >= Constants.kClosestVisionDistance){
-					if(getState() != ControlState.VISION){
+					if(getState() != ControlState.VISION_TRAJECTORY){
 						initialVisionDistance = aim.get().getRange();
 						latestAim = aim.get();
 					}
@@ -685,7 +689,42 @@ public class Swerve extends Subsystem{
 			}
 		}
 	}
+
+	// Vision PID (new, simpler vision tracking system)
+	public void startVisionPID(Rotation2d approachAngle, Translation2d endTranslation) {
+		Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
+		Optional<Pose2d> scoringPos = robotState.getRobotScoringPosition(aim, approachAngle, endTranslation);
+		if(scoringPos.isPresent()) {
+			fixedVisionOrientation = approachAngle;
+			lastVisionEndTranslation = endTranslation;
+			visionPIDTarget = scoringPos.get();
+			setState(ControlState.VISION_PID);
+		} else {
+			System.out.println("No target detected");
+		}
+	}
 	
+	Translation2d updateVisionPID(double dt) {
+		Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
+		Optional<Pose2d> scoringPos = robotState.getRobotScoringPosition(aim, fixedVisionOrientation, lastVisionEndTranslation);
+		if(scoringPos.isPresent()) {
+			visionPIDTarget = scoringPos.get();
+			Translation2d adjustedTarget = visionPIDTarget.getTranslation().rotateBy(fixedVisionOrientation.inverse());
+			Translation2d adjustedPose = pose.getTranslation().rotateBy(fixedVisionOrientation.inverse());
+			Translation2d error = adjustedTarget.translateBy(adjustedPose.inverse());
+			Translation2d output = new Translation2d(Util.deadBand(forwardPID.calculate(error.x(), dt), 0.01), Util.deadBand(lateralPID.calculate(error.y(), dt), 0.01));
+			if(output.norm() > 0.5) {
+				//normalize the output vector
+				output = Translation2d.fromPolar(output.direction(), 0.5);
+			}
+			output = output.rotateBy(fixedVisionOrientation);
+			return output;
+		} else {
+			System.out.println("No target detected");
+			return new Translation2d();
+		}
+	}
+
 	/****************************************************/
 	/* Vector Fields */
 	public synchronized void setVectorField(VectorField vf_) {
@@ -911,7 +950,7 @@ public class Swerve extends Subsystem{
 				}
 			}
 			break;
-		case VISION:
+		case VISION_TRAJECTORY:
 			if(!motionPlanner.isDone()){
 				visionUpdatesAllowed = elevator.inVisionRange(robotHasDisk ? Constants.kElevatorDiskVisibleRanges : Constants.kElevatorBallVisibleRanges);
 				Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
@@ -940,6 +979,18 @@ public class Swerve extends Subsystem{
 				lastTrajectoryVector = driveVector;
 				firstVisionCyclePassed = true;
 			}
+			break;
+		case VISION_PID:
+			Translation2d driveVector = updateVisionPID(timestamp - lastUpdateTimestamp);
+			if(Util.epsilonEquals(driveVector.norm(), 0.0, Constants.kEpsilon)){
+				driveVector = lastDriveVector;
+				setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
+					rotationCorrection*rotationScalar, pose, false), 0.0);
+			}else{
+				setVelocityDriveOutput(inverseKinematics.updateDriveVectors(driveVector, 
+					rotationCorrection*rotationScalar, pose, false));
+			}
+			lastDriveVector = driveVector;
 			break;
 		case VELOCITY:
 
@@ -1008,7 +1059,7 @@ public class Swerve extends Subsystem{
 
 			@Override
 			public boolean isFinished(){
-				return getState() == ControlState.VISION && (robotState.distanceToTarget() < visionCutoffDistance);
+				return getState() == ControlState.VISION_TRAJECTORY && (robotState.distanceToTarget() < visionCutoffDistance);
 			}
 
 		};
@@ -1030,7 +1081,7 @@ public class Swerve extends Subsystem{
 
 			@Override
 			public boolean isFinished(){
-				return getState() == ControlState.VISION && (robotState.distanceToTarget() < visionCutoffDistance);
+				return getState() == ControlState.VISION_TRAJECTORY && (robotState.distanceToTarget() < visionCutoffDistance);
 			}
 
 		};
@@ -1104,7 +1155,7 @@ public class Swerve extends Subsystem{
 
 			@Override
 			public boolean isFinished(){
-				return getState() == ControlState.VISION && /*motionPlanner.isDone()*/ (robotState.distanceToTarget() < visionCutoffDistance);
+				return getState() == ControlState.VISION_TRAJECTORY && /*motionPlanner.isDone()*/ (robotState.distanceToTarget() < visionCutoffDistance);
 			}
 
 		};
@@ -1120,7 +1171,7 @@ public class Swerve extends Subsystem{
 
 			@Override
 			public boolean isFinished(){
-				return getState() == ControlState.VISION && motionPlanner.isDone();
+				return getState() == ControlState.VISION_TRAJECTORY && motionPlanner.isDone();
 			}
 
 		};
