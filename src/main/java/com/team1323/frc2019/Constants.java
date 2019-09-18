@@ -19,7 +19,7 @@ public class Constants {
 	public static final boolean kIsUsingCompBot = true;
 	public static final boolean kIsUsingTractionWheels = true;
 
-	public static final boolean kDebuggingOutput = false;
+	public static final boolean kDebuggingOutput = true;
 	
 	//Physical Robot Dimensions (including bumpers)
 	public static final double kRobotWidth = 36.5;
@@ -142,7 +142,7 @@ public class Constants {
 	//Elevator Constants
 	public static final double kElevatorMaxSpeedHighGear = 696.96 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
-	public static final int kElevatorEncoderStartingPosition = kIsUsingCompBot ? 3146 : 333;
+	public static final int kElevatorEncoderStartingPosition = kIsUsingCompBot ? 2295 : 333;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 0.5; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.6;
