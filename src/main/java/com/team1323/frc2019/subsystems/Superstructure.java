@@ -585,12 +585,15 @@ public class Superstructure extends Subsystem {
 
 	public void climbingState(){
 		request(new SequentialRequest(
-			wrist.angleRequest(37.0),
+			jacks.shiftPowerRequest(true),
+			new ParallelRequest(
+				wrist.angleRequest(37.0),
+				jacks.heightRequest(Constants.kJackFloorHeight),
+				elevator.heightRequest(Constants.kElevatorLowBallHeight)
+			),
 			new ParallelRequest(
 				wrist.gearShiftRequest(false),
-				jacks.shiftPowerRequest(true),
 				new LambdaRequest(() -> enableInterpolator(true)),
-				elevator.heightRequest(Constants.kElevatorLowBallHeight),
 				diskScorer.stateRequest(DiskScorer.State.STOWED),
 				ballIntake.stateRequest(BallIntake.State.CLIMBING),
 				ballCarriage.stateRequest(BallCarriage.State.OFF),

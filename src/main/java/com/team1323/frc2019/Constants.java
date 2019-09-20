@@ -189,6 +189,7 @@ public class Constants {
 	public static final double kWristPrimaryStowAngle = 60.5;
 	public static final double kWristShortPlatformAngle = -32.0;
 	public static final double kWristShortHangingAngle = -63.5;
+	public static final double kWristPlatformAngle = 37.0;
 	public static final double kWristHangingAngle = -70.5;//-71.5
 	public static final double kWristBallHoldingAngle = 38.0;
 	public static final double kWristBallFeedingAngle = 60.5;
@@ -244,6 +245,7 @@ public class Constants {
 	public static final double kJackMinPhysicalHeight = -1.0;
 	public static final double kJackMaxControlHeight = 0.0;
 	public static final double kJackMinControlHeight = -21.0; //-24.5
+	public static final double kJackFloorHeight = -1.2;
 	public static final int kJackCurrentLimit = 60;
 
 	//LED Colors
@@ -261,8 +263,8 @@ public class Constants {
 	//Jack Height Treemap
 	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kJackHeightTreeMap = new InterpolatingTreeMap<>();
 	static{
-		kJackHeightTreeMap.put(new InterpolatingDouble(100.0), new InterpolatingDouble(kJackMaxControlHeight));
-		kJackHeightTreeMap.put(new InterpolatingDouble(37.0), new InterpolatingDouble(kJackMaxControlHeight));
+		kJackHeightTreeMap.put(new InterpolatingDouble(100.0), new InterpolatingDouble(kJackFloorHeight));
+		kJackHeightTreeMap.put(new InterpolatingDouble(37.0), new InterpolatingDouble(kJackFloorHeight));
 		kJackHeightTreeMap.put(new InterpolatingDouble(kWristHangingAngle), new InterpolatingDouble(kJackMinControlHeight));
 		kJackHeightTreeMap.put(new InterpolatingDouble(kWristMinControlAngle - 10.0), new InterpolatingDouble(kJackMinControlHeight));
 	}
