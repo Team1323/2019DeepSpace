@@ -542,14 +542,14 @@ public class Superstructure extends Subsystem {
 			diskScorer.stateRequest(DiskScorer.State.NEUTRAL_EXTENDED),
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
 			waitForVisionRequest(),
-			swerve.visionPIDRequest(new Translation2d(4.0, 0.0), Rotation2d.fromDegrees(0.0), 66.0), //TODO change this rotation back to 180 for normal driver practice
+			swerve.visionPIDRequest(new Translation2d(4.0, 0.0), Rotation2d.fromDegrees(180.0), 66.0), //TODO change this rotation back to 180 for normal driver practice
 			new ParallelRequest(
 				elevator.heightRequest(Constants.kElevatorHumanLoaderHeight),
 				diskScorer.stateRequest(DiskScorer.State.RECEIVING),
 				diskScorer.waitForDiskRequest()
 			),
 			diskScorer.stateRequest(DiskScorer.State.DETECTED),
-			swerve.trajectoryRequest(new Translation2d(-60.0, 0.0), 0.0, 60.0),
+			swerve.trajectoryRequest(new Translation2d(-60.0, 0.0), 180.0, 60.0),
 			swerve.openLoopRequest(new Translation2d(), 0.0)
 		));
 	}
