@@ -111,7 +111,8 @@ public class Swerve extends Subsystem{
 	}
 	Pose2d visionPIDTarget;
 	SynchronousPIDF lateralPID = new SynchronousPIDF(0.05, 0.0, 0.0);
-	SynchronousPIDF forwardPID = new SynchronousPIDF(0.01, 0.0, 0.0);
+	SynchronousPIDF forwardPID = new SynchronousPIDF(0.02, 0.0, 0.0);
+	boolean visionTargetAcquired = false;
 
 	boolean needsToNotifyDrivers = false;
 	public boolean needsToNotifyDrivers(){
@@ -202,6 +203,9 @@ public class Swerve extends Subsystem{
 		generator = TrajectoryGenerator.getInstance();
 
 		elevator = Elevator.getInstance();
+
+		lateralPID.setSetpoint(0.0);
+		forwardPID.setSetpoint(0.0);
 	}
 
 	//Assigns appropriate directions for scrub factors
@@ -693,36 +697,31 @@ public class Swerve extends Subsystem{
 	// Vision PID (new, simpler vision tracking system)
 	public void startVisionPID(Translation2d endTranslation, Rotation2d approachAngle) {
 		Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
-		Optional<Pose2d> scoringPos = robotState.getRobotScoringPosition(aim, approachAngle, endTranslation);
-		if(scoringPos.isPresent()) {
-			fixedVisionOrientation = approachAngle;
-			useFixedVisionOrientation = true;
-			lastVisionEndTranslation = endTranslation;
-			visionPIDTarget = scoringPos.get();
-			setPathHeading(fixedVisionOrientation.getDegrees());
-			setState(ControlState.VISION_PID);
-		} else {
-			System.out.println("No target detected");
-		}
-	}
-
-	public void startVisionPID(Translation2d endTranslation) {
-		Optional<ShooterAimingParameters> aim = robotState.getAimingParameters();
 		if(aim.isPresent()) {
-			Optional<Pose2d> scoringPos = robotState.getRobotScoringPosition(aim, aim.get().getRobotToGoal(), endTranslation);
+			useFixedVisionOrientation = (approachAngle != null);
+			Optional<Pose2d> scoringPos = robotState.getRobotScoringPosition(aim, useFixedVisionOrientation ? approachAngle : aim.get().getRobotToGoal(), endTranslation);
 			if(scoringPos.isPresent()) {
-				fixedVisionOrientation = aim.get().getRobotToGoal();
-				useFixedVisionOrientation = false;
+				lateralPID.setSetpoint(0.0);
+				forwardPID.setSetpoint(0.0);
+				fixedVisionOrientation = (useFixedVisionOrientation ? approachAngle : aim.get().getRobotToGoal());
 				lastVisionEndTranslation = endTranslation;
 				visionPIDTarget = scoringPos.get();
+				visionTargetAcquired = false;
+				rotationScalar = 0.5;
 				setPathHeading(fixedVisionOrientation.getDegrees());
 				setState(ControlState.VISION_PID);
 			} else {
 				System.out.println("No target detected");
+				visionTargetAcquired = false;
 			}
 		} else {
 			System.out.println("No target detected");
+			visionTargetAcquired = false;
 		}
+	}
+
+	public void startVisionPID(Translation2d endTranslation) {
+		startVisionPID(endTranslation, null);
 	}
 	
 	Translation2d updateVisionPID(double dt) {
@@ -732,21 +731,22 @@ public class Swerve extends Subsystem{
 			Optional<Pose2d> scoringPos = robotState.getRobotScoringPosition(aim, fixedVisionOrientation, lastVisionEndTranslation);
 			if(scoringPos.isPresent()) {
 				visionPIDTarget = scoringPos.get();
-				Translation2d adjustedTarget = visionPIDTarget.getTranslation().rotateBy(fixedVisionOrientation.inverse());
-				Translation2d adjustedPose = pose.getTranslation().rotateBy(fixedVisionOrientation.inverse());
-				Translation2d error = adjustedTarget.translateBy(adjustedPose.inverse());
-				Translation2d output = new Translation2d(Util.deadBand(forwardPID.calculate(error.x(), dt), 0.01), Util.deadBand(lateralPID.calculate(error.y(), dt), 0.01));
-				if(output.norm() > 0.5) {
-					//normalize the output vector
-					output = Translation2d.fromPolar(output.direction(), 0.5);
-				}
-				output = output.rotateBy(fixedVisionOrientation);
-				setPathHeading(fixedVisionOrientation.getDegrees());
-				return output;
-			} else {
-				System.out.println("No target detected");
-				return new Translation2d();
+				visionTargetAcquired = true;
 			}
+		} 
+
+		if(visionTargetAcquired) {
+			Translation2d adjustedTarget = visionPIDTarget.getTranslation().rotateBy(fixedVisionOrientation.inverse());
+			Translation2d adjustedPose = pose.getTranslation().rotateBy(fixedVisionOrientation.inverse());
+			Translation2d error = adjustedTarget.translateBy(adjustedPose.inverse());
+			Translation2d output = new Translation2d(Util.deadBand(-forwardPID.calculate(error.x(), dt), 0.01), Util.deadBand(-lateralPID.calculate(error.y(), dt), 0.01));
+			if(output.norm() > 0.25) {
+				//normalize the output vector
+				output = Translation2d.fromPolar(output.direction(), 0.25);
+			}
+			output = output.rotateBy(fixedVisionOrientation);
+			setPathHeading(fixedVisionOrientation.getDegrees());
+			return output;
 		} else {
 			System.out.println("No target detected");
 			return new Translation2d();
@@ -1110,6 +1110,24 @@ public class Swerve extends Subsystem{
 			@Override
 			public boolean isFinished(){
 				return getState() == ControlState.VISION_TRAJECTORY && (robotState.distanceToTarget() < visionCutoffDistance);
+			}
+
+		};
+	}
+
+	public Request visionPIDRequest(Translation2d endTranslation, Rotation2d fixedOrientation, double cutoffDistance) {
+		return new Request(){
+
+			@Override
+			public void act() {
+				visionCutoffDistance = cutoffDistance;
+				startVisionPID(endTranslation, fixedOrientation);
+				System.out.println("Vision Request started");
+			}
+
+			@Override
+			public boolean isFinished(){
+				return getState() == ControlState.VISION_PID && (robotState.distanceToTarget() < visionCutoffDistance);
 			}
 
 		};

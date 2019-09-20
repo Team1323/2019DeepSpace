@@ -443,14 +443,12 @@ public class Superstructure extends Subsystem {
 	public void diskTrackingState(){
 		request(new SequentialRequest(
 			waitForVisionRequest(),
-			swerve.startTrackRequest(Constants.kDiskTargetHeight, new Translation2d(-1.0, 0.0), true, VisionState.LINEAR),
+			new LambdaRequest(() -> swerve.startVisionPID(new Translation2d(-1.0, 0.0))),
 			wrist.angleRequest(Constants.kWristBallFeedingAngle),
 			ballCarriage.stateRequest(BallCarriage.State.OFF), 
 			ballIntake.stateRequest(BallIntake.State.OFF),
 			diskScorer.stateRequest(DiskScorer.State.HOLDING),
-			diskIntake.stateRequest(DiskIntake.State.OFF),
-			swerve.waitForTrackRequest(),
-			swerve.strictWaitForTrackRequest()
+			diskIntake.stateRequest(DiskIntake.State.OFF)
 		)); 
 	}
 
@@ -535,7 +533,8 @@ public class Superstructure extends Subsystem {
 	}
 
 	public void humanLoaderRetrievingState(){
-		robotState.clearVisionTargets(); //TODO test this addition to the sequence
+		robotState.clearVisionTargets();
+		diskScorer.checkForDisk();
 		request(new SequentialRequest(
 			diskIntake.stateRequest(DiskIntake.State.OFF),
 			ballIntake.stateRequest(BallIntake.State.OFF),
@@ -543,14 +542,14 @@ public class Superstructure extends Subsystem {
 			diskScorer.stateRequest(DiskScorer.State.NEUTRAL_EXTENDED),
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
 			waitForVisionRequest(),
-			swerve.trackRequest(Constants.kDiskTargetHeight, new Translation2d(4.0, 0.0), false, Rotation2d.fromDegrees(180.0), 66.0, 60.0),
+			swerve.visionPIDRequest(new Translation2d(4.0, 0.0), Rotation2d.fromDegrees(0.0), 66.0), //TODO change this rotation back to 180 for normal driver practice
 			new ParallelRequest(
 				elevator.heightRequest(Constants.kElevatorHumanLoaderHeight),
 				diskScorer.stateRequest(DiskScorer.State.RECEIVING),
 				diskScorer.waitForDiskRequest()
 			),
 			diskScorer.stateRequest(DiskScorer.State.DETECTED),
-			swerve.trajectoryRequest(new Translation2d(-60.0, 0.0), 180.0, 60.0),
+			swerve.trajectoryRequest(new Translation2d(-60.0, 0.0), 0.0, 60.0),
 			swerve.openLoopRequest(new Translation2d(), 0.0)
 		));
 	}
@@ -558,8 +557,9 @@ public class Superstructure extends Subsystem {
 	//Testing new vision system
 	public void visionPIDState() {
 		request(new SequentialRequest(
+			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
 			waitForVisionRequest(),
-			new LambdaRequest(() -> swerve.startVisionPID(new Translation2d()))
+			new LambdaRequest(() -> swerve.startVisionPID(new Translation2d(-6.0, 0.0)))
 		));
 	}
 

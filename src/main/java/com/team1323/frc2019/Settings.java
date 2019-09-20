@@ -17,7 +17,7 @@ public class Settings {
 
 	public static final boolean kResetTalons = false;
 
-    public static final boolean kSimulate = true;
+    public static final boolean kSimulate = false;
     
     // Separate debugging output into the different subsystems so as to not 
     // overload the NetworkTables
@@ -26,6 +26,6 @@ public class Settings {
     public static final boolean kDebugIntakes = false;
     public static final boolean kDebugWrist = false;
     public static final boolean kDebugJacks = false;
-    public static final boolean kDebugVision = false;
+    public static final boolean kDebugVision = true;
 
 }
