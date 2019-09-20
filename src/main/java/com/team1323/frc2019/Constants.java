@@ -236,13 +236,13 @@ public class Constants {
 
 	//Jack Constants
 	public static final double kJackMaxSpeed = 344.1749 * 4096.0 / 600.0;//2675.0;
-	public static final double kJackTicksPerInch = 13.3733539 * 4096.0 / 30.4444882;//1.219 inches before wrap
+	public static final double kJackTicksPerInch = 13.3733539 * 4096.0 / 30.4444882;//2.2765 inches before wrap
 	public static final double kJackHeightTolerance = 1.0; //inches
-	public static final int kJackStartingEncPosition = Settings.kIsUsingCompBot ? 2813 : 3942;
+	public static final int kJackStartingEncPosition = Settings.kIsUsingCompBot ? 1103 : 3942;
 	public static final double kJackStartingHeight = 0.0;
 	public static final double kJackShortClimbHeight = -10.0;
 	public static final double kJackMaxPhysicalHeight = 0.2;
-	public static final double kJackMinPhysicalHeight = -1.0;
+	public static final double kJackMinPhysicalHeight = -2.0;
 	public static final double kJackMaxControlHeight = 0.0;
 	public static final double kJackMinControlHeight = -21.0; //-24.5
 	public static final double kJackFloorHeight = -1.2;

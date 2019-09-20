@@ -237,8 +237,8 @@ public class Jacks extends Subsystem {
             }
             DiskScorer.getInstance().setSensorPosition(absolutePosition);
         }else{
-            int absolutePosition = (int) Util.boundToScope(0, 4096, motor.getSensorCollection().getPulseWidthPosition());
-            System.out.println("Pulse width position: " + motor.getSensorCollection().getPulseWidthPosition());
+            int absolutePosition = (int) Util.boundToScope(0, 4096, -motor.getSensorCollection().getPulseWidthPosition());
+            System.out.println("Pulse width position: " + absolutePosition);
             if(encUnitsToJackHeight(absolutePosition) > Constants.kJackMaxPhysicalHeight){
                 absolutePosition -= 4096;
             }else if(encUnitsToJackHeight(absolutePosition) < Constants.kJackMinPhysicalHeight){
