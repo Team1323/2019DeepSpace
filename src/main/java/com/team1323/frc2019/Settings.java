@@ -12,7 +12,7 @@ package com.team1323.frc2019;
  */
 public class Settings {
 
-    public static final boolean kIsUsingCompBot = true;
+    public static final boolean kIsUsingCompBot = false;
 	public static final boolean kIsUsingTractionWheels = true;
 
 	public static final boolean kResetTalons = false;
@@ -26,6 +26,6 @@ public class Settings {
     public static final boolean kDebugIntakes = false;
     public static final boolean kDebugWrist = false;
     public static final boolean kDebugJacks = false;
-    public static final boolean kDebugVision = true;
+    public static final boolean kDebugVision = false;
 
 }
