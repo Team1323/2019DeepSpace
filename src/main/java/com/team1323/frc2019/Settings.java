@@ -24,7 +24,7 @@ public class Settings {
     public static final boolean kDebugSwerve = false;
     public static final boolean kDebugElevator = false;
     public static final boolean kDebugIntakes = false;
-    public static final boolean kDebugWrist = false;
+    public static final boolean kDebugWrist = true;
     public static final boolean kDebugJacks = false;
     public static final boolean kDebugVision = false;
 

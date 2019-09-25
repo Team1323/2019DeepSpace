@@ -100,7 +100,7 @@ public class Constants {
     //Swerve Module Wheel Offsets (Rotation encoder values when the wheels are facing 0 degrees)
 	public static final int kFrontRightEncoderStartingPos = Settings.kIsUsingCompBot ? -1403 - 1024 : 1740 - 1024;
 	public static final int kFrontLeftEncoderStartingPos = Settings.kIsUsingCompBot ? -2171 - 1024 : -2895 - 1024;
-	public static final int kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? -1327 - 1024 : -2639 - 1024;
+	public static final int kRearLeftEncoderStartingPos = Settings.kIsUsingCompBot ? -1327 - 1024 : 1055 - 1024;
 	public static final int kRearRightEncoderStartingPos = Settings.kIsUsingCompBot ? -5953 - 1024 : 975 - 1024;
 	
 	//Swerve Module Positions (relative to the center of the drive base)
@@ -177,7 +177,7 @@ public class Constants {
 	public static final double kWristMaxSpeedLowGear = 31.32 * 4096.0 / 600.0;//200.0;
 	public static final double kWristStartingAngle = 0.0;
 	/** Pulse width position of the wrist encoder when the wrist is upright (at 90 degrees, parallel to the elevator). */
-	public static final int kWristStartingEncoderPosition = Settings.kIsUsingCompBot ? 1239 : 1502;
+	public static final int kWristStartingEncoderPosition = Settings.kIsUsingCompBot ? 1239 : 220;
 	/** The number of rotations the wrist encoder undergoes for every rotation of the wrist. */
 	public static final double kWristEncoderToOutputRatio = 30.0 / 12.0; // 144 degrees before wrap
 	public static final double kWristAngleTolerance = 10.0; //degrees
