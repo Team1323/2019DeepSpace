@@ -474,6 +474,9 @@ public class Superstructure extends Subsystem {
 		)); 
 	}
 
+	/**
+	 * Old Tracking Tech
+	 */
 	public void diskTrackingState(double elevatorHeight, Rotation2d fixedOrientation){
 		request(new SequentialRequest(
 			waitForVisionRequest(),
@@ -489,6 +492,9 @@ public class Superstructure extends Subsystem {
 		)); 
 	}
 
+	/**
+	 * Old Tracking tech
+	 */
 	public void diskTrackingState(double elevatorHeight, Rotation2d fixedOrientation, double trackingSpeed){
 		request(new SequentialRequest(
 			waitForVisionRequest(),
@@ -504,6 +510,9 @@ public class Superstructure extends Subsystem {
 		)); 
 	}
 
+	/**
+	 * Old tracking tech
+	 */
 	public void diskTrackingState(double elevatorHeight, Rotation2d fixedOrientation, double cutoffDistance, Translation2d endTranslation, double trackingSpeed){
 		request(new SequentialRequest(
 			waitForVisionRequest(),
