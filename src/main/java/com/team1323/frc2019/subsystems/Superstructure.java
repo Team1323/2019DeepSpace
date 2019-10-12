@@ -362,6 +362,9 @@ public class Superstructure extends Subsystem {
 		)); 
 	}
 
+	/**
+	 * Uses old tracking tech
+	 */
 	public void ballTrackingState(double elevatorHeight){
 		request(new SequentialRequest(
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
@@ -514,6 +517,9 @@ public class Superstructure extends Subsystem {
 		)); 
 	}
 
+	/**
+	 * Uses old tracking tech
+	 */
 	public void humanLoaderTrackingState(){
 		request(new SequentialRequest(
 			diskIntake.stateRequest(DiskIntake.State.OFF),
@@ -532,6 +538,9 @@ public class Superstructure extends Subsystem {
 		));
 	}
 
+	/**
+	 * Uses new tracking tech
+	 */
 	public void humanLoaderRetrievingState(){
 		robotState.clearVisionTargets();
 		diskScorer.checkForDisk();
