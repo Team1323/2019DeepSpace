@@ -22,7 +22,7 @@ public class Settings {
     // Separate debugging output into the different subsystems so as to not 
     // overload the NetworkTables
     public static final boolean kDebugSwerve = false;
-    public static final boolean kDebugElevator = false;
+    public static final boolean kDebugElevator = true;
     public static final boolean kDebugIntakes = false;
     public static final boolean kDebugWrist = true;
     public static final boolean kDebugJacks = false;
