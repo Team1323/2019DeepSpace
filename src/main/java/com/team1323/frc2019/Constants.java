@@ -137,7 +137,8 @@ public class Constants {
 	//Elevator Constants
 	public static final double kElevatorMaxSpeedHighGear = 696.96 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
-	public static final int kElevatorEncoderStartingPosition = Settings.kIsUsingCompBot ? 1746 : 333;
+
+	public static final int kElevatorEncoderStartingPosition = Settings.kIsUsingCompBot ? 2295 : 4403;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 0.5; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.6;

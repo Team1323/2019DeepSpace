@@ -362,6 +362,9 @@ public class Superstructure extends Subsystem {
 		)); 
 	}
 
+	/**
+	 * Uses old tracking tech
+	 */
 	public void ballTrackingState(double elevatorHeight){
 		request(new SequentialRequest(
 			elevator.heightRequest(elevator.nearestVisionHeight(Constants.kElevatorBallVisibleRanges)),
@@ -471,6 +474,9 @@ public class Superstructure extends Subsystem {
 		)); 
 	}
 
+	/**
+	 * Old Tracking Tech
+	 */
 	public void diskTrackingState(double elevatorHeight, Rotation2d fixedOrientation){
 		request(new SequentialRequest(
 			waitForVisionRequest(),
@@ -486,6 +492,9 @@ public class Superstructure extends Subsystem {
 		)); 
 	}
 
+	/**
+	 * Old Tracking tech
+	 */
 	public void diskTrackingState(double elevatorHeight, Rotation2d fixedOrientation, double trackingSpeed){
 		request(new SequentialRequest(
 			waitForVisionRequest(),
@@ -501,6 +510,9 @@ public class Superstructure extends Subsystem {
 		)); 
 	}
 
+	/**
+	 * Old tracking tech
+	 */
 	public void diskTrackingState(double elevatorHeight, Rotation2d fixedOrientation, double cutoffDistance, Translation2d endTranslation, double trackingSpeed){
 		request(new SequentialRequest(
 			waitForVisionRequest(),
@@ -514,6 +526,9 @@ public class Superstructure extends Subsystem {
 		)); 
 	}
 
+	/**
+	 * Uses old tracking tech
+	 */
 	public void humanLoaderTrackingState(){
 		request(new SequentialRequest(
 			diskIntake.stateRequest(DiskIntake.State.OFF),
@@ -532,6 +547,9 @@ public class Superstructure extends Subsystem {
 		));
 	}
 
+	/**
+	 * Uses new tracking tech
+	 */
 	public void humanLoaderRetrievingState(){
 		robotState.clearVisionTargets();
 		diskScorer.checkForDisk();

@@ -12,7 +12,7 @@ package com.team1323.frc2019;
  */
 public class Settings {
 
-    public static final boolean kIsUsingCompBot = true;
+    public static final boolean kIsUsingCompBot = false;
 	public static final boolean kIsUsingTractionWheels = true;
 
 	public static final boolean kResetTalons = false;
@@ -22,7 +22,7 @@ public class Settings {
     // Separate debugging output into the different subsystems so as to not 
     // overload the NetworkTables
     public static final boolean kDebugSwerve = false;
-    public static final boolean kDebugElevator = false;
+    public static final boolean kDebugElevator = true;
     public static final boolean kDebugIntakes = false;
     public static final boolean kDebugWrist = false;
     public static final boolean kDebugJacks = false;
