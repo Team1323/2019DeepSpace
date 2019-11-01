@@ -24,8 +24,10 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -53,6 +55,8 @@ public class Robot extends TimedRobot {
 	private DriverStation ds = DriverStation.getInstance();
 
 	private DriverControls driverControls;
+
+	NetworkTableEntry persistent;
 	
 
 	/**
@@ -80,6 +84,8 @@ public class Robot extends TimedRobot {
 		subsystems.registerEnabledLoops(enabledLooper);
 		subsystems.registerDisabledLoops(disabledLooper);
 
+		persistent = Shuffleboard.getTab("Settings").addPersistent("Comp bot", false).getEntry();
+
 		s.swerve.zeroSensors();
 		// swerve.zeroSensors(new Pose2d());
 
@@ -105,6 +111,8 @@ public class Robot extends TimedRobot {
 		//Pigeon.getInstance().outputToSmartDashboard();
 		SmartDashboard.putBoolean("Enabled", ds.isEnabled());
 		SmartDashboard.putNumber("Match time", ds.getMatchTime());
+
+		SmartDashboard.putBoolean("persistent value", persistent.getBoolean(false));
 	}
 
 	@Override
