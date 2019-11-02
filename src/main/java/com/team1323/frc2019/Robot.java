@@ -56,7 +56,7 @@ public class Robot extends TimedRobot {
 
 	private DriverControls driverControls;
 
-	NetworkTableEntry persistent;
+	//NetworkTableEntry persistent;
 	
 
 	/**
@@ -84,7 +84,7 @@ public class Robot extends TimedRobot {
 		subsystems.registerEnabledLoops(enabledLooper);
 		subsystems.registerDisabledLoops(disabledLooper);
 
-		persistent = Shuffleboard.getTab("Settings").addPersistent("Comp bot", false).getEntry();
+		//persistent = Shuffleboard.getTab("Settings").addPersistent("Comp bot", false).getEntry();
 
 		s.swerve.zeroSensors();
 		// swerve.zeroSensors(new Pose2d());
@@ -112,7 +112,7 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putBoolean("Enabled", ds.isEnabled());
 		SmartDashboard.putNumber("Match time", ds.getMatchTime());
 
-		SmartDashboard.putBoolean("persistent value", persistent.getBoolean(false));
+		//SmartDashboard.putBoolean("persistent value", persistent.getBoolean(false));
 	}
 
 	@Override
