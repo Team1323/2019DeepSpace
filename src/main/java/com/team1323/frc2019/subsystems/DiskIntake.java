@@ -317,7 +317,7 @@ public class DiskIntake extends Subsystem {
   @Override
   public void outputTelemetry() {
     SmartDashboard.putString("Disk intake state", currentState.toString());
-    if(Settings.kDebugIntakes) {
+    if(Settings.debugIntakes()) {
       SmartDashboard.putNumber("Disk Intake Current", diskMotor.getOutputCurrent());
       SmartDashboard.putNumber("Disk Intake Voltage", diskMotor.getMotorOutputVoltage());
       SmartDashboard.putBoolean("Disk Intake Has Disk", hasDisk);

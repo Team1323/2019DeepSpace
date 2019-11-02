@@ -293,7 +293,7 @@ public class RobotState {
             SmartDashboard.putNumberArray("Path Pose", new double[]{targetPosition.x(), targetPosition.y(), 0.0, 0.0}); 
         }*/
 
-        if(Settings.kDebugVision){
+        if(Settings.debugVision()){
             List<Pose2d> poses = getCaptureTimeFieldToGoal();
             for (Pose2d pose : poses) {
                 // Only output first goal

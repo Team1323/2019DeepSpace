@@ -192,7 +192,7 @@ public class BallCarriage extends Subsystem{
 
     @Override
     public void outputTelemetry() {
-        if(Settings.kDebugIntakes){
+        if(Settings.debugIntakes()){
             SmartDashboard.putNumber("Ball Carriage Voltage", motor.getMotorOutputVoltage());
             SmartDashboard.putNumber("Ball Carriage Current", motor.getOutputCurrent());
             SmartDashboard.putBoolean("Ball Carriage Banner", getBanner());

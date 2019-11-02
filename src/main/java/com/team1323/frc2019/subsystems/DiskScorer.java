@@ -285,7 +285,7 @@ public class DiskScorer extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        if(Settings.kDebugIntakes){
+        if(Settings.debugIntakes()){
             SmartDashboard.putBoolean("Disk Scorer Has Disk", hasDisk());
             SmartDashboard.putBoolean("Disk Scorer Banner", getBanner());
             SmartDashboard.putNumber("Disk Scorer Current", motor.getOutputCurrent());

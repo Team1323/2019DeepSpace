@@ -382,7 +382,7 @@ public class Elevator extends Subsystem {
 	public synchronized void readPeriodicInputs(){
 		periodicIO.position = master.getSelectedSensorPosition(0);
 
-		if(Settings.kDebugElevator){
+		if(Settings.debugElevator()){
 			periodicIO.velocity = master.getSelectedSensorVelocity(0);
 			periodicIO.voltage = master.getMotorOutputVoltage();
 			periodicIO.current = master.getOutputCurrent();
@@ -416,7 +416,7 @@ public class Elevator extends Subsystem {
 	@Override
 	public void outputTelemetry() {
 		SmartDashboard.putNumber("Elevator Height", getHeight());
-		if(Settings.kDebugElevator){
+		if(Settings.debugElevator()){
 			SmartDashboard.putNumber("Elevator 1 Current", periodicIO.current);
 			SmartDashboard.putNumber("Elevator 2 Current", motor2.getOutputCurrent());
 			SmartDashboard.putNumber("Elevator Voltage", periodicIO.voltage);

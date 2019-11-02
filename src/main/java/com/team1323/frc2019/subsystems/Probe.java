@@ -192,7 +192,7 @@ public class Probe extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        if(Settings.kDebugIntakes){
+        if(Settings.debugIntakes()){
             SmartDashboard.putBoolean("Probe Has Disk", hasDisk());
             SmartDashboard.putBoolean("Probe Banner", getBanner());
         }

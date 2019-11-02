@@ -320,7 +320,7 @@ public class Wrist extends Subsystem{
 	@Override
 	public synchronized void readPeriodicInputs() {
 		periodicIO.position = wrist.getSelectedSensorPosition(0);
-		if(Settings.kDebugWrist){
+		if(Settings.debugWrist()){
 			periodicIO.velocity = wrist.getSelectedSensorVelocity(0);
 			periodicIO.voltage = wrist.getMotorOutputVoltage();
 			periodicIO.current = wrist.getOutputCurrent();
@@ -353,7 +353,7 @@ public class Wrist extends Subsystem{
 	@Override
 	public void outputTelemetry() {
 		SmartDashboard.putNumber("Wrist Angle", getAngle());
-		if(Settings.kDebugWrist){
+		if(Settings.debugWrist()){
 			SmartDashboard.putNumber("Wrist Current", periodicIO.current);
 			SmartDashboard.putNumber("Wrist Voltage", periodicIO.voltage);
 			SmartDashboard.putNumber("Wrist Encoder", periodicIO.position);

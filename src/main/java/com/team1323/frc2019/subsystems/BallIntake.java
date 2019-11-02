@@ -312,7 +312,7 @@ public class BallIntake extends Subsystem {
 
   @Override
   public void outputTelemetry() {
-    if (Settings.kDebugIntakes) {
+    if (Settings.debugIntakes()) {
       SmartDashboard.putNumber("Intake Grabber Current", grabber.getOutputCurrent());
       SmartDashboard.putNumber("Intake Grabber Voltage", grabber.getMotorOutputVoltage());
       SmartDashboard.putNumber("Intake Feeder Current", feeder.getOutputCurrent());

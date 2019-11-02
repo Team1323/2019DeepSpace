@@ -256,7 +256,7 @@ public class Jacks extends Subsystem {
     @Override
     public void readPeriodicInputs() {
         periodicIO.position = motor.getSelectedSensorPosition();
-        if(Settings.kDebugJacks){
+        if(Settings.debugJacks()){
             periodicIO.velocity = motor.getSelectedSensorVelocity();
             periodicIO.voltage = motor.getMotorOutputVoltage();
             periodicIO.current = motor.getOutputCurrent();
@@ -274,7 +274,7 @@ public class Jacks extends Subsystem {
     public void outputTelemetry() {
         SmartDashboard.putNumber("Jack Height", getHeight());
         SmartDashboard.putBoolean("Jacks Have Power", hasPower);
-        if(Settings.kDebugJacks){
+        if(Settings.debugJacks()){
             SmartDashboard.putNumber("Jack Velocity", periodicIO.velocity);
             SmartDashboard.putNumber("Jack Voltage", periodicIO.voltage);
             SmartDashboard.putNumber("Jack Current", periodicIO.current);
