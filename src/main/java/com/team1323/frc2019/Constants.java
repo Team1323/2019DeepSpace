@@ -138,7 +138,7 @@ public class Constants {
 	public static final double kElevatorMaxSpeedHighGear = 696.96 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
 
-	public static final int kElevatorEncoderStartingPosition = Settings.kIsUsingCompBot ? 2295 : 4403;
+	public static final int kElevatorEncoderStartingPosition = Settings.kIsUsingCompBot ? 5580 : 4403;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 0.5; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.6;
@@ -178,7 +178,7 @@ public class Constants {
 	public static final double kWristMaxSpeedLowGear = 31.32 * 4096.0 / 600.0;//200.0;
 	public static final double kWristStartingAngle = 0.0;
 	/** Pulse width position of the wrist encoder when the wrist is upright (at 90 degrees, parallel to the elevator). */
-	public static final int kWristStartingEncoderPosition = Settings.kIsUsingCompBot ? 776 : 220;
+	public static final int kWristStartingEncoderPosition = Settings.kIsUsingCompBot ? 1461 : 220;
 	/** The number of rotations the wrist encoder undergoes for every rotation of the wrist. */
 	public static final double kWristEncoderToOutputRatio = 30.0 / 12.0; // 144 degrees before wrap
 	public static final double kWristAngleTolerance = 10.0; //degrees

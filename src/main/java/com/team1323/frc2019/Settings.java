@@ -26,7 +26,7 @@ public class Settings {
     private boolean kDebugSwerve = false;
     private boolean kDebugElevator = true;
     private boolean kDebugIntakes = false;
-    private boolean kDebugWrist = false;
+    private boolean kDebugWrist = true;
     private boolean kDebugJacks = false;
     private boolean kDebugVision = false;
 
