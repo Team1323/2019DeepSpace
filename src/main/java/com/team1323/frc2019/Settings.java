@@ -26,9 +26,9 @@ public class Settings {
     private boolean kDebugSwerve = false;
     private boolean kDebugElevator = true;
     private boolean kDebugIntakes = false;
-    private boolean kDebugWrist = true;
-    private boolean kDebugJacks = false;
-    private boolean kDebugVision = false;
+    private boolean kDebugWrist = false;
+    private boolean kDebugJacks = true;
+    private boolean kDebugVision = true;
 
     public static boolean debugSwerve(){ return instance.kDebugSwerve; }
     public static boolean debugElevator(){ return instance.kDebugElevator; }

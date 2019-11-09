@@ -62,7 +62,7 @@ public class Constants {
     public static final double kCameraXOffset = kRobotHalfLength - 15.0;
     public static final double kCameraZOffset = 16.45;
     public static final double kCameraYawAngleDegrees = 0.0;//-12.7
-    public static final double kCameraPitchAngleDegrees = Settings.kIsUsingCompBot ? 15.8 : 14.95;//13.45
+    public static final double kCameraPitchAngleDegrees = Settings.kIsUsingCompBot ? 16.7 	 : 14.95;//13.45
     
     //Goal tracker constants
     public static double kMaxGoalTrackAge = 0.5;//0.5
@@ -138,7 +138,7 @@ public class Constants {
 	public static final double kElevatorMaxSpeedHighGear = 696.96 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
 
-	public static final int kElevatorEncoderStartingPosition = Settings.kIsUsingCompBot ? 1690 : 4403;
+	public static final int kElevatorEncoderStartingPosition = Settings.kIsUsingCompBot ? 3103 : 4403;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 0.5; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.6;

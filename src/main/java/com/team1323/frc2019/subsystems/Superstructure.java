@@ -446,7 +446,7 @@ public class Superstructure extends Subsystem {
 	public void diskTrackingState(){
 		request(new SequentialRequest(
 			waitForVisionRequest(),
-			new LambdaRequest(() -> swerve.startVisionPID(new Translation2d(-1.0, 0.0))),
+			new LambdaRequest(() -> swerve.startVisionPID(new Translation2d(-1.0, -1.0))),
 			wrist.angleRequest(Constants.kWristBallFeedingAngle),
 			ballCarriage.stateRequest(BallCarriage.State.OFF), 
 			ballIntake.stateRequest(BallIntake.State.OFF),

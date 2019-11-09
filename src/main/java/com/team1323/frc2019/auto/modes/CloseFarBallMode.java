@@ -68,12 +68,12 @@ public class CloseFarBallMode extends AutoModeBase {
             runAction(new WaitForHeadingAction(-40.0, -25.0));
         else
             runAction(new WaitForHeadingAction(25.0, 40.0));
-        s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(30.0 * directionFactor), Constants.kClosestVisionDistance, new Translation2d(-5.0, /*Constants.kCurvedVisionYOffset*/0.0), Constants.kDefaultVisionTrackingSpeed);
+        s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(30.0 * directionFactor), Constants.kClosestVisionDistance, new Translation2d(-5.0, /*Constants.kCurvedVisionYOffset*/-2.0), Constants.kDefaultVisionTrackingSpeed);
         runAction(new WaitForSuperstructureAction());
         runAction(new WaitAction(0.25));
 
 
-        runAction(new SetTrajectoryAction(trajectories.closeHatchToHumanLoader.get(left), 180.0 * directionFactor, 0.75));
+        runAction(new SetTrajectoryAction(trajectories.closeHatchToHumanLoader.get(left) , 180.0 * directionFactor, 0.75));
         runAction(new WaitAction(0.5));
         s.diskScoringState(12.4, false);
         LimelightProcessor.getInstance().setPipeline(Pipeline.RIGHTMOST);
@@ -94,7 +94,7 @@ public class CloseFarBallMode extends AutoModeBase {
         runAction(new RemainingProgressAction(3.75));
         s.diskScoringState(Constants.kElevatorMidHatchHeight, false);
         runAction(new RemainingProgressAction(1.25 - 0.25));
-        s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(150.0 * directionFactor), Constants.kClosestVisionDistance, new Translation2d(-3.0, /*Constants.kCurvedVisionYOffset*/ 0.0), 30.0);
+        s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(150.0 * directionFactor), Constants.kClosestVisionDistance, new Translation2d(-3.0, /*Constants.kCurvedVisionYOffset*/ -2.0), 30.0);
         runAction(new WaitForSuperstructureAction());
         //runAction(new WaitAction(0.25));
 

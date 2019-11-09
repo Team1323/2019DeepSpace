@@ -107,7 +107,7 @@ public class Swerve extends Subsystem{
 	double visionCutoffDistance = Constants.kClosestVisionDistance;
 	double visionTrackingSpeed = Constants.kDefaultVisionTrackingSpeed;
 	public boolean isTracking(){
-		return currentState == ControlState.VISION_TRAJECTORY;
+		return currentState == ControlState.VISION_TRAJECTORY || currentState == ControlState.VISION_PID;
 	}
 	Pose2d visionPIDTarget;
 	SynchronousPIDF lateralPID = new SynchronousPIDF(0.05, 0.0, 0.0);
