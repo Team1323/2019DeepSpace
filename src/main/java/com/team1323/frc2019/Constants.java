@@ -138,7 +138,7 @@ public class Constants {
 	public static final double kElevatorMaxSpeedHighGear = 696.96 * 4096.0 / 600.0; //encoder units per 100 ms
 	/** Pulse width position of the elevator encoder when it has fully descended. */
 
-	public static final int kElevatorEncoderStartingPosition = Settings.kIsUsingCompBot ? 3310 : 4403;
+	public static final int kElevatorEncoderStartingPosition = Settings.kIsUsingCompBot ? 426 : 4403;
 	public static final double kElevatorTicksPerInch = 6097.0 / 7.625; //determined empirically 5.12 inches before wrap
 	public static final double kElevatorHeightTolerance = 0.5; //inches
 	public static final double kElevatorDiskIntakeHeight = 2.6;
@@ -239,7 +239,7 @@ public class Constants {
 	public static final double kJackMaxSpeed = 344.1749 * 4096.0 / 600.0;//2675.0;
 	public static final double kJackTicksPerInch = 13.3733539 * 4096.0 / 30.4444882;//2.2765 inches before wrap
 	public static final double kJackHeightTolerance = 1.0; //inches
-	public static final int kJackStartingEncPosition = Settings.kIsUsingCompBot ? 1103 : 3942;
+	public static final int kJackStartingEncPosition = Settings.kIsUsingCompBot ? 1572 : 3942;
 	public static final double kJackStartingHeight = 0.0;
 	public static final double kJackShortClimbHeight = -10.0;
 	public static final double kJackMaxPhysicalHeight = 0.2;

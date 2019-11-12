@@ -24,11 +24,11 @@ public class Settings {
     // Separate debugging output into the different subsystems so as to not 
     // overload the NetworkTables
     private boolean kDebugSwerve = false;
-    private boolean kDebugElevator = true;
+    private boolean kDebugElevator = false;
     private boolean kDebugIntakes = false;
     private boolean kDebugWrist = false;
-    private boolean kDebugJacks = true;
-    private boolean kDebugVision = true;
+    private boolean kDebugJacks = false;
+    private boolean kDebugVision = false;
 
     public static boolean debugSwerve(){ return instance.kDebugSwerve; }
     public static boolean debugElevator(){ return instance.kDebugElevator; }

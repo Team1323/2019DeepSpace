@@ -304,8 +304,8 @@ public class Swerve extends Subsystem{
 		rotationalInput = rotate;
 
 		if(translationalInput.norm() != 0){
-			if(currentState == ControlState.VISION_TRAJECTORY){
-				if(Math.abs(translationalInput.direction().distance(visionTargetHeading)) > Math.toRadians(150.0)){
+			if(isTracking()){
+				if(Math.abs(translationalInput.direction().distance(visionTargetHeading)) > Math.toRadians(90.0)){
 					setState(ControlState.MANUAL);
 				}
 			}else if(currentState != ControlState.MANUAL){
@@ -746,6 +746,7 @@ public class Swerve extends Subsystem{
 			}
 			output = output.rotateBy(fixedVisionOrientation);
 			setPathHeading(fixedVisionOrientation.getDegrees());
+			visionTargetHeading = fixedVisionOrientation;
 			return output;
 		} else {
 			System.out.println("No target detected");
@@ -1179,6 +1180,7 @@ public class Swerve extends Subsystem{
 		
 			@Override
 			public void act() {
+				System.out.println("Vision tracking has commenced");
 				robotHasDisk = hasDisk;
 				fixedVisionOrientation = fixedOrientation;
 				useFixedVisionOrientation = true;

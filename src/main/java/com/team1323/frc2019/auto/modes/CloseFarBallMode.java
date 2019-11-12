@@ -61,14 +61,14 @@ public class CloseFarBallMode extends AutoModeBase {
         LimelightProcessor.getInstance().setPipeline(left ? Pipeline.LEFTMOST : Pipeline.RIGHTMOST);
         runAction(new WaitToPassYCoordinateAction((46.25 + Constants.kRobotWidth) * directionFactor));
         s.diskScoringState(Constants.kElevatorMidHatchHeight, true);
-        runAction(new WaitForDistanceAction(left ? Constants.closeHatchPosition.getTranslation() : Constants.rightCloseHatchPosition.getTranslation(), /*56.0*/62.0));//102
+        runAction(new WaitForDistanceAction(left ? Constants.closeHatchPosition.getTranslation() : Constants.rightCloseHatchPosition.getTranslation(), /*56.0*/66.0));//102
         runAction(new WaitForElevatorAction(19.6, true));
         runAction(new WaitForVisionAction(3.0));
         if(left)
             runAction(new WaitForHeadingAction(-40.0, -25.0));
         else
             runAction(new WaitForHeadingAction(25.0, 40.0));
-        s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(30.0 * directionFactor), Constants.kClosestVisionDistance, new Translation2d(-5.0, /*Constants.kCurvedVisionYOffset*/-2.0), Constants.kDefaultVisionTrackingSpeed);
+        s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(30.0 * directionFactor), Constants.kClosestVisionDistance, new Translation2d(-5.0, /*Constants.kCurvedVisionYOffset*/-0.75), Constants.kDefaultVisionTrackingSpeed);
         runAction(new WaitForSuperstructureAction());
         runAction(new WaitAction(0.25));
 
@@ -94,7 +94,7 @@ public class CloseFarBallMode extends AutoModeBase {
         runAction(new RemainingProgressAction(3.75));
         s.diskScoringState(Constants.kElevatorMidHatchHeight, false);
         runAction(new RemainingProgressAction(1.25 - 0.25));
-        s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(150.0 * directionFactor), Constants.kClosestVisionDistance, new Translation2d(-3.0, /*Constants.kCurvedVisionYOffset*/ -2.0), 30.0);
+        s.diskTrackingState(Constants.kElevatorMidHatchHeight, Rotation2d.fromDegrees(150.0 * directionFactor), Constants.kClosestVisionDistance, new Translation2d(-3.0, /*Constants.kCurvedVisionYOffset*/ -0.75), 30.0);
         runAction(new WaitForSuperstructureAction());
         //runAction(new WaitAction(0.25));
 

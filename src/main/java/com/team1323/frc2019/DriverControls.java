@@ -379,7 +379,7 @@ public class DriverControls implements Loop {
             leds.conformToState(LEDs.State.EMERGENCY);
         } else if (s.isClimbing()) {
             leds.conformToState(LEDs.State.CLIMBING);
-        } else if (swerve.getState() == Swerve.ControlState.VISION_TRAJECTORY){
+        } else if (swerve.isTracking()){
             leds.conformToState(LEDs.State.TARGET_TRACKING);
         } else if(robotState.seesTarget()) {
             leds.conformToState(LEDs.State.TARGET_VISIBLE);
