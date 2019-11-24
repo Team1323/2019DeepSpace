@@ -23,6 +23,7 @@ import com.team1323.frc2019.subsystems.SubsystemManager;
 import com.team1323.frc2019.subsystems.Superstructure;
 import com.team1323.frc2019.subsystems.Swerve;
 import com.team1323.frc2019.subsystems.Wrist;
+import com.team1323.io.SwitchController;
 import com.team1323.io.Xbox;
 import com.team1323.lib.util.Util;
 import com.team254.lib.geometry.Translation2d;
@@ -42,7 +43,7 @@ public class DriverControls implements Loop {
         return instance;
     }
 
-    Xbox driver, coDriver;
+	Xbox driver, coDriver;
 
     private Swerve swerve;
     private Elevator elevator;
@@ -73,7 +74,7 @@ public class DriverControls implements Loop {
 
     public DriverControls() {
         driver = new Xbox(0);
-        coDriver = new Xbox(1);
+		coDriver = new Xbox(1);
         driver.setDeadband(0.0);
 		coDriver.setDeadband(0.4);
 		coDriver.rightBumper.setLongPressDuration(1.0);
@@ -135,7 +136,7 @@ public class DriverControls implements Loop {
             }
         } else {
             driver.update();
-            coDriver.update();
+			coDriver.update();
             if(oneControllerMode) oneControllerMode();
             else twoControllerMode();
         }

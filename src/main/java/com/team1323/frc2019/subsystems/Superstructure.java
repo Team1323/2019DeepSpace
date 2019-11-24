@@ -228,8 +228,6 @@ public class Superstructure extends Subsystem {
 
 	@Override
 	public void outputTelemetry() {
-		SmartDashboard.putBoolean("Superstructure Done", allRequestsCompleted);
-		SmartDashboard.putString("Active Request", (activeRequest == null) ? "null" : activeRequest.toString());
 	}
 
 	public Request waitRequest(double seconds){

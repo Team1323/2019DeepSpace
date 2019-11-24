@@ -48,6 +48,62 @@ public class Pose2d implements IPose2d<Pose2d> {
     }
 
     /**
+   * Transforms the pose by the given transformation and returns the new pose.
+   *
+   * @param other The transform to transform the pose by.
+   * @return The transformed pose.
+   */
+    public Pose2d plus(Transform2d other) {
+        return new Pose2d(translation_.translateBy(other.getTranslation().rotateBy(rotation_)),
+            rotation_.rotateBy(other.getRotation()));
+    }
+
+    /**
+   * Obtain a new Pose2d from a (constant curvature) velocity.
+   *
+   * <p>See <a href="https://file.tavsys.net/control/state-space-guide.pdf">
+   * Controls Engineering in the FIRST Robotics Competition</a>
+   * section on nonlinear pose estimation for derivation.
+   *
+   * <p>The twist is a change in pose in the robot's coordinate frame since the
+   * previous pose update. When the user runs exp() on the previous known
+   * field-relative pose with the argument being the twist, the user will
+   * receive the new field-relative pose.
+   *
+   * <p>"Exp" represents the pose exponential, which is solving a differential
+   * equation moving the pose forward in time.
+   *
+   * @param twist The change in pose in the robot's coordinate frame since the
+   *              previous pose update. For example, if a non-holonomic robot moves forward
+   *              0.01 meters and changes angle by 0.5 degrees since the previous pose update,
+   *              the twist would be Twist2d{0.01, 0.0, toRadians(0.5)}
+   * @return The new pose of the robot.
+   */
+  @SuppressWarnings("LocalVariableName")
+  public Pose2d wpiExp(Twist2d twist) {
+    double dx = twist.dx;
+    double dy = twist.dy;
+    double dtheta = twist.dtheta;
+
+    double sinTheta = Math.sin(dtheta);
+    double cosTheta = Math.cos(dtheta);
+
+    double s;
+    double c;
+    if (Math.abs(dtheta) < 1E-9) {
+      s = 1.0 - 1.0 / 6.0 * dtheta * dtheta;
+      c = 0.5 * dtheta;
+    } else {
+      s = sinTheta / dtheta;
+      c = (1 - cosTheta) / dtheta;
+    }
+    var transform = new Transform2d(new Translation2d(dx * s - dy * c, dx * c + dy * s),
+        new Rotation2d(cosTheta, sinTheta, true));
+
+    return this.plus(transform);
+  }
+
+    /**
      * Obtain a new Pose2d from a (constant curvature) velocity. See:
      * https://github.com/strasdat/Sophus/blob/master/sophus/se2.hpp
      */

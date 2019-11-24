@@ -30,6 +30,9 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryGenerator;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
+import com.wpilib.SwerveDriveOdometry;
+import com.wpilib.SwerveModuleState;
+import com.wpilib.SwerveDriveKinematics;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -135,6 +138,11 @@ public class Swerve extends Subsystem{
 		return pose;
 	}
 
+	//Wpilib odometry
+	SwerveDriveOdometry odometry;
+	Pose2d wpiPose = new Pose2d();
+	boolean outputWpiPose = false;
+
 	// Module configuration variables (for beginnning of auto)
 	boolean modulesReady = false;
 	boolean alwaysConfigureModules = false;
@@ -199,6 +207,10 @@ public class Swerve extends Subsystem{
 		motionPlanner = new DriveMotionPlanner();
 
 		robotState = RobotState.getInstance();
+
+		odometry = new SwerveDriveOdometry(new SwerveDriveKinematics(Constants.kVehicleToModuleZero, 
+			Constants.kVehicleToModuleOne, Constants.kVehicleToModuleTwo, Constants.kVehicleToModuleThree), 
+			Rotation2d.identity());
 
 		generator = TrajectoryGenerator.getInstance();
 
@@ -1046,6 +1058,7 @@ public class Swerve extends Subsystem{
 				resetAveragedDirection();
 				headingController.temporarilyDisable();
 				stop();
+				outputWpiPose = true;
 				lastUpdateTimestamp = timestamp;
 			}
 		}
@@ -1056,6 +1069,7 @@ public class Swerve extends Subsystem{
 				if(modulesReady || (getState() != ControlState.TRAJECTORY)){
 					//updatePose(timestamp);
 					alternatePoseUpdate();
+					wpiPose = odometry.update(pose.getRotation(), getModuleStates());
 				}
 				updateControlCycle(timestamp);
 				lastUpdateTimestamp = timestamp;
@@ -1067,6 +1081,7 @@ public class Swerve extends Subsystem{
 			synchronized(Swerve.this){
 				translationalVector = new Translation2d();
 				rotationalInput = 0;
+				outputWpiPose = false;
 				stop();
 			}
 		}
@@ -1287,6 +1302,14 @@ public class Swerve extends Subsystem{
 		modules.forEach((m) -> m.setMaxRotationSpeed(newMaxRotationSpeed));
 	}
 
+	public SwerveModuleState[] getModuleStates() {
+		SwerveModuleState[] states = new SwerveModuleState[modules.size()]; 
+		for(int i = 0; i < modules.size(); i++) {
+			states[i] = modules.get(i).getState();
+		}
+		return states;
+	}
+
 	@Override
 	public synchronized void readPeriodicInputs() {
 		modules.forEach((m) -> m.readPeriodicInputs());
@@ -1324,24 +1347,28 @@ public class Swerve extends Subsystem{
 		pigeon.setAngle(startingPose.getRotation().getUnboundedDegrees());
 		modules.forEach((m) -> m.zeroSensors(startingPose));
 		pose = startingPose;
+		odometry.resetPosition(startingPose, startingPose.getRotation());
 		distanceTraveled = 0;
 	}
 	
 	public synchronized void resetPosition(Pose2d newPose){
 		pose = new Pose2d(newPose.getTranslation(), pose.getRotation());
 		modules.forEach((m) -> m.zeroSensors(pose));
+		odometry.resetPosition(newPose, pose.getRotation());
 		distanceTraveled = 0;
 	}
 	
 	public synchronized void setXCoordinate(double x){
 		pose.getTranslation().setX(x);
 		modules.forEach((m) -> m.zeroSensors(pose));
+		odometry.resetPosition(pose, pose.getRotation());
 		System.out.println("X coordinate reset to: " + pose.getTranslation().x());
 	}
 	
 	public synchronized void setYCoordinate(double y){
 		pose.getTranslation().setY(y);
 		modules.forEach((m) -> m.zeroSensors(pose));
+		odometry.resetPosition(pose, pose.getRotation());
 		System.out.println("Y coordinate reset to: " + pose.getTranslation().y());
 	}
 
@@ -1349,6 +1376,9 @@ public class Swerve extends Subsystem{
 	public void outputTelemetry() {
 		modules.forEach((m) -> m.outputTelemetry());
 		SmartDashboard.putNumberArray("Robot Pose", new double[]{pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation().getUnboundedDegrees()});
+		// testing the wpi odometry
+		if(outputWpiPose)
+			SmartDashboard.putNumberArray("Path Pose", new double[]{wpiPose.getTranslation().x(), wpiPose.getTranslation().y(), wpiPose.getRotation().getUnboundedDegrees()});
 		if(Settings.debugSwerve()){
 			SmartDashboard.putNumber("Robot X", pose.getTranslation().x());
 			SmartDashboard.putNumber("Robot Y", pose.getTranslation().y());

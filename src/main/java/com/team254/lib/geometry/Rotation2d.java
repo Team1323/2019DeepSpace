@@ -117,6 +117,16 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
     }
 
     /**
+   * Multiplies the current rotation by a scalar.
+   *
+   * @param scalar The scalar.
+   * @return The new scaled Rotation2d.
+   */
+    public Rotation2d times(double scalar) {
+        return Rotation2d.fromRadians(getRadians() * scalar);
+    }
+
+    /**
      * The inverse of a Rotation2d "undoes" the effect of this rotation.
      *
      * @return The opposite of this rotation.

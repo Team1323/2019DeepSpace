@@ -13,6 +13,7 @@ import com.team254.drivers.LazyTalonSRX;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
+import com.wpilib.SwerveModuleState;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -251,7 +252,7 @@ public class SwerveDriveModule extends Subsystem{
 	}
 	
 	public double encVelocityToInchesPerSecond(double encUnitsPer100ms){
-		return encUnitsToInches(encUnitsPer100ms) * 10;
+		return encUnitsToInches(encUnitsPer100ms) * 10.0;
 	}
 	
 	public int inchesPerSecondToEncVelocity(double inchesPerSecond){
@@ -362,11 +363,15 @@ public class SwerveDriveModule extends Subsystem{
 		previousEncDistance = getDriveDistanceInches();
 	}
 
+	public SwerveModuleState getState() {
+		return new SwerveModuleState(encVelocityToInchesPerSecond(periodicIO.velocity), getModuleAngle());
+	}
+
 	@Override
 	public synchronized void readPeriodicInputs() {
 		periodicIO.rotationPosition = rotationMotor.getSelectedSensorPosition(0);
 		if(useDriveEncoder) periodicIO.drivePosition = driveMotor.getSelectedSensorPosition(0);
-		//periodicIO.velocity = driveMotor.getSelectedSensorVelocity();
+		periodicIO.velocity = driveMotor.getSelectedSensorVelocity();
 		if(Settings.debugSwerve()){
 			periodicIO.velocity = driveMotor.getSelectedSensorVelocity();
 		}
