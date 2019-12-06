@@ -404,7 +404,7 @@ public class Swerve extends Subsystem{
 	/** Configures each module to match its assigned vector */
 	public void setDriveOutput(List<Translation2d> driveVectors){
 		for(int i=0; i<modules.size(); i++){
-    		if(Util.shouldReverse(driveVectors.get(i).direction().getDegrees(), modules.get(i).getModuleAngle().getDegrees())){
+    		if(Util.shouldReverse(driveVectors.get(i).direction(), modules.get(i).getModuleAngle())){
     			modules.get(i).setModuleAngle(driveVectors.get(i).direction().getDegrees() + 180.0);
     			modules.get(i).setDriveOpenLoop(-driveVectors.get(i).norm());
     		}else{
@@ -416,7 +416,7 @@ public class Swerve extends Subsystem{
 
 	public void setDriveOutput(List<Translation2d> driveVectors, double percentOutputOverride){
 		for(int i=0; i<modules.size(); i++){
-    		if(Util.shouldReverse(driveVectors.get(i).direction().getDegrees(), modules.get(i).getModuleAngle().getDegrees())){
+    		if(Util.shouldReverse(driveVectors.get(i).direction(), modules.get(i).getModuleAngle())){
     			modules.get(i).setModuleAngle(driveVectors.get(i).direction().getDegrees() + 180.0);
     			modules.get(i).setDriveOpenLoop(-percentOutputOverride);
     		}else{
@@ -430,7 +430,7 @@ public class Swerve extends Subsystem{
 	/** Configures each module to match its assigned vector, but puts the drive motors into closed-loop velocity mode */
 	public void setVelocityDriveOutput(List<Translation2d> driveVectors){
 		for(int i=0; i<modules.size(); i++){
-    		if(Util.shouldReverse(driveVectors.get(i).direction().getDegrees(), modules.get(i).getModuleAngle().getDegrees())){
+    		if(Util.shouldReverse(driveVectors.get(i).direction(), modules.get(i).getModuleAngle())){
     			modules.get(i).setModuleAngle(driveVectors.get(i).direction().getDegrees() + 180.0);
     			modules.get(i).setVelocitySetpoint(-driveVectors.get(i).norm() * Constants.kSwerveMaxSpeedInchesPerSecond);
     		}else{
@@ -442,7 +442,7 @@ public class Swerve extends Subsystem{
 
 	public void setVelocityDriveOutput(List<Translation2d> driveVectors, double velocityOverride){
 		for(int i=0; i<modules.size(); i++){
-    		if(Util.shouldReverse(driveVectors.get(i).direction().getDegrees(), modules.get(i).getModuleAngle().getDegrees())){
+    		if(Util.shouldReverse(driveVectors.get(i).direction(), modules.get(i).getModuleAngle())){
     			modules.get(i).setModuleAngle(driveVectors.get(i).direction().getDegrees() + 180.0);
     			modules.get(i).setVelocitySetpoint(-velocityOverride);
     		}else{
@@ -455,7 +455,7 @@ public class Swerve extends Subsystem{
 	/** Sets only module angles to match their assigned vectors */
 	public void setModuleAngles(List<Translation2d> driveVectors){
 		for(int i=0; i<modules.size(); i++){
-    		if(Util.shouldReverse(driveVectors.get(i).direction().getDegrees(), modules.get(i).getModuleAngle().getDegrees())){
+    		if(Util.shouldReverse(driveVectors.get(i).direction(), modules.get(i).getModuleAngle())){
     			modules.get(i).setModuleAngle(driveVectors.get(i).direction().getDegrees() + 180.0);
     		}else{
     			modules.get(i).setModuleAngle(driveVectors.get(i).direction().getDegrees());

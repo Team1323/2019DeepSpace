@@ -33,11 +33,8 @@ public class Pigeon {
 	
 	public Rotation2d getYaw(){
 		if(!Settings.kSimulate){
-			double [] ypr = new double[3];
-			pigeon.getYawPitchRoll(ypr);
 			PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
-			SmartDashboard.putNumber("Pigeon Heading", -pigeon.getFusedHeading(fusionStatus));
-			return Rotation2d.fromDegrees(-pigeon.getFusedHeading(fusionStatus)/*-ypr[0]*/);
+			return Rotation2d.fromDegrees(-pigeon.getFusedHeading(fusionStatus));
 		}
 		return new Rotation2d();
 	}

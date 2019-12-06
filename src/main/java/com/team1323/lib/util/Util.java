@@ -2,6 +2,8 @@ package com.team1323.lib.util;
 
 import java.util.List;
 
+import com.team254.lib.geometry.Rotation2d;
+
 /**
  * Contains basic functions that are used often.
  */
@@ -101,16 +103,11 @@ public class Util {
         }
         return newAngle;
     }
-    
-    public static boolean shouldReverse(double goalAngle, double currentAngle){
-    	goalAngle = boundAngle0to360Degrees(goalAngle);
-    	currentAngle = boundAngle0to360Degrees(currentAngle);
-    	double reversedAngle = boundAngle0to360Degrees(currentAngle + 180);
-    	double angleDifference = Math.abs(goalAngle - currentAngle);
-    	double reversedAngleDifference = Math.abs(goalAngle - reversedAngle);
-    	angleDifference = (angleDifference > 180) ? 360-angleDifference : angleDifference;
-    	reversedAngleDifference = (reversedAngleDifference > 180) ? 360-reversedAngleDifference : reversedAngleDifference;
-    	return reversedAngleDifference < angleDifference;
+
+    public static boolean shouldReverse(Rotation2d goalAngle, Rotation2d currentAngle) {
+        double angleDifference = Math.abs(goalAngle.distance(currentAngle));
+        double reversedAngleDifference = Math.abs(goalAngle.distance(currentAngle.rotateBy(Rotation2d.fromDegrees(180.0))));
+        return reversedAngleDifference < angleDifference;
     }
     
     public static double deadBand(double val, double deadband){

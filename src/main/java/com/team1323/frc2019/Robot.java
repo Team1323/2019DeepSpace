@@ -54,10 +54,7 @@ public class Robot extends TimedRobot {
 
 	private DriverStation ds = DriverStation.getInstance();
 
-	private DriverControls driverControls;
-
-	//NetworkTableEntry persistent;
-	
+	private DriverControls driverControls;	
 
 	/**
 	 * This function is run when the robot is first started up and should be used
@@ -84,8 +81,6 @@ public class Robot extends TimedRobot {
 		subsystems.registerEnabledLoops(enabledLooper);
 		subsystems.registerDisabledLoops(disabledLooper);
 
-		//persistent = Shuffleboard.getTab("Settings").addPersistent("Comp bot", false).getEntry();
-
 		s.swerve.zeroSensors();
 		// swerve.zeroSensors(new Pose2d());
 
@@ -94,6 +89,8 @@ public class Robot extends TimedRobot {
 		s.swerve.stop();
 
 		smartDashboardInteractions.initWithDefaults();
+
+		Settings.initializeToggles();
 
 		generator.generateTrajectories();
 
@@ -107,12 +104,8 @@ public class Robot extends TimedRobot {
 	public void robotPeriodic() {
 		subsystems.outputToSmartDashboard();
 		robotState.outputToSmartDashboard();
-		enabledLooper.outputToSmartDashboard();
-		//Pigeon.getInstance().outputToSmartDashboard();
 		SmartDashboard.putBoolean("Enabled", ds.isEnabled());
 		SmartDashboard.putNumber("Match time", ds.getMatchTime());
-
-		//SmartDashboard.putBoolean("persistent value", persistent.getBoolean(false));
 	}
 
 	@Override
@@ -159,7 +152,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopPeriodic() {
 		try {
-			
+			enabledLooper.outputToSmartDashboard();
 		} catch (Throwable t) {
 			CrashTracker.logThrowableCrash(t);
 			throw t;
@@ -184,7 +177,9 @@ public class Robot extends TimedRobot {
 	@Override
 	public void disabledPeriodic() {
 		try {
+			disabledLooper.outputToSmartDashboard();
 			smartDashboardInteractions.output();
+			Settings.update();
 			if(subsystems.haveEmergency())
 				leds.conformToState(LEDs.State.EMERGENCY);
 		} catch (Throwable t) {

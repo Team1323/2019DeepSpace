@@ -192,7 +192,6 @@ public class RobotState {
             Rotation2d targetOrientation = targetOrientation1;
             Rotation2d robot_to_goal_rotation = Rotation2d
                     .fromRadians(Math.atan2(robot_to_goal.y(), robot_to_goal.x()));
-            SmartDashboard.putNumber("Vision Target Angle", targetOrientation.getDegrees());
 
             ShooterAimingParameters params = new ShooterAimingParameters(robot_to_goal.norm(), robot_to_goal_rotation,
                     report.latest_timestamp, report.stability, targetOrientation);
