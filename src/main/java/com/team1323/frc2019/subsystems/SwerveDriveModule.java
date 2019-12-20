@@ -372,9 +372,6 @@ public class SwerveDriveModule extends Subsystem{
 		periodicIO.rotationPosition = rotationMotor.getSelectedSensorPosition(0);
 		if(useDriveEncoder) periodicIO.drivePosition = driveMotor.getSelectedSensorPosition(0);
 		periodicIO.velocity = driveMotor.getSelectedSensorVelocity();
-		if(Settings.debugSwerve()){
-			periodicIO.velocity = driveMotor.getSelectedSensorVelocity();
-		}
 		/*if(moduleID == 3){
 			periodicIO.velocity = driveMotor.getSelectedSensorVelocity(0);
 			periodicIO.driveVoltage = driveMotor.getMotorOutputVoltage();
